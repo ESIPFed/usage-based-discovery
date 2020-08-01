@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Results{% endblock %}
+
+{% block main %}
+
+
+<!DOCTYPE html>
+<html class="myFontClass">
+
+<head>
+
+    <style>
+        p {
+            color: whitesmoke;
+            text-align: center;
+        }
+
+        button {
+            width: 45%;
+            height: 25%;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 25px;
+            font-family: 'Trebuchet MS';
+
+        }
+
+        input {
+            width: 10%;
+            height: 7%;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 15px;
+            font-family: 'SpaceMeatballRegular';
+            font-size: 10px;
+
+        }
+    </style>
+
+    <br>
+    <p><a href="/">Topics</a> / <a href="/use_cases/{{topic}}">{{topic}}</a> / {{application}}</p>
+    <br><br>
+</head>
+
+<body>
+
+    <!--List dataset information here-->
+    <p>Relevant Datasets:</p>
+
+    {% for data in datasets %}
+
+    
+        <button onclick="window.open('{{data[0]}}','_blank')">
+            <h2><strong>{{data[0]}}</strong></h2>
+            
+            (Confidence Level: {{data[1]}})
+        </button>
+    
+
+    <br><br>
+    {% endfor %}
+
+    <input type="button" value="JSON DOI" onclick="window.open('/data/jsonify/{{topic}}/{{application}}','_blank')">
+    
+
+</body>
+
+
+
+</html>
+
+
+
+{% endblock %}

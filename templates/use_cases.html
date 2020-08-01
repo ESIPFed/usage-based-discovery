@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Applications for {{topic}}{% endblock %}
+
+{% block main %}
+
+<!DOCTYPE html>
+<html class="myFontClass">
+
+<head>
+
+    <style>
+        p {
+            color: whitesmoke;
+            text-align: center;
+        }
+
+        button {
+            width: 45%;
+            height: 25%;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 25px;
+            font-family: 'Helvetica';
+            overflow-y: auto;
+
+        }
+    </style>
+
+    <br>
+    <p><a href="/">Topics</a> / {{topic}}</p><br>
+
+
+</head>
+
+<body>
+
+    <p>Relevant Applications:</p>
+
+    {% for app in applications %}
+
+    <button onclick="window.location.href='/data/{{topic}}/{{app[0]}}';">
+        <h2><strong>{{app[0]}}</strong></h2>
+
+        <strong>Website:</strong> <a href={{app[1]}}>{{app[1]}}</a>
+        <br>
+        <strong>Publication:</strong> <a href={{app[2]}}>{{app[2]}}</a>
+    </button>
+
+    <br>
+
+    {% endfor %}
+
+
+
+</body>
+
+
+</html>
+
+
+
+
+{% endblock %}
