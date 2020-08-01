@@ -1,11 +1,11 @@
 # Usage-Based Discovery Prototype - A simple web application
  
 General instructions for set up:
-- Clone this repository. cd into the project directory. 
+- Clone this repository. `$ cd` into the project directory. 
 - Create a Python virtual environment with the command `$ virtualenv name-of-env`. 
 For simplicity, name it 'venv'. 
 
-- Start up virtualenv using the following command `$ source venv/bin/activate`.
+- Start up the virtual environment using the following command `$ source venv/bin/activate`.
 - Install the required python packages
 
 `$ pip install -r requirements.txt`
