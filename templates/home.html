@@ -31,7 +31,7 @@
             
         }
 
-        .button-container>a {
+        .button-container>form {
             width: 100px;
             height: 100px;
             float: left;
@@ -67,9 +67,9 @@
 
             {% for topic in topics %}
 
-            <a href="/use_cases/{{topic.name}}">
-                <button onclick="window.location.href='/use_cases/{{topic.name}}';"><strong>{{topic.name}}</strong></button>
-            </a>
+            <form method="get" action="/use_cases/{{topic.name}}">
+                <button><strong>{{topic.name}}</strong></button>
+            </form>
             
             {% endfor %}
 
