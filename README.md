@@ -5,8 +5,9 @@ General instructions for set up:
 To access the database with the correct credentials contact me at maggieqzhu@yahoo.com. Once you obtain the username and password from me, execute the following commands (replacing 'username' and 'password' with the correct values):
 
 `$ export NEO4J_USERNAME=username`<br />
-`$ export NEO4J_PASSWORD=password`
+`$ export NEO4J_PASSWORD=password`<br /><br />
 
+Next up:
 
 - Clone this repository. `$ cd` into the project directory. 
 - Create a Python virtual environment with the command `$ virtualenv name-of-env`. 
