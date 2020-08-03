@@ -43,9 +43,14 @@
     <button onclick="window.location.href='/data/{{topic}}/{{app[0]}}';">
         <h2><strong>{{app[0]}}</strong></h2>
 
+        {% if(app[1] != "N/A"): %}
         <strong>Website:</strong> <a href={{app[1]}}>{{app[1]}}</a>
         <br>
+        {% endif %}
+
+        {% if(app[2] != "N/A"): %}
         <strong>Publication:</strong> <a href={{app[2]}}>{{app[2]}}</a>
+        {% endif %}
     </button>
 
     <br>
