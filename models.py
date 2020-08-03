@@ -1,10 +1,12 @@
 from py2neo import Graph, Node, Relationship
 import csv
-
+import os
 
 def db():
 
-    graph = Graph("bolt://hobby-fcaccojbajhegbkelpidkifl.dbs.graphenedb.com:24787", auth=("neo4j", "b.RsWIZv4ntCee.7TYDxTHsycMuOMg9"), secure=True)     
+    username = os.environ.get('NEO4J_USERNAME')
+    password = os.environ.get('NEO4J_PASSWORD')
+    graph = Graph("bolt://hobby-fcaccojbajhegbkelpidkifl.dbs.graphenedb.com:24787", auth=(username, password), secure=True)     
 
     return graph
 
