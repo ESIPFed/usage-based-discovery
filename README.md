@@ -31,7 +31,7 @@ Any questions or suggestions for improvement?
 
 <br /><br />
 Ways to contribute to this project:
-- Automate the relationship foraging process (will likely involve web scraping and/or ML)
+- Automate the relationship foraging process (will likely involve web scraping and/or ML). A link for input/ideas: https://docs.google.com/document/d/1T0aPKu0mlW1syUEsAEXI3g3aTg-7m7XO7jTnnnoKLWI/edit?usp=sharing
 
 
 
