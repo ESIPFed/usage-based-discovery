@@ -1,5 +1,8 @@
 # Usage-Based Discovery Prototype - A simple web application
- 
+
+To see the deployed application, click <a href="https://9dolot495j.execute-api.us-east-1.amazonaws.com/dev">here</a>.
+
+
 General instructions for set up:
 
 To access the database with the correct credentials contact me at maggieqzhu@yahoo.com. Once you obtain the username and password from me, execute the following commands (replacing 'username' and 'password' with the correct values):
