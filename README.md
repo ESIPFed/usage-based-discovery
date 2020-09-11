@@ -13,17 +13,18 @@ To access the database with the correct credentials contact me at maggieqzhu@yah
 Next up:
 
 - Clone this repository. `$ cd` into the project directory. 
-- Create a Python virtual environment with the command `$ virtualenv name-of-env`. 
+- Install Python virtual environments `$ pip3 install virtualenv` (if not installed already)
+- Create a Python virtual environment with the command `$ python3 -m venv ./venv`. 
 For simplicity, name it 'venv'. 
 
 - Start up the virtual environment using the following command `$ source venv/bin/activate`.
 - Install the required python packages
 
-`$ pip install -r requirements.txt`
+`$ pip3 install -r requirements`
 
 - Run the application
 
-`$ python app.py`
+`$ python3 app.py`
 
 - Browse to http://localhost:5000
 
