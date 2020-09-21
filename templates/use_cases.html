@@ -26,10 +26,11 @@
             overflow-y: auto;
 
         }
+
     </style>
 
     <br>
-    <p><a href="/">Topics</a> / {{topic}}</p><br>
+    <p><a href="/dev">Topics</a> / {{topic}}</p><br>
 
 
 </head>
@@ -40,18 +41,20 @@
 
     {% for app in applications %}
 
-    <button onclick="window.location.href='/data/{{topic}}/{{app[0]}}';">
-        <h2><strong>{{app[0]}}</strong></h2>
+    <form action="/dev/data/{{topic}}/{{app[0]}}">
+        <button>
+            <h2><strong>{{app[0]}}</strong></h2>
 
-        {% if(app[1] != "N/A"): %}
-        <strong>Website:</strong> <a href={{app[1]}}>{{app[1]}}</a>
-        <br>
-        {% endif %}
+            {% if(app[1] != "N/A"): %}
+            <strong>Website:</strong> <a href={{app[1]}}>{{app[1]}}</a>
+            <br>
+            {% endif %}
 
-        {% if(app[2] != "N/A"): %}
-        <strong>Publication:</strong> <a href={{app[2]}}>{{app[2]}}</a>
-        {% endif %}
-    </button>
+            {% if(app[2] != "N/A"): %}
+            <strong>Publication:</strong> <a href={{app[2]}}>{{app[2]}}</a>
+            {% endif %}
+        </button>
+    </form>
 
     <br>
 
