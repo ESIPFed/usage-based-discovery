@@ -3,6 +3,8 @@ from flask_wtf import FlaskForm
 from wtforms import SelectField
 from models import db
 
+#just testing out the commit, to make sure it works for me properly -megan 
+
 
 app = Flask(__name__)
 app.secret_key = 'secret_key'
