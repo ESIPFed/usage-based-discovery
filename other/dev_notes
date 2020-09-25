@@ -6,7 +6,15 @@ Dev notes - Beta Version
 Neptune back-end 
 - Fix timeout error 
 
+toList()
 
+toSet()
+
+next()
+
+nextTraverser()
+
+iterate()
 
 
 Python 3.8?
