@@ -8,7 +8,7 @@ from gremlin_python.driver.driver_remote_connection import DriverRemoteConnectio
 
 graph = Graph()
 
-remoteConn = DriverRemoteConnection('wss://your-neptune-endpoint:8182/gremlin','g')
+remoteConn = DriverRemoteConnection('wss://ubd-prototype-beta-instance-1.cp6ppgqhmbet.us-east-1.neptune.amazonaws.com:8182/gremlin','g')
 g = graph.traversal().withRemote(remoteConn)
 
 print(g.V().limit(2).toList())
