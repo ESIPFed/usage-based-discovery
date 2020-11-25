@@ -17,7 +17,7 @@ import nltk
 
 option = webdriver.ChromeOptions()
 option.add_argument('headless')
-driver = webdriver.Chrome('/Users/mzhu1/Desktop/ubd-tool-remotedb/chromedriver', options=option)
+driver = webdriver.Chrome('./chromedriver', options=option)
 
 
 def get_snapshot(url, count):
