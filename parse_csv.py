@@ -17,7 +17,7 @@ import nltk
 
 option = webdriver.ChromeOptions()
 option.add_argument('headless')
-driver = webdriver.Chrome('./chromedriver86', options=option)
+driver = webdriver.Chrome('./chromedriver87', options=option)
 
 
 def get_snapshot(url, count):
