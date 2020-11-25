@@ -10,9 +10,6 @@ for line in reader:
          v2 = g.addV('dataset').property('doi', line['doi']).property('title', line['title']).next()
          g.V(Bindings.of('id',v1)).addE('uses').to(v2).iterate()
 
-
-
-
 Clear graph: 
 g.V().drop().iterate()
 
@@ -46,7 +43,49 @@ iterate()
 
 
 
+# For filtering
 
+# print(g.V().hasLabel('application').has('topic', 'floods').name.toList())
+# print(g.V().hasLabel('application').name.toList())
+
+# For displaying relevant information once a result is selected 
+
+#querying for edges/relationships comes into play here
+
+
+
+
+'''
+
+
+from gremlin_python.process.anonymous_traversal import traversal
+from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
+ 
+g = traversal().withRemote(DriverRemoteConnection('ws://localhost:8182/gremlin','g'))
+#g.addV("mission").property("name", "Mission").property("title", "Big Mission").next()
+msg = 'Vertices count: ', g.V().count().next()
+print(msg)
+
+print(g.V().limit(2).toList())
+'''
+
+'''
+
+# test loading a graph
+def test_loadGraph():
+   file="edges.csv"
+   # make the local file accessible to the server
+   path=os.path.abspath(file)
+   # drop the existing content of the graph
+   g.V().drop().iterate()
+   # read the content from the air routes example
+   g.io(path).read().iterate()
+   vCount=g.V().count().next()
+   print ("%s has %d vertices" % (file,vCount))
+   #assert vCount==1
+
+test_loadGraph()
+'''
 
 
 
