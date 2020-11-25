@@ -32,6 +32,7 @@
                             <!--<em class="font">Datasets: 1</em>-->
                             <br>
                             Description
+                            <!--{{a['description']}}-->
                             <br>
                         </button>
                     </form>
@@ -42,6 +43,7 @@
                             <!--<em class="font">Datasets: 1</em>-->
                             <br>
                             Description
+                            <!--{{a['description']}}-->
                             <br>
                         </button>
                     </form>
@@ -69,11 +71,27 @@
             {% else %}
                 <div class="heading">
                     <h1 class="font">{{app[0]['name']}}</h1> 
-                    <a href="{{app[0]['site']}}" target="_blank" class="font" style="align-self: center;">Website</a>&emsp;&emsp;
-                    <!--publication link, if none then DON'T INCLUDE-->
-                    {% if app[0]['publication'] != none %}
+                    
+                    <!--
+                        <h4 class="font">{{app[0]['description']}}</h4>
+                    -->
+
+                    {% if app[0]['site'] != 'None' %}
+                        <a href="{{app[0]['site']}}" target="_blank" class="font" style="align-self: center;">Website</a>
+                    {% endif %}
+                        <!--publication link, if none then DON'T INCLUDE-->
+                    {% if app[0]['publication'] != 'None' %}
+                        &emsp;&emsp;
                         <a href="{{app[0]['publication']}}" target="_blank" class="font" style="align-self: center;">Publication</a>
                     {% endif %}
+
+                    <!--
+                        {% if app[0]['query'] != 'None' %}
+                            &emsp;&emsp;
+                            <a href="{{app[0]['query']}}" target="_blank" class="font" style="align-self: center;">Query Link</a>
+                        {% endif %}
+                    -->
+
                 </div>
             
                 <a href="{{app[0]['site']}}" target="_blank" class="font" style="align-self: center;">

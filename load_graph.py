@@ -30,7 +30,7 @@ def db():
          names = g.V().name.toList()
          titles = g.V().title.toList()
 
-         if line['name'] not in names:
+         if line['name'] not in names:    # eventually add description and query link as property
             v1 = g.addV('application').property('topic', line['topic']).property('name', line['name']) \
                .property('site', line['site']).property('screenshot', line['screenshot']).property('publication', line['publication']).next()
          else:
