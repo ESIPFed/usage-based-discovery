@@ -31,7 +31,7 @@ def get_snapshot(url, count):
     return name
 
 
-with open('input.csv', 'r') as input, \
+with open('input-test-dup.csv', 'r') as input, \
     open('output.csv', 'w') as output:
 
     fieldnames=['id','topic','name','site', 'screenshot', 'description', \
