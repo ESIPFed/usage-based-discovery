@@ -18,7 +18,7 @@ def about():
 
 
 
-#Main screen 
+# Main screen 
 @app.route('/<topic>/<app>') 
 def main(topic, app): 
 
@@ -39,14 +39,11 @@ def main(topic, app):
 
     else:
         appsel = graph.V().has('application', 'name', app).elementMap().toList()
-
+        print(appsel[0]['screenshot'])
         # query for all datasets relating to specified application
         selected = graph.V().has('application', 'name', app)
         datasets = selected.out().elementMap().toList()
-        '''for d in datasets: 
-            print(d)
-        # datasets = graph.V().hasLabel('dataset').elementMap().toList()'''
-
+        
 
     return render_template('index.html', topic=topic, \
         topics=topics, apps=relapps, app=appsel, datasets=datasets)

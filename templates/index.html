@@ -60,9 +60,28 @@
             {% if app == None %}
                 <div class="heading">
                     <h1 class="font">{{apps[0]['name']}}</h1> 
-                    <a href="{{apps[0]['site']}}" target="_blank" class="font" style="align-self: center;">Website</a>&emsp;&emsp;
-                    <!--publication link-->
-                    <a href="{{apps[0]['publication']}}" target="_blank" class="font" style="align-self: center;">Publication</a> 
+
+                    <!--
+                        <h4 class="font">{{apps[0]['description']}}</h4>
+                    -->
+
+                    {% if apps[0]['site'] != 'None' %}
+                        <a href="{{apps[0]['site']}}" target="_blank" class="font" style="align-self: center;">Website</a>
+                    {% endif %}
+                        <!--publication link-->
+                    {% if apps[0]['publication'] != 'None' %}
+                        &emsp;&emsp;
+                        <a href="{{apps[0]['publication']}}" target="_blank" class="font" style="align-self: center;">Publication</a> 
+                    {% endif %}
+
+                    <!--
+                        {% if apps[0]['query'] != 'None' %}
+                            &emsp;&emsp;
+                            <a href="{{apps[0]['query']}}" target="_blank" class="font" style="align-self: center;">Query Link</a>
+                        {% endif %}
+                    -->
+
+
                 </div>
             
                 <a href="{{apps[0]['site']}}" target="_blank" class="font" style="align-self: center;">
