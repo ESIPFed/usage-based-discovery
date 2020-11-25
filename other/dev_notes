@@ -45,22 +45,6 @@ nextTraverser()
 iterate()
 
 
-Zappa settings JSON: Previous
-
-{
-    "dev": {
-        "app_function": "app.app",
-        "aws_region": "us-east-1",
-        "profile_name": "default", 
-        "project_name": "ubd-tool-remote",
-        "runtime": "python3.7",
-        "s3_bucket": "zappa-y2plp4o1n",
-        "environment_variables": {
-            "NEO4J_USERNAME": "neo4j",
-            "NEO4J_PASSWORD": "b.RsWIZv4ntCee.7TYDxTHsycMuOMg9"
-        }
-    }
-}
 
 
 

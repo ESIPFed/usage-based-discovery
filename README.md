@@ -1,7 +1,6 @@
 # Usage-Based Discovery Prototype - A simple web application
 
-
-Next up:
+Run this locally: 
 
 - Clone this repository. `$ cd` into the project directory. 
 - Install Python virtual environments `$ pip3 install virtualenv` (if not installed already)
