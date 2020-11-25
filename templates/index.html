@@ -1,0 +1,321 @@
+
+<body>
+<div class="container">
+    <div class="sidebar">
+
+        <div class="title">
+            <h1 class="eosdis"><a href="\" style="color: white; text-decoration: none;">EOSDIS Usage Based Discovery</a></h1>
+            <br>
+            <!--drop down or toggle list
+            <div class="filter">
+                <p style="color: white; font-family: 'Maven Pro', sans-serif; vertical-align: auto;">
+                    Application Topic
+                </p>
+            </div>-->
+
+            <div class="filter">
+            <select id="dropdown" class="dropdown" onchange="location = this.options[this.selectedIndex].value;">
+                {% for t in topics %}
+                    {% if t == topic %}
+                        <option value="/{{t}}/all" selected="selected">{{t}}</option>
+                    {% else %}
+                        <option value="/{{t}}/all">{{t}}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>    
+            </div>
+            <br>
+            
+        </div>
+
+        <div class="appresults">
+           
+            {% for a in apps %}
+                {% if app != None and a['name'] == app[0]['name'] %}
+                    <form class="app" action="/{{topic}}/{{a['name']}}">
+                        <button style="width: 100%;" class="selected-app">
+                            <h2 class="font">{{a['name']}}</h2>
+                            <!--<em class="font">Datasets: 1</em>-->
+                            <br>
+                            Description
+                            <br>
+                        </button>
+                    </form>
+                {% else %}
+                    <form class="app" action="/{{topic}}/{{a['name']}}">
+                        <button style="width: 100%;" class="font">
+                            <h2 class="font">{{a['name']}}</h2>
+                            <!--<em class="font">Datasets: 1</em>-->
+                            <br>
+                            Description
+                            <br>
+                        </button>
+                    </form>
+                {% endif %}
+            
+            {% endfor %}
+        </div>
+
+
+    </div>
+    <!--<div class="spacer">
+        <br>
+    </div>-->
+
+    <div class="main">
+        <div class="appmain">
+            {% if app == None %}
+                <div class="heading">
+                    <h1 class="font">{{apps[0]['name']}}</h1> <!--Wrap text if too long-->
+                    <a href="{{apps[0]['site']}}" target="_blank" class="font" style="align-self: center;">Website</a>&emsp;&emsp;
+                    <!--publication link-->
+                    <a href="{{apps[0]['publication']}}" target="_blank" class="font" style="align-self: center;">Publication</a> 
+                </div>
+            
+                <a href="{{apps[0]['site']}}" target="_blank" class="font" style="align-self: center;">
+                    <img src="../static/{{apps[0]['screenshot']}}" class="screenshot"/>
+                </a>
+            {% else %}
+                <div class="heading">
+                    <h1 class="font">{{app[0]['name']}}</h1> <!--Wrap text if too long-->
+                    <a href="{{app[0]['site']}}" target="_blank" class="font" style="align-self: center;">Website</a>&emsp;&emsp;
+                    <!--publication link, if none then DON'T INCLUDE-->
+                    {% if app[0]['publication'] != none %}
+                        <a href="{{app[0]['publication']}}" target="_blank" class="font" style="align-self: center;">Publication</a>
+                    {% endif %}
+                </div>
+            
+                <a href="{{app[0]['site']}}" target="_blank" class="font" style="align-self: center;">
+                    <img src="../static/{{app[0]['screenshot']}}" class="screenshot"/>
+                </a>
+            {% endif %}
+        </div>
+    
+        
+
+    </div>
+    
+
+    <div class="datasets">
+        <div class="dataset-head">
+            <h2 class="eosdis">Datasets</h2>
+        </div>
+        <div class="dataset-results">
+            {% for d in datasets %}
+                <div class="dataset-div">
+                    <h2 class="font">{{d['title']}}</h2>
+                    <br>
+                    <button class="dataset-btn">
+                        <a href="{{d['doi']}}" target="_blank" style="text-decoration: none;">Dataset Landing Page</a>
+                    </button>
+                    <br><br>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    
+    function filterbyTopic() {
+        var list = document.getElementById("dropdown").value;
+        var topic = list.options[list.selectedIndex].text;
+
+        // load window with modified value for selected topic/application
+        window.location.replace("/" + topic);
+        window.location.replace("http://www.google.com");
+
+    }
+    
+    function getRandom(max) {
+        Math.random() * max;
+    }
+
+</script>
+
+</body>
+
+
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="../static/main.css"/>
+	<link href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap" rel="stylesheet">
+
+    <style>
+        
+        html, body {
+            background-color: white;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            padding: 0em;
+            overflow-y: hidden;
+            overflow-x: hidden;
+        }
+
+        .container {width: 100%;}
+        
+        .sidebar {
+            background-color: white;
+            border-right: groove;
+            height: 100%;
+            width: 30%;
+            max-width: 350px;
+            display: inline-table;
+            position: relative;
+            left: 0;
+        }
+
+        .title {
+            background-color: black;
+            width: 350px;
+            height: 250px;
+            overflow-y: hidden;
+        }
+
+        
+        .eosdis {
+            color: white;
+            font-family: 'Maven Pro', sans-serif;
+            text-align: center;
+        }
+
+        .filter {
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
+            height: 20px;
+        }
+
+        .dropdown {
+            background-color: #3B86FF;
+            
+            width: 100%;
+            height: 100%;
+            color: white;
+            font-family: 'Maven Pro', sans-serif;
+            border: 0px;
+            outline: 0px;
+        
+        }
+
+        .appresults {
+            background-color: white;
+            width: 100%;
+            height: 70%;
+            overflow-y: auto;
+        }
+
+        .app {width: 100%;}
+
+        .selected-app {
+            background-color: gray;
+            font-family: 'Maven Pro', sans-serif;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        form {margin-top: -1em;}
+
+
+        /* Spacer Column */
+        .spacer {
+            display: inline-table;
+            width: 50px;
+        }
+
+        /* Right (Main) Side */
+
+        .main {
+            display: inline-flex;
+            overflow-x: auto;
+            background-color: white;
+            height: 100%;
+            width: 50%;
+            margin: 0;
+            
+        }
+
+        .appmain {
+            height: 100%;
+            width: 100%;
+            align-content: center;
+        }
+
+        .screenshot {
+            
+            border-style: solid; 
+            max-width: 850px; 
+            max-height: 600px;
+            width: 90%;
+            height: auto;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+
+        }
+
+        .heading {
+            height: 20%;
+            width: 100%;
+            text-align: center;
+            overflow-wrap:normal;
+            word-wrap: normal;
+        }
+
+
+        .datasets {
+            background-color: white;
+            border-left: groove;
+            height: 100%;
+            width: 30%;
+            max-width: 350px;
+            display: inline-table;
+            position: absolute;
+            /*overflow-x: hidden;*/
+            right:0;
+        }
+
+        .dataset-head {
+            background-color: black;
+            width: 100%;
+            height: 75px;
+            overflow-y: hidden;
+            position: sticky;
+        }
+
+        h2.eosdis {
+            vertical-align: auto;
+        }
+
+        .dataset-results {
+            width: 100%;
+            height: 90%;
+            overflow-y: auto;
+        }
+
+        .dataset-div {
+            width: 100%; 
+            font-family: 'Maven Pro', sans-serif;
+            text-align: center;
+            border-bottom: solid;
+        }
+
+        .dataset-btn {
+            font-family: 'Maven Pro', sans-serif;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            height: 25px;
+            width: 70%;
+        }
+
+
+        .font {
+            font-family: 'Maven Pro', sans-serif;
+            text-align: center;
+        }
+
+
+    </style>
+</head>

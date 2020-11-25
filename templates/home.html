@@ -25,7 +25,6 @@
 
         .button-container {
             width: 520px;
-            background: rgb(80, 80, 80);
             overflow-y: auto;
             border-radius: 15px;
             
@@ -35,15 +34,16 @@
             width: 100px;
             height: 100px;
             float: left;
-            background: lightgray;
             margin: 15px;
             border-radius: 15px;
         }
 
+
+
         button {
             width: 100%;
             height: 100%;
-            display: block;
+            display: inline-block;
             margin-left: auto;
             margin-right: auto;
             border-radius: 25px;
@@ -54,9 +54,6 @@
 
     </style>
 
-    <br><br><br>
-    <p style="text-align: center; color: whitesmoke">CHOOSE A TOPIC:</p>
-
 
 </head>
 
@@ -65,13 +62,10 @@
     <div class="menu-container">
         <div class="button-container">
 
-            {% for topic in topics %}
-
-            <form method="get" action="dev/use_cases/{{topic.name}}">
-                <button><strong>{{topic.name}}</strong></button>
-            </form>
-            
-            {% endfor %}
+            <button><strong>Geology</strong><br><em>subtopics</em></button>
+            <button><strong>Oceanography</strong><em>seas, oceans, etc.</em></button>
+            <button><strong>Astronomy</strong><em>space</em></button>
+            <button><strong>Meteorology</strong><em>weather, air</em></button>
 
         </div>
     </div>
@@ -79,73 +73,6 @@
     <br><br>
     <p style="text-align: center;">Looking to add to our database? Click <a href="https://docs.google.com/forms/d/e/1FAIpQLSd8yG_ypVoIn30YPlNUG0i7bfxe3a6aTNqWUnxK8I3J6BO-Ew/viewform">
     here</a> to contribute.</p>
-
-
-
-
-    <!--
-    <form method='POST' style="text-align: center;">
-        
-        <input type="submit">
-    <a href="/">
-    <input type="button" value="Clear">
-    </a>
-    </form>
-    
-    
-    <script>
-        let topic_select = document.getElementById('topic');
-        let app_select = document.getElementById('application');
-
-        topic_select.onchange = function () {
-            topic = topic_select.value;
-
-            fetch('/use_cases/' + topic).then(function (response) {
-                response.json().then(function(data) {
-                    let optionHTML = '';
-
-                    for (application of data.applications) {
-                        optionHTML += '<option>' + application + '</option>';
-                    }
-
-                    app_select.innerHTML = optionHTML;
-                });
-            });
-        }
-    </script>
-
-
-
-
-
-
-    <form method="POST" action="/use_cases" style="text-align: center;">
-            <select id="topics">
-                {% for topic in topics %}
-                <option value="topic">{{topic.name}}</option>
-                
-                {% endfor %}
-
-            </select>
-            <input type="button" value="Submit" onclick="send()">
-        </form> 
-        
-        
-   <div class="dropdown">
-        <button class="dropbtn" style="text-align: center;">Topic</button>
-        <div class="dropdown-content">
-            {% for topic in topics %}
-                <a href="use_cases">{{topic.name}}</a>
-                
-            {% endfor %}
-        </div>
-        </div>
-           
-        
-        {% for topic in topics %}
-                <button onclick="send()">{{topic.name}}</button>
-                <br>
-            {% endfor %}-->
 
 
 

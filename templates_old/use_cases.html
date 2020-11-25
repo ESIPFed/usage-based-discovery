@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Applications for {{topic}}{% endblock %}
+
+{% block main %}
+
+<!DOCTYPE html>
+<html class="myFontClass">
+
+<head>
+
+    <style>
+        p {
+            color: whitesmoke;
+            text-align: center;
+        }
+
+        button {
+            width: 45%;
+            height: 25%;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 25px;
+            font-family: 'Helvetica';
+            overflow-y: auto;
+
+        }
+
+    </style>
+
+    <br>
+    <p><a href="/dev">Topics</a> / {{topic}}</p><br>
+
+
+</head>
+
+<body>
+
+    <p>Relevant Applications:</p>
+
+    {% for app in applications %}
+
+    <form action="/dev/data/{{topic}}/{{app[0]}}">
+        <button>
+            <h2><strong>{{app[0]}}</strong></h2>
+
+            {% if(app[1] != "N/A"): %}
+            <strong>Website:</strong> <a href={{app[1]}}>{{app[1]}}</a>
+            <br>
+            {% endif %}
+
+            {% if(app[2] != "N/A"): %}
+            <strong>Publication:</strong> <a href={{app[2]}}>{{app[2]}}</a>
+            {% endif %}
+        </button>
+    </form>
+
+    <br>
+
+    {% endfor %}
+
+
+
+</body>
+
+
+</html>
+
+
+
+
+{% endblock %}

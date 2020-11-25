@@ -1,21 +1,7 @@
-topic,name,website,publication,conf-level,identifier
-Floods,TRMM-based Early Warning System (EWS),N/A,10.5194/nhess-12-443-2012,90,http://dx.doi.org/10.5067/TRMM/TMPA/DAY/7
-Floods,ITO-HOSOYA,N/A,N/A,60,http://dx.doi.org/10.5067/TRMM/TMPA/3H/7
-Floods,HEC-HMS,https://www.hec.usace.army.mil/software/hec-hms/,https://doi.org/10.1007/s12517-015-2228-2,90,http://dx.doi.org/10.5067/TRMM/TMPA/3H/7
-Floods,Wangchhu River Basin Flood Forecasting Model,N/A,https://doi.org/10.5539/jgg.v7n2P70,90,http://dx.doi.org/10.5067/TRMM/TMPA/DAY/7
-Floods,SERVIR-Africa Operational Flood Warning System,N/A,https://doi.org/10.1007/s11069-008-9324-5,90,http://dx.doi.org/10.5067/TRMM/TMPA/3H-E/7
-Floods,Global Flood Monitoring Framework,N/A,https://doi.org/10.1007/978-90-481-2915-7_15,90,http://dx.doi.org/10.5067/TRMM/TMPA/3H-E/7
-Floods,UMD Global Flood Monitoring System,http://flood.umd.edu/,https://doi.org/10.1002/2013WR014710,90,http://dx.doi.org/10.5067/TRMM/TMPA/3H-E/7
-Floods,TRMM-based Flood Detection System,N/A,https://doi.org/10.1016/j.jag.2010.11.003,90,http://dx.doi.org/10.5067/TRMM/TMPA/3H-E/7
-Floods,Dartmouth Flood Observatory,https://floodobservatory.colorado.edu/,N/A,60,http://dx.doi.org/10.5067/YL62FUZLAJUT
-Floods,SEDAC Global Reservoir and Dams,https://sedac.ciesin.columbia.edu/theme/water/maps/services,N/A,60,http://dx.doi.org/10.7927/H4HH6H08
-Floods,Flood Factor,https://floodfactor.com,N/A,60,http://dx.doi.org/10.1002/2014EF000239
-Floods,NRT Global Flood Map ,https://floodmap.gsfc.nasa.gov,N/A,60,http://dx.doi.org/10.5067/MODIS/MOD02QKM.NRT.061
-Landslides,SLIP Model,https://gpm.nasa.gov/articles/automating-detection-landslides,https://doi.org/10.1175/EI-D-17-0022.1,90,http://dx.doi.org/10.5067/MODIS/MCD12Q1.006
-Landslides,LHASA,https://gpm.nasa.gov/applications/global-landslide-model,https://doi.org/10.1002/2017EF000715,90,http://dx.doi.org/10.5067/GPM/IMERG/3B-HH-E/06
-Water flow,HYPE Model,http://www.smhi.net/hype/wiki/doku.php,https://doi.org/10.25073/jaec.201931.215,90,http://dx.doi.org/10.5067/TRMM/TMPA/DAY/7
-Sea level,NASA Sea Level Portal,https://sealevel.nasa.gov/,N/A,90,http://dx.doi.org/10.5067/GMSLM-TJ142
-Hydrology,NASA Sea Level Portal,https://sealevel.nasa.gov/,N/A,90,http://dx.doi.org/10.5067/TEMSC-3JC62
-Lake heights,G-REALM,https://ipad.fas.usda.gov/cropexplorer/global_reservoir/,N/A,60,http://dx.doi.org/10.5067/UCLRS-GREV2
-River heights,GRRATS,https://essd.copernicus.org/articles/12/137/2020/,"https://doi.org/10.5194/essd-2019-84
-",60,http://dx.doi.org/10.5067/PSGRA-SA2V2
+topic,name,site,doi,title
+Floods,UMD Global Flood Monitoring System,http://flood.umd.edu/,http://dx.doi.org/10.5067/TRMM/TMPA/3H-E/7
+Floods,Dartmouth Flood Observatory,https://floodobservatory.colorado.edu/,http://dx.doi.org/10.5067/YL62FUZLAJUT
+Floods,HEC-HMS,https://www.hec.usace.army.mil/software/hec-hms/,http://dx.doi.org/10.5067/TRMM/TMPA/3H/7
+Landslides,LHASA,https://gpm.nasa.gov/applications/global-landslide-model,http://dx.doi.org/10.5067/GPM/IMERG/3B-HH-E/06
+Wildfires,Active Fire Live Map,https://firecast.conservation.org/DataMaps/LiveView,http://dx.doi.org/10.5067/FIRMS/VIIRS/VNP14IMGT_NRT.002
+Wildfires,"ABoVE: Burn Severity, Fire Progression, and Field Data, NWT, Canada",https://webmap.ornl.gov/ogc/dataset.jsp?ds_id=1548,http://dx.doi.org/10.3334/ORNLDAAC/1548

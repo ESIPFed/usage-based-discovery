@@ -1,0 +1,68 @@
+
+html, body {
+    margin: 0;
+    min-height: 100vh;
+}
+
+/* Left Side*/
+
+.sidebar {
+    background-color: red;
+    height: 100%;
+    width: 30%;
+}
+
+
+.title {
+    background-color: white;
+    width: 100%;
+    height: 40%;
+    overflow-x: hidden; 
+    overflow-y: auto;
+    
+}
+
+
+/* Need one for drop down */
+.filter {
+    background-color: #3B86FF;
+    padding: 20px;
+    width: 50%;
+    height: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 10px;
+}
+
+/* Make this div scrollable */
+.appresults {
+    background-color: white;
+    width: 100%;
+    height: 60%;
+}
+
+.app {
+    width: 100%;
+}
+
+
+
+/* Right (Main) Side */
+
+.main {
+
+}
+
+.appmain {
+
+}
+
+.heading {
+
+}
+
+
+
+.datasets {
+
+}

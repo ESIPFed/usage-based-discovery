@@ -1,23 +1,66 @@
 Dev notes - Beta Version 
 
 
+Gremlin backup:
+
+for line in reader:
+        
+         v1 = g.addV('application').property('topic', line['topic']).property('name', line['name']) \
+               .property('site', line['site']).property('screenshot', line['screenshot']).property('publication', line['publication']).next()
+         v2 = g.addV('dataset').property('doi', line['doi']).property('title', line['title']).next()
+         g.V(Bindings.of('id',v1)).addE('uses').to(v2).iterate()
 
 
-Neptune back-end 
-- Fix timeout error 
 
+
+Clear graph: 
+g.V().drop().iterate()
+
+Add a vertex: g.addV('application').property('name', 'UMD Global Flood Monitoring System'). \ 
+property('site', 'flood.umd.edu').next()
+
+
+
+Add an edge: g.addE()
+a = g.addV()....
+b = g.addV()....
+g.V(a).addE('uses').to(b).toList()
+
+From documentation:
+v1 = g.addV(‘person’).property(‘name’,‘marko’).next()
+v2 = g.addV(‘person’).property(‘name’,‘stephen’).next()
+g.V(Bindings.of(‘id’,v1)).addE(‘knows’).to(v2).property(‘weight’,0.75).iterate()
+
+Print vertices with certain label:
+print(g.V().hasLabel('application').name.toList())
+
+Print edges/relationships with certain properties? 
+
+
+.elementMap()
 toList()
-
 toSet()
-
 next()
-
 nextTraverser()
-
 iterate()
 
 
-Python 3.8?
+Zappa settings JSON: Previous
+
+{
+    "dev": {
+        "app_function": "app.app",
+        "aws_region": "us-east-1",
+        "profile_name": "default", 
+        "project_name": "ubd-tool-remote",
+        "runtime": "python3.7",
+        "s3_bucket": "zappa-y2plp4o1n",
+        "environment_variables": {
+            "NEO4J_USERNAME": "neo4j",
+            "NEO4J_PASSWORD": "b.RsWIZv4ntCee.7TYDxTHsycMuOMg9"
+        }
+    }
+}
 
 
 

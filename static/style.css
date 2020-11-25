@@ -5,5 +5,38 @@
     color: white;
 }
 
+iframe {
+    width: 100%;
+    height: 500px;
+}
+
+body {
+
+            background-color: rgb(6, 23, 59);
+
+        }
+
+        img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .sidebar {
+
+            display: inline-block;
+            background-color: navy;
+            margin-left: 0px;
+            max-width: 200px;
+            height: 100%;
+            align-self: left;
+            padding: 10px;
+        }
 
 
+        .main {
+
+            display: inline-block;
+            
+
+        }
