@@ -9,7 +9,7 @@ def db():
 
    graph = Graph()
 
-   remoteConn = DriverRemoteConnection('ws://localhost:8182/gremlin','g')
+   remoteConn = DriverRemoteConnection('ws://neptunedbcluster-rmtayunusxcf.cluster-ro-cp6ppgqhmbet.us-east-1.neptune.amazonaws.com:8182/gremlin','g')
    g = graph.traversal().withRemote(remoteConn)
 
    return g

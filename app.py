@@ -1,5 +1,5 @@
 from flask import Flask, render_template 
-from load_graph import db
+from gremlin import db
 
 app = Flask(__name__)
 graph = db()
