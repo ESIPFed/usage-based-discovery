@@ -39,7 +39,7 @@ def main(topic, app):
 
     else:
         appsel = graph.V().has('application', 'name', app).elementMap().toList()
-        print(appsel[0]['screenshot'])
+        
         # query for all datasets relating to specified application
         selected = graph.V().has('application', 'name', app)
         datasets = selected.out().elementMap().toList()
