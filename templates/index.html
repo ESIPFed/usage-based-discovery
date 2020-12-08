@@ -28,10 +28,10 @@
                 {% if app != None and a['name'] == app[0]['name'] %}
                     <form class="app" action="{{a['name']}}">
                         <button style="width: 100%;" class="selected-app">
-                            <h2 class="font">{{a['name']}}</h2>
+                            <h2 class="font"><strong>{{a['name']}}</strong></h2>
                             <!--<em class="font">Datasets: 1</em>-->
                             <br>
-                            Description
+                            <strong>Description</strong>
                             <!--{{a['description']}}-->
                             <br>
                         </button>
@@ -151,6 +151,7 @@
     <title>Home</title>
     <link rel="stylesheet" type="text/css" href="../static/main.css"/>
 	<link href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href="../static/nasalogo.png">
 
     <style>
         

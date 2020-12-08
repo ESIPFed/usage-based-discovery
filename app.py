@@ -1,14 +1,24 @@
 from flask import Flask, render_template 
-from gremlin import db
+
+from gremlin_python import statics
+from gremlin_python.structure.graph import Graph
+from gremlin_python.process.graph_traversal import __
+from gremlin_python.process.strategies import *
+from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
+
 
 app = Flask(__name__)
-graph = db()
-
+graph = Graph()
 
 # Initial screen
 @app.route('/')
 def home():
-    topics = graph.V().hasLabel('application').values('topic').toSet()
+    remoteConn = DriverRemoteConnection('ws://neptunedbcluster-rmtayunusxcf.cluster-ro-cp6ppgqhmbet.us-east-1.neptune.amazonaws.com:8182/gremlin','g')
+    g = graph.traversal().withRemote(remoteConn)
+
+    topics = g.V().hasLabel('application').values('topic').toSet()
+    # close connection
+    remoteConn.close()
     return render_template('init.html', topics=topics)
 
 
@@ -22,11 +32,14 @@ def about():
 @app.route('/<topic>/<app>') 
 def main(topic, app): 
 
+    remoteConn = DriverRemoteConnection('ws://neptunedbcluster-rmtayunusxcf.cluster-ro-cp6ppgqhmbet.us-east-1.neptune.amazonaws.com:8182/gremlin','g')
+    g = graph.traversal().withRemote(remoteConn)
+
     # query for all topic property values and put into list
-    topics = graph.V().hasLabel('application').values('topic').toSet()
+    topics = g.V().hasLabel('application').values('topic').toSet()
   
     # query only for application relating to specified topic
-    relapps = graph.V().has('application', 'topic', topic).elementMap().toList()
+    relapps = g.V().has('application', 'topic', topic).elementMap().toList()
     
     
     # query for single application (vertex) with name specified by parameter 
@@ -34,17 +47,17 @@ def main(topic, app):
         appsel = None
 
         # query for datasets related to relapps[0]
-        apps = graph.V().has('application', 'topic', topic)
+        apps = g.V().has('application', 'topic', topic)
         datasets = apps.out().elementMap().toList()
 
     else:
-        appsel = graph.V().has('application', 'name', app).elementMap().toList()
+        appsel = g.V().has('application', 'name', app).elementMap().toList()
         
         # query for all datasets relating to specified application
-        selected = graph.V().has('application', 'name', app)
+        selected = g.V().has('application', 'name', app)
         datasets = selected.out().elementMap().toList()
         
-
+    remoteConn.close()
     return render_template('index.html', topic=topic, \
         topics=topics, apps=relapps, app=appsel, datasets=datasets)
 
