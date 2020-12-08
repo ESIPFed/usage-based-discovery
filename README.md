@@ -1,4 +1,4 @@
-# Usage-Based Discovery Prototype - A simple web application
+# Usage-Based Data Discovery Tool - A simple web application
 
 Run this locally: 
 
