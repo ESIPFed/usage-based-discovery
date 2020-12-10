@@ -10,7 +10,7 @@ For simplicity, name it 'venv'.
 - Start up the virtual environment using the following command `$ source venv/bin/activate`.
 - Install the required python packages
 
-`$ pip3 install -r requirements`
+`$ pip3 install -r requirements.txt`
 
 - Run the application
 
