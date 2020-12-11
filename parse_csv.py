@@ -51,7 +51,7 @@ with open('algo-input.csv', 'r') as input, \
     for line in reader: 
 
         '''
-        # GET DATASET NAME 
+        # GET DATASET NAME, application dataset matching algorithm takes care of this
         doi = line['doi']
         doi = doi.split("g/")[1]
         
@@ -77,17 +77,18 @@ with open('algo-input.csv', 'r') as input, \
             count += 1
         
         '''
-        # GET APP DESCRIPTION
+        # GET APP DESCRIPTION, semi-automated for now due to edge cases
         req = requests.get(line['site'])
         soup = BeautifulSoup(req.text, 'html5lib')
         topics = ['map', 'model', 'product', 'NASA', 'flood', 'fire', 'landslide'] # and more
         for p in soup.find_all('p'):
             for topic in topics:
                 if topic in p.get_text():
-                    sentence = p.get_text().split('.')
+                    sentence = sent_tokenize(p.get_text())
                     
         # line['description'] = sentence[0]
         '''
+
         # add app to set
         apps.add(line['name'])
         

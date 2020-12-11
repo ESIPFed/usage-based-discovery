@@ -27,11 +27,12 @@ def db():
       
       for line in reader:
          g = graph.traversal().withRemote(remoteConn)
- 
+
+         # generates a list of existing applications and datasets to avoid duplicates
          names = g.V().name.toList()
          titles = g.V().title.toList()
 
-         if line['name'] not in names:    # eventually add query link as property?
+         if line['name'] not in names:    
             v1 = g.addV('application').property('topic', line['topic']).property('name', line['name']) \
                .property('site', line['site']).property('screenshot', line['screenshot']) \
                .property('publication', line['publication']).property('description', line['description']).next()
@@ -45,12 +46,12 @@ def db():
          
          g.addE('uses').from_(v1).to(v2).iterate()
 
-      '''
-         v1 = g.addV('application').property('topic', line['topic']).property('name', line['name']) \
-               .property('site', line['site']).property('screenshot', line['screenshot']).property('publication', line['publication']).next()
-         v2 = g.addV('dataset').property('doi', line['doi']).property('title', line['title']).next()
-         g.V(Bindings.of('id',v1)).addE('uses').to(v2).iterate()
-      '''
+
+   '''
+      v1 = g.addV('application').property('topic', line['topic']).property('name', line['name']) \               .property('site', line['site']).property('screenshot', line['screenshot']).property('publication', line['publication']).next()
+      v2 = g.addV('dataset').property('doi', line['doi']).property('title', line['title']).next()
+      g.V(Bindings.of('id',v1)).addE('uses').to(v2).iterate()
+   '''
 
 
    msg = 'Vertices count: ', g.V().count().next() # count vertices
@@ -61,8 +62,16 @@ def db():
    return g
 
 
+# calling the function to load the database
 db()
 
+
+
+
+
+
+
+# troubleshooting data loading
 def test():
 
    graph = Graph()
