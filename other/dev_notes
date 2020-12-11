@@ -1,5 +1,7 @@
 Dev notes - Beta Version 
 
+This file is an amalgam of archived code; please use/ignore as you see fit. 
+
 
 CLOUDFORMATION SETUP DOCUMENTATION
 
@@ -60,7 +62,6 @@ g.V(Bindings.of(‘id’,v1)).addE(‘knows’).to(v2).property(‘weight’,0.7
 Print vertices with certain label:
 print(g.V().hasLabel('application').name.toList())
 
-Print edges/relationships with certain properties? 
 
 
 .elementMap()
@@ -71,7 +72,8 @@ nextTraverser()
 iterate()
 
 
-Previous home route
+
+Previous home route for app.py
 
 @app.route('/')
 def home():
@@ -101,37 +103,6 @@ def home():
 
 
 
-'''
-
-
-from gremlin_python.process.anonymous_traversal import traversal
-from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
- 
-g = traversal().withRemote(DriverRemoteConnection('ws://localhost:8182/gremlin','g'))
-#g.addV("mission").property("name", "Mission").property("title", "Big Mission").next()
-msg = 'Vertices count: ', g.V().count().next()
-print(msg)
-
-print(g.V().limit(2).toList())
-'''
-
-'''
-
-# test loading a graph
-def test_loadGraph():
-   file="edges.csv"
-   # make the local file accessible to the server
-   path=os.path.abspath(file)
-   # drop the existing content of the graph
-   g.V().drop().iterate()
-   # read the content from the air routes example
-   g.io(path).read().iterate()
-   vCount=g.V().count().next()
-   print ("%s has %d vertices" % (file,vCount))
-   #assert vCount==1
-
-test_loadGraph()
-'''
 
 
 

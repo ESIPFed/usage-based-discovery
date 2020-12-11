@@ -17,11 +17,13 @@ import nltk
 from nltk.tokenize import sent_tokenize
 
 
+# initiate selenium webdriver
 option = webdriver.ChromeOptions()
 option.add_argument('headless')
 driver = webdriver.Chrome('./chromedriver87', options=option)
 
-
+# this function generates the snapshot for the specified application url
+# and saves it to the static folder in the project directory
 def get_snapshot(url, count):
 
     name = "app" + str(count) + ".png"
@@ -32,13 +34,15 @@ def get_snapshot(url, count):
 
     return name
 
-
+# opening the 
 with open('algo-input.csv', 'r') as input, \
     open('algo-output.csv', 'w') as output:
 
+    # specifies header columns of output csv file
     fieldnames=['topic','name','site', 'screenshot', 'description', \
         'publication', 'query', 'doi','title']
 
+    # initiate csv reader and writer
     reader = csv.DictReader(input)
     writer = csv.DictWriter(output, fieldnames=fieldnames)
 
@@ -46,10 +50,12 @@ with open('algo-input.csv', 'r') as input, \
 
     count = 1
 
+    # keeps track of which apps have already been seen
     apps = set()
     
     for line in reader: 
 
+        # automated generation of dataset name from the doi
         '''
         # GET DATASET NAME, application dataset matching algorithm takes care of this
         doi = line['doi']
@@ -68,14 +74,16 @@ with open('algo-input.csv', 'r') as input, \
         line['title'] = title['title']
         '''
        
-        # GET SITE SCREENSHOT
+        # automated generation of application screenshot from website link
 
-        # handles duplicates
+        # this conditional handles duplicate application values
         if line['name'] not in apps:
             line['screenshot'] = get_snapshot(line['site'], count)
-            # line['id'] = str(count)
             count += 1
         
+        # semi-automated generation application website description 
+        # needs refinement, could be explored with nlp applications due to 
+        # the large amount of edge cases
         '''
         # GET APP DESCRIPTION, semi-automated for now due to edge cases
         req = requests.get(line['site'])
@@ -89,7 +97,7 @@ with open('algo-input.csv', 'r') as input, \
         # line['description'] = sentence[0]
         '''
 
-        # add app to set
+        # add app to set to indicate it has already been seen
         apps.add(line['name'])
         
         
