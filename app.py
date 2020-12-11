@@ -6,14 +6,17 @@ from gremlin_python.process.graph_traversal import __
 from gremlin_python.process.strategies import *
 from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
 
+import os
 
 app = Flask(__name__)
 graph = Graph()
 
+dbro = os.environ.get('NEPTUNEDBRO')
+
 # Initial screen
 @app.route('/')
 def home():
-    remoteConn = DriverRemoteConnection('ws://neptunedbcluster-rmtayunusxcf.cluster-ro-cp6ppgqhmbet.us-east-1.neptune.amazonaws.com:8182/gremlin','g')
+    remoteConn = DriverRemoteConnection(dbro,'g')
     g = graph.traversal().withRemote(remoteConn)
 
     topics = g.V().hasLabel('application').values('topic').toSet()
@@ -32,7 +35,7 @@ def about():
 @app.route('/<topic>/<app>') 
 def main(topic, app): 
 
-    remoteConn = DriverRemoteConnection('ws://neptunedbcluster-rmtayunusxcf.cluster-ro-cp6ppgqhmbet.us-east-1.neptune.amazonaws.com:8182/gremlin','g')
+    remoteConn = DriverRemoteConnection(dbro,'g')
     g = graph.traversal().withRemote(remoteConn)
 
     # query for all topic property values and put into list
@@ -67,21 +70,4 @@ if __name__ == '__main__':
 
 
 
-
-'''
-Previous home route
-
-@app.route('/')
-def home():
-    topics = graph.V().hasLabel('application').values('topic').toSet()
-    
-
-    # query for all applications and put in a list
-    apps = graph.V().hasLabel('application').elementMap().toList()
-    for a in apps:
-        print(a)
-    datasets = graph.V().hasLabel('dataset').elementMap().toList()
-
-    return render_template('index.html', topics=topics, apps=apps, datasets=datasets)
-'''
 

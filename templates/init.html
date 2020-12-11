@@ -36,7 +36,7 @@
 <head>
     <title>Home</title>
     <link href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap" rel="stylesheet">
-    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='nasalogo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="../static/nasalogo.png">
 
     <style>
 
@@ -76,13 +76,15 @@
             vertical-align: middle;
             width: 100%;
             margin: 0;
-            
+            overflow-y: auto;
         }
 
         .menu-container {
             display: flex;
             justify-content: space-around;
             background-color: white;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
 

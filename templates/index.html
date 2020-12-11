@@ -26,25 +26,27 @@
            
             {% for a in apps %}
                 {% if app != None and a['name'] == app[0]['name'] %}
-                    <form class="app" action="{{a['name']}}">
+                    <form class="app" action="{{a['name']}}" onclick="document.location.reload(true)">
                         <button style="width: 100%;" class="selected-app">
+                            <br>
                             <h2 class="font"><strong>{{a['name']}}</strong></h2>
                             <!--<em class="font">Datasets: 1</em>-->
-                            <br>
-                            <strong>Description</strong>
-                            <!--{{a['description']}}-->
-                            <br>
+                            
+                            <strong>{{a['description'][:50]}}...</strong>
+                            
+                            <br><br>
                         </button>
                     </form>
                 {% else %}
-                    <form class="app" action="{{a['name']}}">
+                    <form class="app" action="{{a['name']}}" onclick="document.location.reload(true)">
                         <button style="width: 100%;" class="font">
+                            <br>
                             <h2 class="font">{{a['name']}}</h2>
                             <!--<em class="font">Datasets: 1</em>-->
-                            <br>
-                            Description
-                            <!--{{a['description']}}-->
-                            <br>
+                            
+                            {{a['description'][:50]}}...
+                            
+                            <br><br>
                         </button>
                     </form>
                 {% endif %}
@@ -73,7 +75,14 @@
                         &emsp;&emsp;
                         <a href="{{apps[0]['publication']}}" target="_blank" class="font" style="align-self: center;">Publication</a> 
                     {% endif %}
-
+                    <br>
+                    
+                    <!--application website description-->
+                    {% if apps[0]['site'] != 'None' %}
+                        <p class="font" style="align-self: center;">{{apps[0]['description'][:200]}}...</p>
+                    {% endif %}
+                    <br><br>
+                    
                     <!--
                         {% if apps[0]['query'] != 'None' %}
                             &emsp;&emsp;
@@ -83,10 +92,13 @@
 
 
                 </div>
-            
-                <a href="{{apps[0]['site']}}" target="_blank" class="font" style="align-self: center;">
-                    <img src="../static/{{apps[0]['screenshot']}}" class="screenshot"/>
-                </a>
+                <br><br><br><br>
+                <div>
+                    <a href="{{apps[0]['site']}}" target="_blank" class="font" style="align-self: center;">
+                        <img src="../static/{{apps[0]['screenshot']}}" class="screenshot"/>
+                    </a>
+                </div>
+
             {% else %}
                 <div class="heading">
                     <h1 class="font">{{app[0]['name']}}</h1> 
@@ -103,6 +115,13 @@
                         &emsp;&emsp;
                         <a href="{{app[0]['publication']}}" target="_blank" class="font" style="align-self: center;">Publication</a>
                     {% endif %}
+                    <br>
+
+                    <!--application website description-->
+                    {% if app[0]['site'] != 'None' %}
+                        <p class="font" style="align-self: center;">{{app[0]['description'][:200]}}...</p>
+                    {% endif %}
+                    <br><br>
 
                     <!--
                         {% if app[0]['query'] != 'None' %}
@@ -112,10 +131,13 @@
                     -->
 
                 </div>
-            
-                <a href="{{app[0]['site']}}" target="_blank" class="font" style="align-self: center;">
-                    <img src="../static/{{app[0]['screenshot']}}" class="screenshot"/>
-                </a>
+                <br><br><br><br>
+                <div>
+                    <a href="{{app[0]['site']}}" target="_blank" class="font" style="align-self: center;">
+                        <img src="../static/{{app[0]['screenshot']}}" class="screenshot"/>
+                    </a>
+                </div>    
+
             {% endif %}
         </div>
     

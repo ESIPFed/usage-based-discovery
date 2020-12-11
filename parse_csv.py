@@ -27,14 +27,14 @@ def get_snapshot(url, count):
     name = "app" + str(count) + ".png"
     
     driver.get(url)
-    sleep(1)
+    sleep(2)
     driver.get_screenshot_as_file('static/' + name)
 
     return name
 
 
-with open('input-test-dup.csv', 'r') as input, \
-    open('output.csv', 'w') as output:
+with open('algo-input.csv', 'r') as input, \
+    open('algo-output.csv', 'w') as output:
 
     fieldnames=['topic','name','site', 'screenshot', 'description', \
         'publication', 'query', 'doi','title']
@@ -50,6 +50,7 @@ with open('input-test-dup.csv', 'r') as input, \
     
     for line in reader: 
 
+        '''
         # GET DATASET NAME 
         doi = line['doi']
         doi = doi.split("g/")[1]
@@ -65,7 +66,7 @@ with open('input-test-dup.csv', 'r') as input, \
         print(title['title'])
         
         line['title'] = title['title']
-
+        '''
        
         # GET SITE SCREENSHOT
 
@@ -75,7 +76,7 @@ with open('input-test-dup.csv', 'r') as input, \
             # line['id'] = str(count)
             count += 1
         
-
+        '''
         # GET APP DESCRIPTION
         req = requests.get(line['site'])
         soup = BeautifulSoup(req.text, 'html5lib')
@@ -86,7 +87,7 @@ with open('input-test-dup.csv', 'r') as input, \
                     sentence = p.get_text().split('.')
                     
         # line['description'] = sentence[0]
-
+        '''
         # add app to set
         apps.add(line['name'])
         

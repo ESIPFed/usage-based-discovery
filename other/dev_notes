@@ -71,6 +71,23 @@ nextTraverser()
 iterate()
 
 
+Previous home route
+
+@app.route('/')
+def home():
+    topics = graph.V().hasLabel('application').values('topic').toSet()
+    
+
+    # query for all applications and put in a list
+    apps = graph.V().hasLabel('application').elementMap().toList()
+    for a in apps:
+        print(a)
+    datasets = graph.V().hasLabel('dataset').elementMap().toList()
+
+    return render_template('index.html', topics=topics, apps=apps, datasets=datasets)
+
+
+
 
 # For filtering
 
