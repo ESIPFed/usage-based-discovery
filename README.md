@@ -20,7 +20,7 @@ For simplicity, name it 'venv'.
 
 <br /><br />
 Any questions or suggestions for improvement?
-- Questions - email maggieqzhu@yahoo.com 
+- Questions - email chris.lynnes@nasa.gov 
 - Suggestions - submit a pull request
 
 <br /><br />
