@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+import sys
 import csv
 from csv import reader, writer
 
@@ -16,6 +19,17 @@ from time import sleep
 import nltk
 from nltk.tokenize import sent_tokenize
 
+import argparse
+def parse_options():
+    parser = argparse.ArgumentParser(description="Parse CSV for input into UBD Neptune database")
+    # TODO: default to stdin and stdout
+    parser.add_argument('-i', '--ifile', default='algo-input.csv',
+        metavar="input-pathname")
+    parser.add_argument('-o', '--ofile', default='algo-output.csv',
+        metavar="output-pathname")
+    return(parser.parse_args())
+
+args = parse_options()
 
 # initiate selenium webdriver
 option = webdriver.ChromeOptions()
@@ -35,8 +49,8 @@ def get_snapshot(url, count):
     return name
 
 # opening the 
-with open('algo-input.csv', 'r') as input, \
-    open('algo-output.csv', 'w') as output:
+with open(args.ifile, 'r') as input, \
+    open(args.ofile, 'w') as output:
 
     # specifies header columns of output csv file
     fieldnames=['topic','name','site', 'screenshot', 'description', \
