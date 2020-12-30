@@ -37,7 +37,7 @@ def get_chrome_driver():
     https://chromedriver.storage.googleapis.com/:
     linux64 or mac64
     """
-    os_suffix = {'Linux':'linux64', 'darwin':'mac64'}
+    os_suffix = {'Linux':'linux64', 'Darwin':'mac64'}
 
     path = "./chromedriver87." + os_suffix.get(platform.system())
     # initiate selenium webdriver
