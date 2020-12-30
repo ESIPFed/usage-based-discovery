@@ -15,13 +15,20 @@ def db():
 
    # initiate connection
    graph = Graph()
-   remoteConn = DriverRemoteConnection('ws://localhost:8182/gremlin','g')
+   remoteConn = DriverRemoteConnection('wss://neptunedbinstance-4lxhmnqeyz6s.copyeo4gkrow.us-west-1.neptune.amazonaws.com:8182/gremlin','g')
    g = graph.traversal().withRemote(remoteConn)
    
    # start loading graph
    
+   empty = False
    # clear graph
-   g.V().drop().iterate() 
+   try:
+       g.V().drop().iterate() 
+   except:
+       empty = True
+       print("No existing graphs to clear")
+       names = []
+       titles = []
    
    # load csv file
    with open('algo-output.csv', 'r') as file: 
@@ -35,8 +42,9 @@ def db():
          g = graph.traversal().withRemote(remoteConn)
 
          # generates a list of existing applications and datasets to avoid duplicates
-         names = g.V().name.toList()
-         titles = g.V().title.toList()
+         if not empty:
+            names = g.V().name.toList()
+            titles = g.V().title.toList()
 
          # this conditional checks for application duplicates
          if line['name'] not in names:    
@@ -78,7 +86,7 @@ def db():
 
 
 # calling the function to load the database
-# db()
+db()
 
 
 

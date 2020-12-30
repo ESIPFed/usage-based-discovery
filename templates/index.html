@@ -4,16 +4,16 @@
     <div class="sidebar">
 
         <div class="title">
-            <h1 class="eosdis"><a href="/beta/" style="color: white; text-decoration: none;">EOSDIS Usage Based Discovery</a></h1>
+            <h1 class="eosdis"><a href="/dev/" style="color: white; text-decoration: none;">EOSDIS Usage Based Discovery</a></h1>
             <br>
 
             <div class="filter">
             <select id="dropdown" class="dropdown" onchange="location = this.options[this.selectedIndex].value;">
                 {% for t in topics %}
                     {% if t == topic %}
-                        <option value="/beta/{{t}}/all" selected="selected">{{t}}</option>
+                        <option value="/dev/{{t}}/all" selected="selected">{{t}}</option>
                     {% else %}
-                        <option value="/beta/{{t}}/all">{{t}}</option>
+                        <option value="/dev/{{t}}/all">{{t}}</option>
                     {% endif %}
                 {% endfor %}
             </select>    
