@@ -2,6 +2,7 @@
 
 import sys
 import csv
+import platform
 from csv import reader, writer
 
 import requests
@@ -29,16 +30,24 @@ def parse_options():
         metavar="output-pathname")
     return(parser.parse_args())
 
-args = parse_options()
 
-# initiate selenium webdriver
-option = webdriver.ChromeOptions()
-option.add_argument('headless')
-driver = webdriver.Chrome('./chromedriver87', options=option)
+
+def get_chrome_driver():
+    """figure out which chromedriver to use from 
+    https://chromedriver.storage.googleapis.com/:
+    linux64 or mac64
+    """
+    os_suffix = {'Linux':'linux64', 'darwin':'mac64'}
+
+    path = "./chromedriver87." + os_suffix.get(platform.system())
+    # initiate selenium webdriver
+    option = webdriver.ChromeOptions()
+    option.add_argument('headless')
+    return webdriver.Chrome(path, options=option)
 
 # this function generates the snapshot for the specified application url
 # and saves it to the static folder in the project directory
-def get_snapshot(url, count):
+def get_snapshot(driver, url, count):
 
     name = "app" + str(count) + ".png"
     
@@ -48,7 +57,10 @@ def get_snapshot(url, count):
 
     return name
 
-# opening the 
+# Main program
+args = parse_options()
+chrome_driver = get_chrome_driver()
+# opening the CSV file
 with open(args.ifile, 'r') as input, \
     open(args.ofile, 'w') as output:
 
@@ -74,17 +86,11 @@ with open(args.ifile, 'r') as input, \
         # GET DATASET NAME, application dataset matching algorithm takes care of this
         doi = line['doi']
         doi = doi.split("g/")[1]
-        
         url = "https://api.datacite.org/dois/" + doi
-
         headers = {"Accept": "application/vnd.api+json"}
-
         response = requests.request("GET", url, headers=headers)
-
         title = response.json()['data']['attributes']['titles'][0]
-
         print(title['title'])
-        
         line['title'] = title['title']
         '''
        
@@ -92,7 +98,7 @@ with open(args.ifile, 'r') as input, \
 
         # this conditional handles duplicate application values
         if line['name'] not in apps:
-            line['screenshot'] = get_snapshot(line['site'], count)
+            line['screenshot'] = get_snapshot(chrome_driver, line['site'], count)
             count += 1
         
         # semi-automated generation application website description 
