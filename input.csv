@@ -1,7 +1,0 @@
-topic,name,site,doi,title
-Floods,UMD Global Flood Monitoring System,http://flood.umd.edu/,http://dx.doi.org/10.5067/TRMM/TMPA/3H-E/7
-Floods,Dartmouth Flood Observatory,https://floodobservatory.colorado.edu/,http://dx.doi.org/10.5067/YL62FUZLAJUT
-Floods,HEC-HMS,https://www.hec.usace.army.mil/software/hec-hms/,http://dx.doi.org/10.5067/TRMM/TMPA/3H/7
-Landslides,LHASA,https://gpm.nasa.gov/applications/global-landslide-model,http://dx.doi.org/10.5067/GPM/IMERG/3B-HH-E/06
-Wildfires,Active Fire Live Map,https://firecast.conservation.org/DataMaps/LiveView,http://dx.doi.org/10.5067/FIRMS/VIIRS/VNP14IMGT_NRT.002
-Wildfires,"ABoVE: Burn Severity, Fire Progression, and Field Data, NWT, Canada",https://webmap.ornl.gov/ogc/dataset.jsp?ds_id=1548,http://dx.doi.org/10.3334/ORNLDAAC/1548
