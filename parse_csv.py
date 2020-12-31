@@ -56,11 +56,11 @@ def get_snapshot(driver, url):
     """
 
     filename = re.sub(r'^https?://', '', url)
-    filename = re.sub(r'\W', '-', filename)
+    filename = re.sub(r'\W', '-', filename) + '.png'
 
     driver.get(url)
     sleep(2)
-    driver.get_screenshot_as_file('static/' + filename + '.png')
+    driver.get_screenshot_as_file('static/' + filename)
 
     return filename
 
