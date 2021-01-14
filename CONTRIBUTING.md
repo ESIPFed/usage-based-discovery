@@ -10,5 +10,20 @@ Before you begin:
 
 ## How to make a contribution
 1. fork this repository
-2. make changes to the files you thinks should change
+2. make changes to the files, please follow [Coding Conventions](#Coding-Conventions)
 3. submit a pull request with details of changes
+4. Project maintainers will review the Pull Request
+
+
+## How to report Bugs/ Problems
+- You can open an issue and the Project maintianers will take a look. 
+- Please provide detailed description on what the issue is 
+
+# Current Goals
+- creating an operational front-end
+- fixing neptune database to accepting incremental additions
+
+# Testing
+
+# Coding Conventions
+- place spaces around operations like x += 1 or in arrays 
