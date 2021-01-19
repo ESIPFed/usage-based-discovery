@@ -38,16 +38,29 @@ def db_connect(neptune_endpoint):
 	return graph.traversal().withRemote(remote_connection)
 
 def db_get_topics(graph_trav):
+	'''
+	queries database for a set of all topics
+	'''
     return graph_trav.V().hasLabel('application').values('topic').toSet()
 
 def db_get_topic_apps(graph_trav, topic):
+	'''
+	queries database for a list of all applications related to the given topic
+	'''
     return graph_trav.V().has('application', 'topic', topic).elementMap().toList()
 
 def db_get_topic_datasets(graph_trav, topic):
+	'''
+	queries database for a list of datasets related to the given topic 
+	'''
 	return graph_trav.V().has('application', 'topic', topic).out().elementMap().toList()
 
 def db_get_app_datasets(graph_trav, app)
+	'''
+	queries database for a list of datasets that the given application might be using
+	'''
 	return graph_trav.V().has('application', 'name', app).out().elementMap().toList()
+
 
 
 # maybe write a class and get rid of graph_trav input
@@ -115,4 +128,4 @@ def db_input_csv(input_file, neptune_endpoint):
 if __name__ == '__main__':
 	# Main program
 	args = parse_options()
-	load_database(args.ifile, args.neptune)
+	db_input_csv(args.ifile, args.neptune)
