@@ -19,8 +19,11 @@ Before you begin:
 
 
 ## How to report Bugs/ Problems
-- You can open an issue and the Project maintianers will take a look. 
+- You can open an issue with the Bug reports template
 - Please provide detailed description on what the issue is 
+
+## Feature Request
+- You can open an issue with the Feature Request template 
 
 ## Current Goals
 - creating an operational front-end
