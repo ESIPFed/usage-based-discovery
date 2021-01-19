@@ -13,8 +13,9 @@ Before you begin:
 2. make changes to the files, please follow [Coding Conventions](#Coding-Conventions)
 3. Update the [README.md](README.md) if needed
 4. submit your Pull Request with details of changes
-5. Project maintainers will review the Pull Request
-6. once your Pull request is merged you will be listed as a contributor. Congrats!
+5. link any open issues that your Pull Request addresses
+6. Project maintainers will review the Pull Request
+7. once your Pull request is merged you will be listed as a contributor. Congrats!
 
 
 ## How to report Bugs/ Problems
