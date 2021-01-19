@@ -25,10 +25,13 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Runs a single command using the runners shell
+    - uses: actions/checkout@main
     - name: Install Dependencies
       run: |
+        ls
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest
+    - uses: actions/checkout@main
     - name: Run PyTest
       run: pytest
