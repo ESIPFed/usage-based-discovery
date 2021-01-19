@@ -26,6 +26,9 @@ jobs:
     steps:
     # Runs a single command using the runners shell
     - uses: actions/checkout@main
+    - name: Get Python3
+      with:
+        python-version: 3.6
     - name: Install Dependencies
       run: |
         pip3 install setuptools
