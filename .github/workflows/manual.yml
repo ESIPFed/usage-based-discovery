@@ -28,6 +28,8 @@ jobs:
     - uses: actions/checkout@main
     - name: Install Dependencies
       run: |
+        pip --version
+        python --verion
         ls
         python -m pip install --upgrade pip
         pip3 install -r requirements.txt
