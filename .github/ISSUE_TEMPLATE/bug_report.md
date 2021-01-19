@@ -17,7 +17,7 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 ## Screenshots or Error message
 If applicable, add screenshots or Error message to help explain your problem.
-## please complete the following information:
+## Please complete the following information:
 - Browser [e.g. chrome, safari]
 - Any important Version information
 - Operating System [e.g. Linux, Windows]
