@@ -29,9 +29,9 @@ jobs:
     - name: Install Dependencies
       run: |
         ls
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest
+        python3 -m pip install --upgrade pip
+        pip3 install -r requirements.txt
+        pip3 install pytest
     - uses: actions/checkout@main
     - name: Run PyTest
       run: pytest
