@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 from __future__  import print_function  # Python 2/3 compatibility
-import csv
-import sys
 import os
-import argparse
-import asyncio
+import sys
 from gremlin_python import statics
 from gremlin_python.structure.graph import Graph
 from gremlin_python.process.graph_traversal import *
@@ -17,7 +14,7 @@ class GraphDB:
     
     def __init__(self):
         # initiate connection
-        self.graph = Graph()
+        graph = Graph()
         # Neptune secure web sockets endpoint, e.g.
         neptune_endpoint = os.environ.get('NEPTUNEDBRO')
         if neptune_endpoint is None:
@@ -25,22 +22,33 @@ class GraphDB:
         if not self.valid_endpoint(neptune_endpoint):
             sys.exit("Invalid Neptune Endpoint")
         self.remote_connection = DriverRemoteConnection(neptune_endpoint, 'g')
-        self.graph_trav = self.graph.traversal().withRemote(self.remote_connection)
+        self.graph_trav = graph.traversal().withRemote(self.remote_connection)
 
     def __del__(self):
         print("I am terminating the connection!")
         self.remote_connection.close()
-
+    
     def valid_endpoint(self, neptune_endpoint):
         return neptune_endpoint.startswith("wss://") and neptune_endpoint.endswith(":8182/gremlin")
 
     def has_app(self, name):
-        return self.graph_trav.V().has('application', 'name', name).limit(1)
+        '''
+        returns true if the app name is found in the database
+        otherwise false
+        '''
+        return self.graph_trav.V().has('application', 'name', name).hasNext()
 
     def has_dataset(self, doi):
-        return self.graph_trav.V().has('dataset', 'doi', doi).limit(1)
+        '''
+        returns true if the dataset doi is found in the database
+        otherwise false
+        '''
+        return self.graph_trav.V().has('dataset', 'doi', doi).hasNext()
 
-    async def get_topics(self):
+    def has_relationship(self, name, doi):
+        return self.graph_trav.V().has('application', 'name', name).as_('v').V().has('dataset', 'doi', doi).inE('uses').hasNext()
+
+    def get_topics(self):
         '''
         queries database for a set of all topics
         '''
@@ -60,12 +68,19 @@ class GraphDB:
         '''
         return self.graph_trav.V().has('application', 'topic', topic).out().elementMap().toList()
 
-    def get_datasets_by_app(self, app):
+    def get_datasets_by_app(self, name):
         '''
-        queries database for a list of datasets that the given application might be using
+        queries database for a list of datasets that are connected to the given application
         '''
-        return self.graph_trav.V().has('application', 'name', app).out().elementMap().toList()
+        return self.graph_trav.V().has('application', 'name', name).out().elementMap().toList()
     
+    def get_vertex_count(self):
+        '''
+        returns number of vertexes in the database
+        a nice sanity check if you will
+        '''
+        return self.graph_trav.V().count().next()
+   
     def add_app(self, app):
         '''
         adds application to database if it doesn't already exist
@@ -94,39 +109,25 @@ class GraphDB:
                 .V().has('dataset', 'doi', doi) \
                 .coalesce(inE('uses').where(outV().as_('v')), addE('uses').from_('v')).next()
     
-    async def get_vertex_count(self):
-        return self.graph_trav.V().count().next()
+    def update_app(self, name):
+        pass
+
+    def update_doi(self, doi):
+        pass
+
+    def clear_database(self):
+        '''
+        warning: this function clears everything in the database
+        '''
+        return self.graph_trav.V().drop().iterate()
+
+    def delete_application(self, name):
+        pass
+
+    def delete_dataset(self, doi):
+        pass
+
+    def delete_relationship(self, name, doi):
+        pass
 
 
-def parse_options():
-    """parse the command line options, returning input file and Neptune endpoint"""
-    parser = argparse.ArgumentParser(description="Load CSV input into UBD Neptune database")
-    parser.add_argument('-i', '--ifile', default='algo-output.csv',
-        metavar="input-pathname")
-    return parser.parse_args()
-
-def db_input_csv(input_file):
-    """reads the input CSV file and loads into the neptune database
-    Positional Arguments:
-    input_file:  input CSV file
-    neptune_endpoint: secure web socket Neptune endpoint
-    """
-    db = GraphDB()
-    # load csv file
-    with open(input_file, 'r') as file:
-        # initiate csv reader
-        reader = csv.DictReader(file)
-        # loop through every line in csv file
-        for line in reader:
-            print("Onto the Next One")
-            print(db.add_app(line))
-            print(db.add_dataset(line))
-            print(db.add_relationship(line['name'], line['doi']))
-    # counts vertices, used for troubleshooting purposes
-    print(asyncio.run(db.get_vertex_count()))
-    #print("Vertices count: " + {graph_trav.V().count().next()}, file=sys.stderr)
-
-if __name__ == '__main__':
-    # Main program
-    args = parse_options()
-    db_input_csv(args.ifile)
