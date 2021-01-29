@@ -22,12 +22,17 @@ class GraphDB:
         neptune_endpoint = os.environ.get('NEPTUNEDBRO')
         if neptune_endpoint is None:
             sys.exit("Neptune Endpoint was not supplied in NEPTUNEDBRO environment")
+        if not self.valid_endpoint(neptune_endpoint):
+            sys.exit("Invalid Neptune Endpoint")
         self.remote_connection = DriverRemoteConnection(neptune_endpoint, 'g')
         self.graph_trav = self.graph.traversal().withRemote(self.remote_connection)
 
     def __del__(self):
         print("I am terminating the connection!")
         self.remote_connection.close()
+
+    def valid_endpoint(self, neptune_endpoint):
+        return neptune_endpoint.startswith("wss://") and neptune_endpoint.endswith(":8182/gremlin")
 
     def has_app(self, name):
         return self.graph_trav.V().has('application', 'name', name).limit(1)
