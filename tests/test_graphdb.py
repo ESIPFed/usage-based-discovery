@@ -1,8 +1,24 @@
-from unittest import mock
-import pytest
 import sys
 sys.path.append("../util")
-from graph_db import GraphDB
+from graph_db import GraphDB, valid_endpoint
+
+APP = {'topic': 'Test', 'name': 'Testing 123', 'site': 'https://example.com', 'screenshot': 'Testing 123.jpg', 'publication': 'None', 'description': 'example description 123' }
+
+CHANGE_APP = {'topic': 'Change Test', 'name': 'Change Testing 123', 'site': 'Change https://example.com', 'screenshot': 'Change Testing 123.jpg', 'publication': 'Change None', 'description': 'Change example description 123' }
+
+DATASET = {'title': 'dataset', 'doi': '1234567890'}
+
+CHANGE_DATASET = {'title': 'Change dataset', 'doi': 'Change 1234567890'}
+
+def test_valid_endpoint():
+    assert valid_endpoint("wss://endpoint:8182/gremlin")
+
+def test_invalid_endpoint_start():
+    assert not valid_endpoint("endpoint:8182/gremlin")
+
+def test_invalid_endpoint_end():
+    assert not valid_endpoint("wss://endpoint")
+
 
 class TestInit():
     
@@ -12,54 +28,58 @@ class TestInit():
     def teardown_method(self):
         self.db = None
 
-    def test_valid_endpoint(self):
-        assert self.db.valid_endpoint("wss://endpoint:8182/gremlin") == True
-    
-    def test_invalid_endpoint_start(self):
-        assert self.db.valid_endpoint("endpoint:8182/gremlin") == False
-    
-    def test_invalid_endpoint_end(self):
-        assert self.db.valid_endpoint("wss://endpoint") == False
-
     def test_clear_database_start(self):
         self.db.clear_database()
         assert self.db.get_vertex_count() == 0
+        assert self.db.get_edge_count() == 0
 
     def test_has_app(self):
-        assert self.db.has_app("Testing 123") == False
+        assert not self.db.has_app("Testing 123")
 
     def test_add_app(self):
-        app = {'topic': 'Test', 'name': 'Testing 123', 'site': 'https://example.com', 'screenshot': 'Testing 123.jpg', 'publication': 'None', 'description': 'example description 123' }
-        self.db.add_app(app)
-        assert self.db.has_app('Testing 123') == True
-    
+        self.db.add_app(APP)
+        assert self.db.has_app('Testing 123')
+ 
+    def test_add_app_dupe(self):
+        startnum = self.db.get_vertex_count()
+        self.db.add_app(APP)
+        endnum = self.db.get_vertex_count()
+        assert startnum == endnum
+   
     def test_has_dataset(self):
-        assert self.db.has_dataset('1234567890') == False
+        assert not self.db.has_dataset('1234567890')
 
     def test_add_dataset(self):
-        dataset = {'title': 'dataset', 'doi': '1234567890'}
-        self.db.add_dataset(dataset)
-        assert self.db.has_dataset('1234567890') == True
+        self.db.add_dataset(DATASET)
+        assert self.db.has_dataset('1234567890')
+
+    def test_add_dataset_dupe(self):
+        startnum = self.db.get_vertex_count()
+        self.db.add_dataset(DATASET)
+        endnum = self.db.get_vertex_count()
+        assert startnum == endnum
 
     def test_has_relationship(self):
-        assert self.db.has_relationship('Testing 123', '1234567890') == False
+        assert not self.db.has_relationship('Testing 123', '1234567890')
 
     def test_add_relationship(self):
         self.db.add_relationship('Testing 123', '1234567890')
-        assert self.db.has_relationship('Testing 123', "1234567890") == True
+        assert self.db.has_relationship('Testing 123', "1234567890")
 
-    def test_do_not_add_dupe(self):
-        startnum = self.db.get_vertex_count()
-        app = {'topic': 'Test', 'name': 'Testing 123', 'site': 'https://example.com', 'screenshot': 'Testing 123.jpg', 'publication': 'None', 'description': 'example description 123' }
-        self.db.add_app(app)
-        endnum = self.db.get_vertex_count()
+    def test_add_relationship_dupe(self):
+        startnum = self.db.get_edge_count()
+        self.db.add_relationship('Testing 123', '1234567890')
+        endnum = self.db.get_edge_count()
         assert startnum == endnum
+
+    def test_update_app(self):
+        startapp = self.db.get_app('Testing 123')
+        assert APP.items() <= startapp[0].items()
+        self.db.update_app('Testing 123', CHANGE_APP)
+        endapp = self.db.get_app('Change Testing 123')
+        assert CHANGE_APP.items() <= endapp[0].items()
 
     def test_clear_database_end(self):
         self.db.clear_database()
         assert self.db.get_vertex_count() == 0
-
-
-
-
-
+        assert self.db.get_edge_count() == 0
