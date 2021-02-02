@@ -1,118 +1,192 @@
 #!/usr/bin/env python
-"""load_graph.py 
-Load a set of application-dataset relationships in CSV form into a Neptune graph database
-"""
-
-from __future__  import print_function	# Python 2/3 compatibility
-import csv
-import sys
+'''
+GraphDB: facilitates all interactions to the Neptune Graph Database
+'''
+from __future__  import print_function  # Python 2/3 compatibility
 import os
-import argparse
-
-from gremlin_python import statics
+import sys
 from gremlin_python.structure.graph import Graph
-from gremlin_python.process.graph_traversal import __
+from gremlin_python.process.graph_traversal import unfold, inE, addV, addE, outV
+from gremlin_python.process.traversal import Cardinality
 from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
-from gremlin_python.process.traversal import Bindings
-# from gremlin_python.process.strategies import *
 
+def valid_endpoint(neptune_endpoint):
+    '''
+    checks whether or not the neptune_endpoint supplied is valid
+    '''
+    return neptune_endpoint.startswith("wss://") and neptune_endpoint.endswith(":8182/gremlin")
 
-def parse_options():
-	"""parse the command line options, returning input file and Neptune endpoint"""
-	parser = argparse.ArgumentParser(description="Load CSV input into UBD Neptune database")
-	parser.add_argument('-i', '--ifile', default='algo-output.csv',
-		metavar="input-pathname")
-	parser.add_argument('-n', '--neptune',
-		metavar="neptune-endpoint")
-	return parser.parse_args()
+class GraphDB:
+    '''
+    GraphDB: facilitates all interactions to the Neptune Graph Database
+    '''
+    def __init__(self):
+        '''
+        connects to the neptune database upon class creation
+        '''
+        graph = Graph()
+        neptune_endpoint = os.environ.get('NEPTUNEDBRO')
+        if neptune_endpoint is None:
+            sys.exit("Neptune Endpoint was not supplied in NEPTUNEDBRO environment")
+        if not valid_endpoint(neptune_endpoint):
+            sys.exit("Invalid Neptune Endpoint")
+        self.remote_connection = DriverRemoteConnection(neptune_endpoint, 'g')
+        self.graph_trav = graph.traversal().withRemote(self.remote_connection)
 
-def db_connect(neptune_endpoint):
-	# initiate connection
-	graph = Graph()
-	# Neptune secure web sockets endpoint, e.g.
-	if neptune_endpoint is None:
-		neptune_endpoint = os.environ.get('NEPTUNEDBRO')
-		if neptune_endpoint is None:
-			sys.exit("Neptune Endpoint was not supplied in either command line or NEPTUNEDBRO environment")
-	remote_connection = DriverRemoteConnection(neptune_endpoint, 'g')
-	return graph.traversal().withRemote(remote_connection)
+    def __del__(self):
+        '''
+        disconnects from the neptune database once there are no more references to the class
+        '''
+        print("I am terminating the connection!")
+        self.remote_connection.close()
 
-def db_get_topics(graph_trav):
-    return graph_trav.V().hasLabel('application').values('topic').toSet()
+    def has_app(self, name):
+        '''
+        returns true if the app name is found in the database
+        otherwise false
+        '''
+        return self.graph_trav.V().has('application', 'name', name).hasNext()
 
-def db_get_topic_apps(graph_trav, topic):
-    return graph_trav.V().has('application', 'topic', topic).elementMap().toList()
+    def has_dataset(self, doi):
+        '''
+        returns true if the dataset doi is found in the database
+        otherwise false
+        '''
+        return self.graph_trav.V().has('dataset', 'doi', doi).hasNext()
 
-def db_get_topic_datasets(graph_trav, topic):
-	return graph_trav.V().has('application', 'topic', topic).out().elementMap().toList()
+    def has_relationship(self, name, doi):
+        '''
+        returns true if the relationship edge is found in the database
+        otherwise false
+        '''
+        return self.graph_trav.V().has('application', 'name', name).as_('v').V() \
+                .has('dataset', 'doi', doi).inE('uses').hasNext()
 
-def db_get_app_datasets(graph_trav, app)
-	return graph_trav.V().has('application', 'name', app).out().elementMap().toList()
+    def get_topics(self):
+        '''
+        queries database for a set of all topics
+        '''
+        topics = self.graph_trav.V().hasLabel('application').values('topic').toSet()
+        return topics
 
+    def get_app(self, name):
+        '''
+        queries database for a specific application
+        '''
+        return self.graph_trav.V().has('application', 'name', name).elementMap().toList()
 
-# maybe write a class and get rid of graph_trav input
-def db_add_app(graph_trav, line, names):
-	# name may be an unecessary input
-	# should be able to query graph db for does line['name'] already exist
-	# this conditional checks for application duplicates
-	if line['name'] not in names:
-		# if application is not yet in database, add it
-		return graph_trav.addV('application').property('topic', line['topic']) \
-			.property('name', line['name']) \
-			.property('site', line['site']) \
-			.property('screenshot', line['screenshot']) \
-			.property('publication', line['publication'])  \
-			.property('description', line['description']).next()
-	print( line['name'] + " already in db, skipping...", file=sys.stderr)
-	# get existing application vertex
-	return graph_trav.V().has('application', 'name', line['name']).limit(1)
+    def get_dataset(self, doi):
+        '''
+        queries database for a specific database
+        '''
+        return self.graph_trav.V().has('dataset','doi', doi).elementMap().toList()
 
-def db_add_dataset(graph_trav, line, titles):
-	# this conditional checks for dataset duplicates
-	if line['title'] not in titles:
-		# if dataset is not yet in database, add it
-		return graph_trav.addV('dataset') \
-			.property('doi', line['doi']) \
-			.property('title', line['title']).next()
-	# get existing dataset vertex
-	return graph_trav.V().has('dataset', 'title', line['title']).limit(1)
+    def get_apps_by_topic(self, topic):
+        '''
+        queries database for a list of all applications related to the given topic
+        '''
+        return self.graph_trav.V().has('application', 'topic', topic).elementMap().toList()
 
+    def get_datasets_by_topic(self, topic):
+        '''
+        queries database for a list of datasets related to the given topic
+        '''
+        return self.graph_trav.V().has('application', 'topic', topic).out().elementMap().toList()
 
-def db_input_csv(input_file, neptune_endpoint):
-	"""reads the input CSV file and loads into the neptune database
-	Positional Arguments:
-	input_file:  input CSV file
-	neptune_endpoint: secure web socket Neptune endpoint
-	"""
-	graph_trav = db_connect(neptune_endpoint)
-	# load csv file
-	with open(input_file, 'r') as file:
+    def get_datasets_by_app(self, name):
+        '''
+        queries database for a list of datasets that are connected to the given application
+        '''
+        return self.graph_trav.V().has('application', 'name', name).out().elementMap().toList()
 
-		# initiate csv reader
-		reader = csv.DictReader(file)
+    def get_vertex_count(self):
+        '''
+        returns number of vertexes in the database
+        a nice sanity check if you will
+        '''
+        return self.graph_trav.V().count().next()
 
-		# loop through every line in csv file
-		for line in reader:
+    def get_edge_count(self):
+        '''
+        returns number of edges in the database
+        another nice sanity check if you will
+        '''
+        return self.graph_trav.E().count().next()
 
-			# generates a list of existing applications and datasets to avoid duplicates
-			if not empty:
-				names = graph_trav.V().name.toList()
-				titles = graph_trav.V().title.toList()
-			
-			app_vertex = db_add_app(graph_trav, line, names)
-			dataset_vertex = db_add_dataset(graph_trav, line, titles)
+    def add_app(self, app):
+        '''
+        adds application to database if it doesn't already exist
+        '''
+        return self.graph_trav.V().has('application', 'name', app['name']) \
+                .fold().coalesce(unfold(), addV('application') \
+                .property('topic', app['topic']) \
+                .property('name', app['name']) \
+                .property('site', app['site']) \
+                .property('screenshot', app['screenshot']) \
+                .property('publication', app['publication'])  \
+                .property('description', app['description'])).next()
 
-			# add edge between application and dataset vertices
-			graph_trav.addE('uses').from_(app_vertex).to(dataset_vertex).iterate()
+    def add_dataset(self, dataset):
+        '''
+        adds dataset to database if it doesn't already exist
+        '''
+        return self.graph_trav.V().has('dataset', 'doi', dataset['doi']) \
+                .fold().coalesce(unfold(), addV('dataset') \
+                .property('doi', dataset['doi']) \
+                .property('title', dataset['title'])).next()
 
-	# counts vertices, used for troubleshooting purposes
-	print("Vertices count: " + {graph_trav.V().count().next()}, file=sys.stderr)
+    def add_relationship(self, name, doi):
+        '''
+        adds relationship to database if it doesn't already exist
+        '''
+        return self.graph_trav.V().has('application', 'name', name).as_('v') \
+                .V().has('dataset', 'doi', doi) \
+                .coalesce(inE('uses').where(outV().as_('v')), addE('uses').from_('v')).next()
 
-	# close connection
-	remote_connection.close()
-	return graph_trav
+    def update_app(self, name, app):
+        '''
+        updates application vertex in the database with new information
+        '''
+        return self.graph_trav.V().has('application', 'name', name) \
+            .property(Cardinality.single, 'topic', app['topic']) \
+            .property(Cardinality.single, 'name', app['name']) \
+            .property(Cardinality.single, 'site', app['site']) \
+            .property(Cardinality.single, 'screenshot', app['screenshot']) \
+            .property(Cardinality.single, 'publication', app['publication'])  \
+            .property(Cardinality.single, 'description', app['description']).next()
 
-if __name__ == '__main__':
-	# Main program
-	args = parse_options()
-	load_database(args.ifile, args.neptune)
+    def update_app_property(self, name, prop, value):
+        '''
+        updates only one of the application's properties
+        '''
+        if prop not in ['topic', 'name', 'site', 'screenshot', 'publication', 'description']:
+            raise Exception("property provided is not a valid option")
+        return self.graph_trav.V().has('application', 'name', name) \
+                .property(Cardinality.single, prop, value).next()
+
+    def update_dataset(self, doi, dataset):
+        '''
+        updates dataset vertex in the database with new information
+        '''
+        return self.graph_trav.V().has('dataset', 'doi', doi) \
+                .property(Cardinality.single, 'title', dataset['title']) \
+                .property(Cardinality.single, 'doi', dataset['doi']).next()
+
+    def clear_database(self):
+        '''
+        warning: this function clears everything in the database
+        '''
+        return self.graph_trav.V().drop().iterate()
+
+    def delete_application(self, name):
+        '''
+        deletes application vertex in the database
+        '''
+        return self.graph_trav.V().has('application', 'name', name).drop().iterate()
+
+    def delete_dataset(self, doi):
+        '''
+        deletes dataset vertex in the database
+        '''
+        return self.graph_trav.V().has('dataset', 'doi', doi).drop().iterate()
+

@@ -1,3 +1,4 @@
+from util import graph_db
 from flask import Flask, render_template 
 
 from gremlin_python import statics
@@ -9,7 +10,6 @@ from gremlin_python.driver.driver_remote_connection import DriverRemoteConnectio
 import os
 
 app = Flask(__name__)
-graph = Graph()
 
 # getting the database reader endpoint as an environment variable
 dbro = os.environ.get('NEPTUNEDBRO')
@@ -17,16 +17,9 @@ dbro = os.environ.get('NEPTUNEDBRO')
 # Initial screen
 @app.route('/')
 def home():
-
-    # initiate connection to graph
-    remoteConn = DriverRemoteConnection(dbro,'g')
-    g = graph.traversal().withRemote(remoteConn)
-
-    # gets all the topics available in the database
-    topics = g.V().hasLabel('application').values('topic').toSet()
-    
-    # close connection
-    remoteConn.close()
+    graph_trav = graph_db.connect(dbro)
+    topics = graph_db.get_topics(graph_trav)
+    graph_trav.close()
     return render_template('init.html', topics=topics)
 
 # About page
@@ -34,48 +27,39 @@ def home():
 def about():
     return render_template('about.html')
 
-
-
 # Main screen 
 @app.route('/<topic>/<app>') 
 def main(topic, app): 
 
     # initiate graph connection
-    remoteConn = DriverRemoteConnection(dbro,'g')
-    g = graph.traversal().withRemote(remoteConn)
+    graph_trav= graph_db.connect(dbro)
 
     # query for all topic property values and put into list
-    topics = g.V().hasLabel('application').values('topic').toSet()
+    topics = graph_db.get_topics(graph_trav)
   
     # query only for application relating to specified topic
-    relapps = g.V().has('application', 'topic', topic).elementMap().toList()
-    
+    relapps = graph_db.get_topic_apps(graph_trav, topic)
     
     # query for the first application in relapps list
     if(app == 'all'):
         appsel = None
 
-        # query for datasets related to relapps[0]
-        apps = g.V().has('application', 'topic', topic)
-        datasets = apps.out().elementMap().toList()
+        # query for datasets related to the topic
+        datasets = graph_db.get_topic_datasets(graph_trav, topic)
 
     # query for single application (vertex) with name specified by parameter
     else:
         appsel = g.V().has('application', 'name', app).elementMap().toList()
         
         # query for all datasets relating to specified application
-        selected = g.V().has('application', 'name', app)
-        datasets = selected.out().elementMap().toList()
-    
+        datasets = graph_db.get_app_datasets(graph_trav, app)
+
     # close connection
-    remoteConn.close()
+    graph_trav.close()
     return render_template('index.html', topic=topic, \
         topics=topics, apps=relapps, app=appsel, datasets=datasets)
 
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
 
