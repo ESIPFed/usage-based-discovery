@@ -13,10 +13,15 @@ import re
 from time import sleep
 import argparse
 
-# import requests
+import boto3
 
+
+# import requests
+import io
 from selenium import webdriver
 # from selenium.webdriver.chrome.options import Options
+
+s3 = boto3.client('s3')
 
 def parse_options():
     """ Parse the command line options for input and output files """
@@ -60,7 +65,10 @@ def get_snapshot(driver, url):
 
     driver.get(url)
     sleep(2)
-    driver.get_screenshot_as_file('static/' + filename)
+
+    with io.BytesIO(driver.get_screenshot_as_png()) as f:
+        s3.upload_fileobj(f, 'test-bucket-parth', filename)
+    
 
     return filename
 
