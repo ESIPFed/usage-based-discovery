@@ -83,9 +83,9 @@ class TestInit():
         enddataset = self.db.get_dataset('Change 1234567890')
         assert CHANGE_DATASET.items() <= enddataset[0].items()
 
-    def test_delete_application(self):
+    def test_delete_app(self):
         self.db.add_app(APP)
-        print(self.db.delete_application("Testing 123"))
+        print(self.db.delete_app("Testing 123"))
         assert not self.db.has_app("Testing 123")
         assert self.db.has_app("Change Testing 123")
 

@@ -33,6 +33,7 @@ def db_input_csv(input_file):
             print(db.add_relationship(line['name'], line['doi']))
     # counts vertices, used for troubleshooting purposes
     print(db.get_vertex_count())
+    print(db.get_edge_count())
     #print("Vertices count: " + {graph_trav.V().count().next()}, file=sys.stderr)
 
 if __name__ == '__main__':

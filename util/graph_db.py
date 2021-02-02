@@ -178,7 +178,7 @@ class GraphDB:
         '''
         return self.graph_trav.V().drop().iterate()
 
-    def delete_application(self, name):
+    def delete_app(self, name):
         '''
         deletes application vertex in the database
         '''

@@ -1,4 +1,4 @@
-from util import graph_db
+from util.graph_db import GraphDB
 from flask import Flask, render_template 
 
 from gremlin_python import statics
@@ -11,15 +11,11 @@ import os
 
 app = Flask(__name__)
 
-# getting the database reader endpoint as an environment variable
-dbro = os.environ.get('NEPTUNEDBRO')
-
 # Initial screen
 @app.route('/')
 def home():
-    graph_trav = graph_db.connect(dbro)
-    topics = graph_db.get_topics(graph_trav)
-    graph_trav.close()
+    g = GraphDB()
+    topics = g.get_topics()
     return render_template('init.html', topics=topics)
 
 # About page
@@ -30,36 +26,22 @@ def about():
 # Main screen 
 @app.route('/<topic>/<app>') 
 def main(topic, app): 
-
-    # initiate graph connection
-    graph_trav= graph_db.connect(dbro)
-
-    # query for all topic property values and put into list
-    topics = graph_db.get_topics(graph_trav)
-  
+    g = GraphDB()
+    topics = g.get_topics()
     # query only for application relating to specified topic
-    relapps = graph_db.get_topic_apps(graph_trav, topic)
-    
+    relapps = g.get_apps_by_topic(topic)
     # query for the first application in relapps list
     if(app == 'all'):
         appsel = None
-
         # query for datasets related to the topic
-        datasets = graph_db.get_topic_datasets(graph_trav, topic)
-
+        datasets = g.get_datasets_by_topic(topic)
     # query for single application (vertex) with name specified by parameter
     else:
-        appsel = g.V().has('application', 'name', app).elementMap().toList()
-        
+        appsel = g.get_app(app)
         # query for all datasets relating to specified application
-        datasets = graph_db.get_app_datasets(graph_trav, app)
-
-    # close connection
-    graph_trav.close()
+        datasets = g.get_datasets_by_app(app)
     return render_template('index.html', topic=topic, \
         topics=topics, apps=relapps, app=appsel, datasets=datasets)
 
-
 if __name__ == '__main__':
     app.run(debug=True)
-
