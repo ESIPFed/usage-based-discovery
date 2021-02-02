@@ -19,7 +19,6 @@ def test_invalid_endpoint_start():
 def test_invalid_endpoint_end():
     assert not valid_endpoint("wss://endpoint")
 
-
 class TestInit():
     
     def setup_method(self):
@@ -74,10 +73,27 @@ class TestInit():
 
     def test_update_app(self):
         startapp = self.db.get_app('Testing 123')
-        assert APP.items() <= startapp[0].items()
         self.db.update_app('Testing 123', CHANGE_APP)
         endapp = self.db.get_app('Change Testing 123')
         assert CHANGE_APP.items() <= endapp[0].items()
+
+    def test_update_dataset(self):
+        startdataset = self.db.get_dataset('1234567890')
+        self.db.update_dataset('1234567890', CHANGE_DATASET)
+        enddataset = self.db.get_dataset('Change 1234567890')
+        assert CHANGE_DATASET.items() <= enddataset[0].items()
+
+    def test_delete_application(self):
+        self.db.add_app(APP)
+        print(self.db.delete_application("Testing 123"))
+        assert not self.db.has_app("Testing 123")
+        assert self.db.has_app("Change Testing 123")
+
+    def test_delete_dataset(self):
+        self.db.add_dataset(DATASET)
+        print(self.db.delete_dataset("1234567890"))
+        assert not self.db.has_dataset("1234567890")
+        assert self.db.has_dataset("Change 1234567890")
 
     def test_clear_database_end(self):
         self.db.clear_database()

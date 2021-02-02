@@ -177,3 +177,16 @@ class GraphDB:
         warning: this function clears everything in the database
         '''
         return self.graph_trav.V().drop().iterate()
+
+    def delete_application(self, name):
+        '''
+        deletes application vertex in the database
+        '''
+        return self.graph_trav.V().has('application', 'name', name).drop().iterate()
+
+    def delete_dataset(self, doi):
+        '''
+        deletes dataset vertex in the database
+        '''
+        return self.graph_trav.V().has('dataset', 'doi', doi).drop().iterate()
+
