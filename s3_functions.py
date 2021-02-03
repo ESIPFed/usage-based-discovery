@@ -8,12 +8,12 @@ import boto3
 
 class s3Functions():
 
-    def upload_image_from_url(self, bucket_Name, url):
+    def upload_image_from_url(self, bucket_name, url):
         """
         Fetch a snapshot of the application home page using Selenium
 
         Positional Arguments
-        driver:  selenium driver
+        bucket_name:  s3 bucket name        
         url:  application URL
 
         Returns output filename, basically the meat of the URL,
@@ -21,14 +21,14 @@ class s3Functions():
         """
         s3 = boto3.client('s3')
         CHROME_DRIVER = self.get_chrome_driver()
-        filename = re.sub(r'^https?://', '', url)
-        filename = re.sub(r'\W', '-', filename) + '.png'
+        file_name = re.sub(r'^https?://', '', url)
+        file_name = re.sub(r'\W', '-', file_name) + '.png'
 
         CHROME_DRIVER.get(url)
         sleep(2)
         with io.BytesIO(CHROME_DRIVER.get_screenshot_as_png()) as f:
-            s3.upload_fileobj(f, bucket_Name, filename)
-        return filename
+            s3.upload_fileobj(f, bucket_name, file_name)
+        return file_name
 
     def get_chrome_driver(self):
         """figure out which chromedriver to use from
