@@ -189,4 +189,3 @@ class GraphDB:
         deletes dataset vertex in the database
         '''
         return self.graph_trav.V().has('dataset', 'doi', doi).drop().iterate()
-
