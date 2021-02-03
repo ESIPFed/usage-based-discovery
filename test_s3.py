@@ -1,90 +1,85 @@
-import pytest
-from s3_functions import s3Functions
-import boto3
 import re
+import boto3
 from botocore.errorfactory import ClientError
-bucketName = "test-bucket-parth"
+from s3_functions import s3Functions
+
 class TestInit():
 
     def setup_method(self):
         self.s = s3Functions()
-        self.bucketName = "test-bucket-parth"
-    
+        self.bucket_name = "test-bucket-parth"
+        self.s3 = boto3.client('s3')
+
+    #have the funciton return the file name so you don't need to do that here
     def test_upload_image_from_url(self):
-        s3 = boto3.client('s3')
         url = "https://www.nasa.gov/"
         filename = re.sub(r'^https?://', '', url)
         filename = re.sub(r'\W', '-', filename) + '.png'
-        
+
         #checks if object is in bucket when uploading
-        self.s.upload_image_from_url(self.bucketName, url)
+        self.s.upload_image_from_url(self.bucket_name, url)
         try:
-            s3.head_object(Bucket= self.bucketName, Key = filename)
+            self.s3.head_object(Bucket= self.bucket_name, Key = filename)
         except ClientError:
             assert False
         assert True
-        
-        #checks if object is not in bucket        
-        self.s.delete_image(self.bucketName, filename)
+ 
+        #checks if object is not in bucket 
+        self.s.delete_image(self.bucket_name, filename)
         try:
-            s3.head_object(Bucket= self.bucketName, Key = filename)
+            self.s3.head_object(Bucket= self.bucket_name, Key = filename)
             assert False
         except ClientError:
             assert True
-         
+ 
         #checks if object is in bucket
-        self.s.upload_image_from_url(self.bucketName, url)
+        self.s.upload_image_from_url(self.bucket_name, url)
         try:
-            s3.head_object(Bucket= self.bucketName, Key = filename)
+            self.s3.head_object(Bucket= self.bucket_name, Key = filename)
         except ClientError:
             assert False
         assert True
-        
-    def test_query_image(self):
+ 
+    def test_get_image(self):
         '''
         checks if www-nasa-gov-.png image is queried sucessfully and then removes it from s3
         '''
-        s3 = boto3.client('s3')
         filename = "www-nasa-gov-.png"
         try:
-            f = self.s.query_image(self.bucketName, filename)
+            f = self.s.get_image(self.bucket_name, filename)
         except:
             assert False
-        assert True       
-            
-        #checks if object is not in bucket        
-        self.s.delete_image(self.bucketName, filename)
+        assert True
+ 
+        #checks if object is not in bucket 
+        self.s.delete_image(self.bucket_name, filename)
         try:
-            s3.head_object(Bucket= self.bucketName, Key = filename)
+            self.s3.head_object(Bucket= self.bucket_name, Key = filename)
             assert False
         except ClientError:
             assert True
-    
-    def test_get_chrome_driver(self):
-        pass
 
     def test_upload_image(self):
         '''
         uploads an image file from your directories and then removes it
         '''
-        s3 = boto3.client('s3')
-        uniqueFilename = "test_s3.py"
+        unique_filename = "test_s3.py"
         f = "test_s3.py"
-        self.s.upload_image(bucketName, uniqueFilename, f)
-        
+        self.s.upload_image(self.bucket_name, unique_filename, f)
+ 
         try:
-            s3.head_object(Bucket= self.bucketName, Key = uniqueFilename)
+            self.s3.head_object(Bucket= self.bucket_name, Key = unique_filename)
         except ClientError:
             assert False
-        
-        self.s.delete_image(self.bucketName, uniqueFilename)
-        #checks if object is not in bucket        
+ 
+        self.s.delete_image(self.bucket_name, unique_filename)
+        #checks if object is not in bucket 
         try:
-            s3.head_object(Bucket= self.bucketName, Key = uniqueFilename)
+            self.s3.head_object(Bucket= self.bucket_name, Key = unique_filename)
             assert False
         except ClientError:
             assert True
  
     def test_list_s3_objects(self):
-        x = self.s.list_s3_objects(self.bucketName)
-        assert type(x)==list
+        s3_list = self.s.list_s3_objects(self.bucket_name)
+        assert type(s3_list)==list
