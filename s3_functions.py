@@ -71,3 +71,11 @@ class s3Functions():
         ls = [s3_file.key for s3_file in my_bucket.objects.all()]
         print(ls)
         return ls
+
+    def delete_image(self, bucket_Name, file_Name):
+        s3 = boto3.resource('s3')
+        obj = s3.Object(bucket_Name, file_Name)
+        obj.delete()
+
+
+

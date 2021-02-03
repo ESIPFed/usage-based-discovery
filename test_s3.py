@@ -9,56 +9,82 @@ class TestInit():
     def setup_method(self):
         self.s = s3Functions()
         self.bucketName = "test-bucket-parth"
+    
     def test_upload_image_from_url(self):
-
-
-        """
-        Fetch a snapshot of the application home page using Selenium
-
-        Positional Arguments
-        driver:  selenium driver
-        url:  application URL
-
-        Returns output filename, basically the meat of the URL,
-        using '-' in place of non-alphnumeric chars, plus .png
-        """
-
         s3 = boto3.client('s3')
         url = "https://www.nasa.gov/"
         filename = re.sub(r'^https?://', '', url)
         filename = re.sub(r'\W', '-', filename) + '.png'
+        
+        #checks if object is in bucket when uploading
         self.s.upload_image_from_url(self.bucketName, url)
         try:
             s3.head_object(Bucket= self.bucketName, Key = filename)
         except ClientError:
             assert False
         assert True
-        #We still have to remove the object from the s3 bucket after this test is done
-        #does this fuction still run after an assert?
-
+        
+        #checks if object is not in bucket        
+        self.s.delete_image(self.bucketName, filename)
+        try:
+            s3.head_object(Bucket= self.bucketName, Key = filename)
+            assert False
+        except ClientError:
+            assert True
+         
+        #checks if object is in bucket
+        self.s.upload_image_from_url(self.bucketName, url)
+        try:
+            s3.head_object(Bucket= self.bucketName, Key = filename)
+        except ClientError:
+            assert False
+        assert True
+        
+    def test_query_image(self):
+        '''
+        checks if www-nasa-gov-.png image is queried sucessfully and then removes it from s3
+        '''
+        s3 = boto3.client('s3')
+        filename = "www-nasa-gov-.png"
+        try:
+            f = self.s.query_image(self.bucketName, filename)
+        except:
+            assert False
+        assert True       
+            
+        #checks if object is not in bucket        
+        self.s.delete_image(self.bucketName, filename)
+        try:
+            s3.head_object(Bucket= self.bucketName, Key = filename)
+            assert False
+        except ClientError:
+            assert True
+    
     def test_get_chrome_driver(self):
         pass
 
     def test_upload_image(self):
+        '''
+        uploads an image file from your directories and then removes it
+        '''
         s3 = boto3.client('s3')
-        uniqueFilename = "this-is-a-unique-Filename"
+        uniqueFilename = "test_s3.py"
         f = "test_s3.py"
         self.s.upload_image(bucketName, uniqueFilename, f)
-        #upload a file from this directory and then remove it after the assert
-        assert True
+        
         try:
             s3.head_object(Bucket= self.bucketName, Key = uniqueFilename)
         except ClientError:
             assert False
-        assert True
-
-    def test_query_image(self):
-        file_Name = "www-nasa-gov-.png"
+        
+        self.s.delete_image(self.bucketName, uniqueFilename)
+        #checks if object is not in bucket        
         try:
-            f = self.s.query_image(self.bucketName, file_Name)
-        except:
+            s3.head_object(Bucket= self.bucketName, Key = uniqueFilename)
             assert False
-        assert True
+        except ClientError:
+            assert True
+ 
     def test_list_s3_objects(self):
         x = self.s.list_s3_objects(self.bucketName)
         assert type(x)==list
