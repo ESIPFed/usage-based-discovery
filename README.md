@@ -22,6 +22,9 @@ The following instructions are verified for the EC2 host created by the Neptune 
 SSH to the EC2 host
 
 Run this locally: 
+- Update/Upgrade your ec2 instance
+`sudo apt update`
+`sudo apt upgrade`
 
 - Clone this repository. 
 
@@ -102,7 +105,7 @@ To get the subnet_ids, click the Subnet groups on the side panel of the Neptune 
 `$ zappa deploy dev`
 
 This will create a lambda function with the code from app.py and instantiate an API gateway. 
-Static files will go into the S3 bucket listed in the config file.
+Screenshots will go into the S3 bucket listed in the config file.
 
 __(Q:  does bucket need to be pre-created? Need to find out...)__
 
@@ -114,8 +117,8 @@ Browse to http://localhost:5000
 
 <br /><br />
 Any questions or suggestions for improvement?
+- Create an issue, and use the tempalates for feature request or bug reports for improvements
 - Questions - email chris.lynnes@nasa.gov 
-- Suggestions - submit a pull request
 
 <br /><br />
 If looking to contribute, please look at [CONTRIBUTING.md](CONTRIBUTING.md).
