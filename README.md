@@ -23,7 +23,9 @@ SSH to the EC2 host
 
 Run this locally: 
 - Update/Upgrade your ec2 instance (differs based on OS)
+
 For Ubuntu `sudo apt update`
+
 For Ubuntu `sudo apt upgrade`
 
 - Clone this repository. 
