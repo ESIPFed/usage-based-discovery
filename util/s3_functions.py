@@ -40,7 +40,6 @@ class s3Functions():
         # initiate selenium webdriver
         option = webdriver.ChromeOptions()
         option.add_argument('headless')
-        print(webdriver.Chrome(path, options=option))
         return webdriver.Chrome(path, options=option)
 
     def upload_image(self, bucket_name, unique_filename, f):

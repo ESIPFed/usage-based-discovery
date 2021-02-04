@@ -15,13 +15,10 @@ import re
 # from urllib.request import urlopen
 from time import sleep
 import argparse
-import boto3
+from s3_functions import s3Functions
 # import requests
 
-from selenium import webdriver
 # from selenium.webdriver.chrome.options import Options
-
-s3 = boto3.client('s3')
 
 def parse_options():
     """ Parse the command line options for input and output files """
@@ -32,50 +29,10 @@ def parse_options():
                         metavar="output-pathname")
     return parser.parse_args()
 
-
-def get_chrome_driver():
-    """figure out which chromedriver to use from
-    https://chromedriver.storage.googleapis.com/:
-    linux64 or mac64
-    """
-    os_suffix = {'Linux':'linux64', 'Darwin':'mac64'}
-
-    path = "../drivers/chromedriver87." + os_suffix.get(platform.system())
-    # initiate selenium webdriver
-    option = webdriver.ChromeOptions()
-    option.add_argument('headless')
-    print(webdriver.Chrome(path, options=option))
-    return webdriver.Chrome(path, options=option)
-
-# this function generates the snapshot for the specified application url
-# and saves it to the static folder in the project directory
-def get_snapshot(driver, url):
-    """
-    Fetch a snapshot of the application home page using Selenium
-
-    Positional Arguments
-    driver:  selenium driver
-    url:  application URL
-
-    Returns output filename, basically the meat of the URL,
-    using '-' in place of non-alphnumeric chars, plus .png
-    """
-
-    filename = re.sub(r'^https?://', '', url)
-    filename = re.sub(r'\W', '-', filename) + '.png'
-    driver.get(url)
-    sleep(2)
-    
-    with io.BytesIO(driver.get_screenshot_as_png()) as f:
-        s3.upload_fileobj(f, 'test-bucket-parth', filename)
-    
-    return filename
-
 def main():
     # Main program
     OPTIONS = parse_options()
     print(OPTIONS)
-    CHROME_DRIVER = get_chrome_driver()
 
     # opening the CSV file
     with open(OPTIONS.ifile, 'r') as csv_in, \
@@ -93,7 +50,7 @@ def main():
 
         # keeps track of which apps have already been seen
         apps = set()
-
+        
         for line in READER:
 
             # automated generation of dataset name from the doi
@@ -111,22 +68,7 @@ def main():
             # this conditional handles duplicate application values
             if line['name'] not in apps:
                 print(f"Getting snapshot for {line['site']}", file=sys.stderr)
-                line['screenshot'] = get_snapshot(CHROME_DRIVER, line['site'])
-
-            # TODO #############################
-            # semi-automated generation application website description
-            # needs refinement, could be explored with nlp applications due to
-            # the large amount of edge cases
-            # GET APP DESCRIPTION, semi-automated for now due to edge cases
-            # req = requests.get(line['site'])
-            # soup = BeautifulSoup(req.text, 'html5lib')
-            # topics = ['map', 'model', 'product', 'NASA', 'flood', 'fire', 'landslide'] # and more
-            # for p in soup.find_all('p'):
-            #   for topic in topics:
-            #       if topic in p.get_text():
-            #           sentence = sent_tokenize(p.get_text())
-            # line['description'] = sentence[0]
-            ###################################
+                line['screenshot'] = s3Functions().upload_image_from_url('test-bucket-parth',line['site'])
 
             # add app to set to indicate it has already been seen
             apps.add(line['name'])

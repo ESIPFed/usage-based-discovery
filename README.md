@@ -22,9 +22,9 @@ The following instructions are verified for the EC2 host created by the Neptune 
 SSH to the EC2 host
 
 Run this locally: 
-- Update/Upgrade your ec2 instance
-`sudo apt update`
-`sudo apt upgrade`
+- Update/Upgrade your ec2 instance (differs based on OS)
+For Ubuntu `sudo apt update`
+For Ubuntu `sudo apt upgrade`
 
 - Clone this repository. 
 
@@ -117,7 +117,7 @@ Browse to http://localhost:5000
 
 <br /><br />
 Any questions or suggestions for improvement?
-- Create an issue, and use the tempalates for feature request or bug reports for improvements
+- Create an issue, and use the templates for feature request or bug reports for improvements
 - Questions - email chris.lynnes@nasa.gov 
 
 <br /><br />
