@@ -22,6 +22,11 @@ The following instructions are verified for the EC2 host created by the Neptune 
 SSH to the EC2 host
 
 Run this locally: 
+- Update/Upgrade your ec2 instance (differs based on OS)
+
+For Ubuntu `sudo apt update`
+
+For Ubuntu `sudo apt upgrade`
 
 - Clone this repository. 
 
@@ -50,13 +55,11 @@ For simplicity, we name it 'venv'.
 Loading the graph data is currently a two step process:
 Parse the CSV file with the relationships, outputting a new CSV with additiona information and in the expected structure:
 
-`$ python3 parse_csv.pl -i <input_file> -o algo-output.csv`
+`$ python3 parse_csv.py -i <input_file> -o algo-output.csv`
 
 Load the graph into the database
 
-`$ python load_graph.pl`
-
-To Do:  make the filename a command line switch instead of requiring "algo-output.csv".
+`$ python load_graph.py`
 
 ## Deploying the Web User Interface application
 
@@ -83,18 +86,17 @@ To get the subnet_ids, click the Subnet groups on the side panel of the Neptune 
     "dev": {
         "app_function": "app.app",
         "aws_region" : "us-west-1",
-        "slim_handler" : true,
         "manage_roles" : true,
         "profile_name": null,
         "project_name": "ubd-tool"
         "runtime": "python3.7",
-        "s3_bucket": "zappa-qdzy6v21k"
+        "s3_bucket": "YOUR_S3_BUCKET"
         "vpc_config": {
-                "SubnetIds": [ "subnet-0a4cf776ec14a1ad1", "subnet-05c38176413aed035"],
-                "SecurityGroupIds": [ "sg-04932af6ea6405a98" ]
+                "SubnetIds": ["YOUR_SUBNET_ID1", "YOUR_SUBNET_ID2"],
+                "SecurityGroupIds": [ "YOUR_SECURITY_GROUP_ID" ]
         }
         "environment_variables": {
-                "NEPTUNEDBRO": "wss://neptunedbcluster-dijacguygxid.cluster-ro-copyeo4gkrow.us-west-1.neptune.amazonaws.com:8182/gremlin"
+                "NEPTUNEDBRO": "wss://<neptune endpoint>:<port>/gremlin"
         }
     }
 }
@@ -105,7 +107,7 @@ To get the subnet_ids, click the Subnet groups on the side panel of the Neptune 
 `$ zappa deploy dev`
 
 This will create a lambda function with the code from app.py and instantiate an API gateway. 
-Static files will go into the S3 bucket listed in the config file.
+Screenshots will go into the S3 bucket listed in the config file.
 
 __(Q:  does bucket need to be pre-created? Need to find out...)__
 
@@ -117,8 +119,8 @@ Browse to http://localhost:5000
 
 <br /><br />
 Any questions or suggestions for improvement?
+- Create an issue, and use the templates for feature request or bug reports for improvements
 - Questions - email chris.lynnes@nasa.gov 
-- Suggestions - submit a pull request
 
 <br /><br />
-Ways to contribute to this project: coming soon!
+If looking to contribute, please look at [CONTRIBUTING.md](CONTRIBUTING.md).
