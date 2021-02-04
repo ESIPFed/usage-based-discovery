@@ -1,3 +1,5 @@
+import sys
+sys.path.append("../util")
 import re
 import boto3
 from botocore.errorfactory import ClientError
