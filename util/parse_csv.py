@@ -7,6 +7,7 @@ the graph database.
 # parse_csv.py
 
 import sys
+import io
 import csv
 import platform
 import re
@@ -14,11 +15,13 @@ import re
 # from urllib.request import urlopen
 from time import sleep
 import argparse
-
+import boto3
 # import requests
 
 from selenium import webdriver
 # from selenium.webdriver.chrome.options import Options
+
+s3 = boto3.client('s3')
 
 def parse_options():
     """ Parse the command line options for input and output files """
@@ -60,11 +63,12 @@ def get_snapshot(driver, url):
 
     filename = re.sub(r'^https?://', '', url)
     filename = re.sub(r'\W', '-', filename) + '.png'
-
     driver.get(url)
     sleep(2)
-    driver.get_screenshot_as_file('static/' + filename)
-
+    
+    with io.BytesIO(driver.get_screenshot_as_png()) as f:
+        s3.upload_fileobj(f, 'test-bucket-parth', filename)
+    
     return filename
 
 def main():
