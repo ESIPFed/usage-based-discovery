@@ -24,6 +24,7 @@ jobs:
 
     - name: Connect to EC2
       run: |
+        pip3 install setuptools
         pip3 install mssh
         mssh ${{ secrets.AWS_EC2}}
 
