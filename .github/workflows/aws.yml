@@ -26,6 +26,7 @@ jobs:
       run: |
         pip install setuptools
         pip install ec2instanceconnectcli
+        sudo apt install mssh
         mssh ${{ secrets.AWS_EC2}}
 
     - name: Pytest
