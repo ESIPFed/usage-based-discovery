@@ -1,0 +1,43 @@
+name: Testing
+
+on:
+  push:
+    branches: 
+      - main
+  workflow_dispatch:
+
+jobs:
+  unittest:
+    name: Neptune and S3 Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@main
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-1
+
+    - name: Connect to EC2
+      run: |
+        pip3 install ec2instanceconnectcli
+        mssh ${{ secrets.AWS_EC2}}
+
+    - name: Pytest
+      run: |
+        git clone https://github.com/sxia1/ubd-tool-remotedb.git
+        cd ubd-tool-remotedb
+        . ~/venv/bin/activate
+        pip install -r requirements
+        cd tests
+        pytest
+
+    - name: Cleaning up
+      run: |
+        cd ~/
+        rm -rf ubd-tool-remotedb
+        exit
