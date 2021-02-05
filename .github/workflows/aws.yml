@@ -24,7 +24,7 @@ jobs:
 
     - name: Connect to EC2
       run: |
-        pip3 install ec2instanceconnectcli
+        pip3 install mssh
         mssh ${{ secrets.AWS_EC2}}
 
     - name: Pytest
