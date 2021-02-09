@@ -30,8 +30,8 @@ jobs:
 
     - name: Create and Activate Venv
       run: |
-        python -m venv ~/venv
-        . ~/venv/bin/activate
+        python -m venv ./venv
+        source venv/bin/activate
 
     - name: Install Dependencies
       run: |
