@@ -42,8 +42,5 @@ jobs:
       run: |
         python -m venv ./venv
         source venv/bin/activate
-        'echo "$ZAPPA_SETTINGS" > zappa_settings.json'
+        'echo ${{secrets.ZAPPA_SETTINGS}} > zappa_settings.json'
         zappa update dev
-      shell: bash
-      env:
-        ZAPPA_SETTINGS = ${{secrets.ZAPPA_SETTINGS}}
