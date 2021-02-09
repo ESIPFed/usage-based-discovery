@@ -42,4 +42,5 @@ jobs:
       run: |
         python -m venv ./venv
         source venv/bin/activate
-        zappa deploy dev -s zappa_settings.yml
+        ${{secrets.ZAPPA_SETTINGS}} > zappa_settings.json
+        zappa update dev
