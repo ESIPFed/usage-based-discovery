@@ -11,6 +11,9 @@ jobs:
     name: Zappa Deploy
     runs-on: ubuntu-latest
 
+    environment:
+      name: zappa
+
     steps:
     - uses: actions/checkout@main
     - name: Get Python3
@@ -37,4 +40,4 @@ jobs:
       run: |
         python -m venv ./venv
         source venv/bin/activate
-        zappa deploy dev
+        zappa deploy dev -s zappa_settings.yml

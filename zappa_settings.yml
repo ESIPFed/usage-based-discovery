@@ -5,13 +5,13 @@ dev:
     profile_name: null
     project_name: ubd-tool
     runtime: python3.7
-    s3_bucket: ${{secrets.BUCKET}}
+    s3_bucket: ${{ secrets.BUCKET }}
     vpc_config:
       SubnetIds: 
-        ${{secrets.SUBNET1}}
-        ${{secrets.SUBNET2}}
+        ${{ secrets.SUBNET1 }}
+        ${{ secrets.SUBNET2 }}
       SecurityGroupIds:
-        ${{secrets.SECURITY_GROUP}}
+        ${{ secrets.SECURITY_GROUP }}
     environment_variables:
       NEPTUNEDBRO:
-        ${{secrets.NEPTUNEDBRO}}
+        ${{ secrets.NEPTUNEDBRO }}
