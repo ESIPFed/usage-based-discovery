@@ -28,11 +28,6 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-west-1
 
-    - name: Create and Activate Venv
-      run: |
-        python -m venv ./venv
-        source venv/bin/activate
-
     - name: Install Dependencies
       run: |
         pip3 install setuptools
@@ -40,4 +35,6 @@ jobs:
 
     - name: Run Zappa
       run: |
+        python -m venv ./venv
+        source venv/bin/activate
         zappa update dev
