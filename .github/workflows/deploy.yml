@@ -1,0 +1,38 @@
+name: Testing
+
+on:
+  push:
+    branches: 
+      - main
+  workflow_dispatch:
+
+jobs:
+  unittest:
+    name: Neptune and S3 Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@main
+    - name: Get Python3
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.6 
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-1
+
+    - name: Install Dependencies
+      run: |
+        pip3 install setuptools
+        pip3 install -r requirements.txt
+
+    - name: Run Zappa
+      run: |
+        zappa update dev
