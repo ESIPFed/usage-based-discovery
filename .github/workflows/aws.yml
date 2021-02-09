@@ -36,5 +36,4 @@ jobs:
     - name: Run PyTest
       run: |
         cd tests
-        ls
-        pytest test_s3.py
+        pytest -v -s test_s3.py
