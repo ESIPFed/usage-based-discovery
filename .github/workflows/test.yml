@@ -38,13 +38,17 @@ jobs:
         cd tests
         pytest -v -s test_s3.py
 
-    - name: Run Graph DB PyTest
+    - name: Run Gremlin Server
       run: |
         wget -q https://mirrors.sonic.net/apache/tinkerpop/3.4.10/apache-tinkerpop-gremlin-server-3.4.10-bin.zip
         unzip -q apache-tinkerpop-gremlin-server-3.4.10-bin.zip
         cd apache-tinkerpop-gremlin-server-3.4.10
         bin/gremlin-server.sh conf/gremlin-server-modern.yaml &
-        sleep 5s #give server a chance to start
+        sleep 5s
+
+    - name: Run Graph DB PyTest
+      run: |
+        sleep 5s
         cd ../tests
         export NEPTUNEDBRO=ws://localhost:8182/gremlin
         pytest -v -s test_graphdb.py
