@@ -60,6 +60,9 @@ jobs:
         bin/gremlin-server.sh conf/gremlin-server-modern.yaml &
         sleep 5s
 
+    - name: Install Dependencies
+      run: pip install pytest
+
     - name: Run Graph DB PyTest
       run: |
         cd tests
