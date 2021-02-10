@@ -1,11 +1,6 @@
 name: Testing
 
 on:
-  push:
-    branches: 
-      - main
-    path:
-      - zappa_settings.yml
   workflow_dispatch:
 
 jobs:

@@ -33,7 +33,24 @@ jobs:
         pip3 install setuptools
         pip3 install -r requirements.txt
 
-    - name: Run PyTest
+    - name: Run S3 PyTest
       run: |
         cd tests
         pytest -v -s test_s3.py
+
+    - name: Start Gremlin Server
+      run: |
+        export NEPTUNEDBRO=ws://localhost:8182/gremlin
+        wget https://mirrors.sonic.net/apache/tinkerpop/3.4.10/apache-tinkerpop-gremlin-server-3.4.10-bin.zip
+        unzip apache-tinkerpop-gremlin-server-3.4.10-bin.zip
+        apache-tinkerpop-gremlin-server-3.4.10/bin/gremlin-server.sh apache-tinkerpop-gremlin-server-3.4.10/conf/gremlin-server-modern.yaml
+
+    - name: Run Graph DB PyTest
+      run: |
+        cd tests
+        pytest -v -s test_graphdb.py
+
+    - name: stop gremlin
+      run: |
+        pkill gremlin
+        pkill java
