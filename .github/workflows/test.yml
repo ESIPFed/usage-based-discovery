@@ -48,8 +48,7 @@ jobs:
 
     - name: Run Graph DB PyTest
       run: |
-        sleep 5s
-        cd ../tests
+        cd tests
         export NEPTUNEDBRO=ws://localhost:8182/gremlin
         pytest -v -s test_graphdb.py
         pkill gremlin
