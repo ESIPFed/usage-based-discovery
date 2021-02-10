@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  s3test:
-    name: S3 Tests
+  unittests:
+    name: S3 and Graph DB Tests
     runs-on: ubuntu-latest
 
     steps:
