@@ -43,7 +43,8 @@ jobs:
         export NEPTUNEDBRO=ws://localhost:8182/gremlin
         wget https://mirrors.sonic.net/apache/tinkerpop/3.4.10/apache-tinkerpop-gremlin-server-3.4.10-bin.zip
         unzip apache-tinkerpop-gremlin-server-3.4.10-bin.zip
-        apache-tinkerpop-gremlin-server-3.4.10/bin/gremlin-server.sh apache-tinkerpop-gremlin-server-3.4.10/conf/gremlin-server-modern.yaml
+        cd apache-tinkerpop-gremlin-server-3.4.10
+        bin/gremlin-server.sh conf/gremlin-server-modern.yaml
 
     - name: Run Graph DB PyTest
       run: |
