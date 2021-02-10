@@ -43,6 +43,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@main
+    - name: Get Python3
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.6 
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Run Gremlin Server
       run: |
         wget -q https://mirrors.sonic.net/apache/tinkerpop/3.4.10/apache-tinkerpop-gremlin-server-3.4.10-bin.zip
