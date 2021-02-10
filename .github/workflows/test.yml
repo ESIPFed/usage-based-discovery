@@ -30,27 +30,14 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        pip3 install setuptools
-        pip3 install -r requirements.txt
+        python -m pip install --upgrade pip
+        pip install setuptools
+        pip install -r requirements.txt
 
     - name: Run S3 PyTest
       run: |
         cd tests
         pytest -v -s test_s3.py
-
-  graphdbtest:
-    name: GraphDB Tests
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@main
-    - name: Get Python3
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.6 
-
-    - name: Checkout
-      uses: actions/checkout@v2
 
     - name: Run Gremlin Server
       run: |
@@ -59,9 +46,6 @@ jobs:
         cd apache-tinkerpop-gremlin-server-3.4.10
         bin/gremlin-server.sh conf/gremlin-server-modern.yaml &
         sleep 5s
-
-    - name: Install Dependencies
-      run: pip install pytest
 
     - name: Run Graph DB PyTest
       run: |
