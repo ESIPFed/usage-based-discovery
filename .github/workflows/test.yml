@@ -40,12 +40,12 @@ jobs:
 
     - name: Run Graph DB PyTest
       run: |
-        export NEPTUNEDBRO=ws://localhost:8182/gremlin
         wget -q https://mirrors.sonic.net/apache/tinkerpop/3.4.10/apache-tinkerpop-gremlin-server-3.4.10-bin.zip
         unzip -q apache-tinkerpop-gremlin-server-3.4.10-bin.zip
         cd apache-tinkerpop-gremlin-server-3.4.10
         bin/gremlin-server.sh conf/gremlin-server-modern.yaml &
         cd ../tests
+        export NEPTUNEDBRO=ws://localhost:8182/gremlin
         pytest -v -s test_graphdb.py
         pkill gremlin
         pkill java
