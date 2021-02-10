@@ -1,4 +1,4 @@
-name: Testing
+name: Zappa Deploy
 
 on:
   workflow_dispatch:

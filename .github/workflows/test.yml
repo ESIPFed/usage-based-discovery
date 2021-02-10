@@ -1,4 +1,4 @@
-name: Testing
+name: Unit Testing
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  unittest:
-    name: Neptune and S3 Tests
+  s3test:
+    name: S3 Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -38,6 +38,11 @@ jobs:
         cd tests
         pytest -v -s test_s3.py
 
+  graphdbtest:
+    name: GraphDB Tests
+    runs-on: ubuntu-latest
+
+    steps:
     - name: Run Gremlin Server
       run: |
         wget -q https://mirrors.sonic.net/apache/tinkerpop/3.4.10/apache-tinkerpop-gremlin-server-3.4.10-bin.zip
@@ -51,5 +56,8 @@ jobs:
         cd tests
         export NEPTUNEDBRO=ws://localhost:8182/gremlin
         pytest -v -s test_graphdb.py
+
+    - name: Stop Gremlin Server
+      run: |
         pkill gremlin
         pkill java
