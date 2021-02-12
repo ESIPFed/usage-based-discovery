@@ -26,8 +26,8 @@ def home():
 def about():
     return render_template('about.html', stage=stage)
 
-# Main screen 
-@app.route('/<topic>/<app>') 
+# Main screen
+@app.route('/<topic>/<app>')
 def main(topic, app):
     g = GraphDB()
     topics = g.get_topics()
