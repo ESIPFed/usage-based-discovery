@@ -4,11 +4,12 @@ on:
   push:
     branches: 
       - main
+      - dev
   workflow_dispatch:
 
 jobs:
   unittests:
-    name: S3 and Graph DB Tests
+    name: PyTest
     runs-on: ubuntu-latest
 
     steps:
@@ -34,11 +35,6 @@ jobs:
         pip install setuptools
         pip install -r requirements.txt
 
-    - name: Run S3 PyTest
-      run: |
-        cd tests
-        pytest -v -s test_s3.py
-
     - name: Run Gremlin Server
       run: |
         wget -q https://mirrors.sonic.net/apache/tinkerpop/3.4.10/apache-tinkerpop-gremlin-server-3.4.10-bin.zip
@@ -47,16 +43,11 @@ jobs:
         bin/gremlin-server.sh conf/gremlin-server-modern.yaml &
         sleep 5s
 
-    - name: Run Graph DB PyTest
+    - name: PyTest
       run: |
         cd tests
         export NEPTUNEDBRO=ws://localhost:8182/gremlin
-        pytest -v -s test_graphdb.py
-
-    - name: Run App PyTest
-      run: |
-        cd tests
-        pytest -v -s test_app.py
+        pytest -v -s
 
     - name: Stop Gremlin Server
       run: |
