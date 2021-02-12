@@ -72,7 +72,7 @@ def main():
             # this conditional handles duplicate application values
             if line['name'] not in apps:
                 print(f"Getting snapshot for {line['site']}", file=sys.stderr)
-                line['screenshot'] = s3Functions().upload_image_from_url('ubd-bucket-prod',line['site'])
+                line['screenshot'] = s3Functions().upload_image_from_url('test-bucket-parth',line['site'])
 
             # add app to set to indicate it has already been seen
             apps.add(line['name'])

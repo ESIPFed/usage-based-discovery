@@ -44,5 +44,5 @@ def main(topic, app):
     return render_template('index.html', stage=stage, topic=topic, \
         topics=topics, apps=relapps, app=appsel, datasets=datasets)
 
-    if __name__ == '__main__':
-        app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
