@@ -3,21 +3,6 @@
     <div class="row">
       <div class="col-md-3">
         <div class="title">
-<<<<<<< HEAD
-            <h1 class="eosdis"><a href="/{{stage}}/" style="color: white; text-decoration: none;">EOSDIS Usage Based Discovery</a></h1>
-            <br>
-
-            <div class="filter">
-            <select id="dropdown" class="dropdown" onchange="location = this.options[this.selectedIndex].value;">
-                {% for t in topics %}
-                    {% if t == topic %}
-                        <option value="/{{stage}}/{{t}}/all" selected="selected">{{t}}</option>
-                    {% else %}
-                        <option value="/{{stage}}/{{t}}/all">{{t}}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>    
-=======
           <br />
           <h1 class="eosdis">
             <a href="/{{stage}}/" style="color: white; text-decoration: none;"
@@ -48,7 +33,6 @@
                 <a class="dropdown-item" href="/{{stage}}/{{t}}/all">{{t}}</a>
                 {% endif %} {% endfor %}
               </div>
->>>>>>> upstream/main
             </div>
           </div>
         </div>
@@ -130,94 +114,6 @@
                 {% endif %}
             -->
         </div>
-<<<<<<< HEAD
-
-
-    </div>
-
-    <div class="main">
-        <div class="appmain">
-            {% if app == None %}
-                <div class="heading">
-                    <h1 class="font">{{apps[0]['name']}}</h1> 
-
-                    <!--
-                        <h4 class="font">{{apps[0]['description']}}</h4>
-                    -->
-
-                    {% if apps[0]['site'] != 'None' %}
-                        <a href="{{apps[0]['site']}}" target="_blank" class="font" style="align-self: center;">Website</a>
-                    {% endif %}
-                        <!--publication link-->
-                    {% if apps[0]['publication'] != 'None' %}
-                        &emsp;&emsp;
-                        <a href="{{apps[0]['publication']}}" target="_blank" class="font" style="align-self: center;">Publication</a> 
-                    {% endif %}
-                    <br>
-                    
-                    <!--application website description-->
-                    {% if apps[0]['site'] != 'None' %}
-                        <p class="font" style="align-self: center;">{{apps[0]['description'][:200]}}...</p>
-                    {% endif %}
-                    <br><br>
-                    
-                    <!--
-                        {% if apps[0]['query'] != 'None' %}
-                            &emsp;&emsp;
-                            <a href="{{apps[0]['query']}}" target="_blank" class="font" style="align-self: center;">Query Link</a>
-                        {% endif %}
-                    -->
-
-
-                </div>
-                <br><br><br><br>
-                <div>
-                    <a href="{{apps[0]['site']}}" target="_blank" class="font" style="align-self: center;">
-                        <img src="{{screenshot}}" class="screenshot"/>
-                    </a>
-                </div>
-
-            {% else %}
-                <div class="heading">
-                    <h1 class="font">{{app[0]['name']}}</h1> 
-                    
-                    <!--
-                        <h4 class="font">{{app[0]['description']}}</h4>
-                    -->
-
-                    {% if app[0]['site'] != 'None' %}
-                        <a href="{{app[0]['site']}}" target="_blank" class="font" style="align-self: center;">Website</a>
-                    {% endif %}
-                        <!--publication link, if none then DON'T INCLUDE-->
-                    {% if app[0]['publication'] != 'None' %}
-                        &emsp;&emsp;
-                        <a href="{{app[0]['publication']}}" target="_blank" class="font" style="align-self: center;">Publication</a>
-                    {% endif %}
-                    <br>
-
-                    <!--application website description-->
-                    {% if app[0]['site'] != 'None' %}
-                        <p class="font" style="align-self: center;">{{app[0]['description'][:200]}}...</p>
-                    {% endif %}
-                    <br><br>
-
-                    <!--
-                        {% if app[0]['query'] != 'None' %}
-                            &emsp;&emsp;
-                            <a href="{{app[0]['query']}}" target="_blank" class="font" style="align-self: center;">Query Link</a>
-                        {% endif %}
-                    -->
-
-                </div>
-                <br><br><br><br>
-                <div>
-                    <a href="{{app[0]['site']}}" target="_blank" class="font" style="align-self: center;">
-			    <img src="{{screenshot}}" class="screenshot"/>
-                    </a>
-                </div>    
-
-            {% endif %}
-=======
         <div>
           <a
             href="{{apps[0]['site']}}"
@@ -226,11 +122,10 @@
             style="align-self: center;"
           >
             <img
-              src="https://s3.us-west-1.amazonaws.com/test-bucket-parth/{{apps[0]['screenshot']}}"
+              src="{{screenshot}}"
               class="screenshot"
             />
           </a>
->>>>>>> upstream/main
         </div>
         {% else %}
         <div class="heading">
@@ -283,7 +178,7 @@
             style="align-self: center;"
           >
             <img
-              src="https://s3.us-west-1.amazonaws.com/test-bucket-parth/{{app[0]['screenshot']}}"
+              src="{{screenshot}}"
               class="screenshot"
             />
           </a>
