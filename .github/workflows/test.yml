@@ -53,6 +53,11 @@ jobs:
         export NEPTUNEDBRO=ws://localhost:8182/gremlin
         pytest -v -s test_graphdb.py
 
+    - name: Run App PyTest
+      run: |
+        cd tests
+        pytest -v -s test_app.py
+
     - name: Stop Gremlin Server
       run: |
         pkill gremlin

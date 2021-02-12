@@ -51,7 +51,6 @@ class TestInit():
     def test_create_presigned_url(self):
         filename = "www-nasa-gov-.png"
         url = self.s.create_presigned_url(self.bucket_name, filename)
-        print(url)
         assert requests.get(url).status_code == 200
         time.sleep(120)
         assert requests.get(url).status_code == 403

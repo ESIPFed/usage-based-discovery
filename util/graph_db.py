@@ -14,11 +14,7 @@ def valid_endpoint(endpoint):
     '''
     checks whether or not the neptune_endpoint supplied is valid
     '''
-<<<<<<< HEAD
     return (endpoint.startswith("wss://") or endpoint.startswith("ws://")) and endpoint.endswith(":8182/gremlin")
-=======
-    return (neptune_endpoint.startswith("wss://") or neptune_endpoint.startswith("ws://")) and neptune_endpoint.endswith(":8182/gremlin")
->>>>>>> upstream/main
 
 class GraphDB:
     '''
