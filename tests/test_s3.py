@@ -101,7 +101,3 @@ class TestInit():
     def test_list_s3_objects(self):
         s3_list = self.s.list_s3_objects(self.bucket_name)
         assert type(s3_list)==list
-
-    def test_delete_image(self):
-        unique_filename = "test_s3.py"
-       
