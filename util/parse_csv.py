@@ -64,6 +64,10 @@ def main():
             # print(title['title'])
             # line['title'] = title['title']
 
+            #removes spaces before and after each data point
+            for i in line:
+                line[i]= line[i].strip()
+            line['name'] = line['name'].replace('/', '~~')
             # automated generation of application screenshot from website link
             # this conditional handles duplicate application values
             if line['name'] not in apps:
