@@ -1,6 +1,8 @@
 import sys
 sys.path.append("../util")
 import re
+import requests
+import time
 import boto3
 from botocore.errorfactory import ClientError
 from s3_functions import s3Functions
@@ -41,7 +43,15 @@ class TestInit():
         except ClientError:
             assert False
         assert True
- 
+
+    def test_create_presigned_url(self):
+        filename = "www-nasa-gov-.png"
+        url = self.s.create_presigned_url(self.bucket_name, filename)
+        print(url)
+        assert requests.get(url).status_code == 200
+        time.sleep(120)
+        assert requests.get(url).status_code == 403
+
     def test_get_image(self):
         '''
         checks if www-nasa-gov-.png image is queried sucessfully and then removes it from s3
@@ -73,7 +83,6 @@ class TestInit():
             self.s3.head_object(Bucket= self.bucket_name, Key = unique_filename)
         except ClientError:
             assert False
- 
         self.s.delete_image(self.bucket_name, unique_filename)
         #checks if object is not in bucket 
         try:
@@ -85,3 +94,7 @@ class TestInit():
     def test_list_s3_objects(self):
         s3_list = self.s.list_s3_objects(self.bucket_name)
         assert type(s3_list)==list
+
+    def test_delete_image(self):
+        unique_filename = "test_s3.py"
+       

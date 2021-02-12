@@ -1,4 +1,5 @@
 from util.graph_db import GraphDB
+from util.s3_functions import s3Functions
 from flask import Flask, render_template 
 
 from gremlin_python import statics
@@ -37,13 +38,17 @@ def main(topic, app):
         appsel = None
         # query for datasets related to the topic
         datasets = g.get_datasets_by_topic(topic)
+        filename = relapps[0]['screenshot']
     # query for single application (vertex) with name specified by parameter
     else:
         appsel = g.get_app(app)
+        filename = appsel[0]['screenshot']
         # query for all datasets relating to specified application
         datasets = g.get_datasets_by_app(app)
+    s3 = s3Functions()
+    screenshot = s3.create_presigned_url('test-bucket-parth', filename)
     return render_template('index.html', stage=stage, topic=topic, \
-        topics=topics, apps=relapps, app=appsel, datasets=datasets)
+        topics=topics, apps=relapps, app=appsel, datasets=datasets, screenshot=screenshot)
 
 if __name__ == '__main__':
     app.run(debug=True)
