@@ -23,7 +23,7 @@ class TestInit():
         try:
             self.s3.head_object(Bucket= self.bucket_name, Key = filename)
         except ClientError as e:
-            print("falied when checking if image was uploaded {}".format(e))
+            print("failed when checking if image was uploaded {}".format(e))
             assert False
         assert True
  
@@ -32,7 +32,7 @@ class TestInit():
         try:
             self.s3.head_object(Bucket= self.bucket_name, Key = filename)
             
-            print("falied when checking if image was deleted")
+            print("failed when checking if image was deleted")
             assert False
         except ClientError:
             assert True
@@ -42,7 +42,7 @@ class TestInit():
         try:
             self.s3.head_object(Bucket= self.bucket_name, Key = filename)
         except ClientError as e: 
-            print("falied when checking if image was uploaded 2nd time {}".format(e))
+            print("failed when checking if image was uploaded 2nd time {}".format(e))
             assert False
         assert True
  
@@ -78,7 +78,7 @@ class TestInit():
         try:
             self.s3.head_object(Bucket= self.bucket_name, Key = unique_filename)
         except ClientError as e:
-            print("falied when checking if image was uploaded, {}".format(e))
+            print("failed when checking if image was uploaded, {}".format(e))
             assert False
  
         self.s.delete_image(self.bucket_name, unique_filename)
