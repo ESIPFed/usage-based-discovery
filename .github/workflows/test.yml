@@ -47,7 +47,10 @@ jobs:
       run: |
         cd tests
         export NEPTUNEDBRO=ws://localhost:8182/gremlin
-        pytest -v -s
+        pytest -v -s test_s3.py
+        pytest -v -s test_graphdb.py
+        pytest -v -s test_app.py
+
 
     - name: Stop Gremlin Server
       run: |
