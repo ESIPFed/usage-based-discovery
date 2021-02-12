@@ -22,7 +22,8 @@ class TestInit():
         self.s.upload_image_from_url(self.bucket_name, url)
         try:
             self.s3.head_object(Bucket= self.bucket_name, Key = filename)
-        except ClientError:
+        except ClientError as e:
+            print("falied when checking if image was uploaded {}".format(e))
             assert False
         assert True
  
@@ -30,6 +31,8 @@ class TestInit():
         self.s.delete_image(self.bucket_name, filename)
         try:
             self.s3.head_object(Bucket= self.bucket_name, Key = filename)
+            
+            print("falied when checking if image was deleted")
             assert False
         except ClientError:
             assert True
@@ -38,7 +41,8 @@ class TestInit():
         self.s.upload_image_from_url(self.bucket_name, url)
         try:
             self.s3.head_object(Bucket= self.bucket_name, Key = filename)
-        except ClientError:
+        except ClientError as e: 
+            print("falied when checking if image was uploaded 2nd time {}".format(e))
             assert False
         assert True
  
@@ -49,7 +53,8 @@ class TestInit():
         filename = "www-nasa-gov-.png"
         try:
             f = self.s.get_image(self.bucket_name, filename)
-        except:
+        except error as e:
+            print("failed while trying to get image from bucket, {}".format(e))
             assert False
         assert True
  
@@ -57,6 +62,7 @@ class TestInit():
         self.s.delete_image(self.bucket_name, filename)
         try:
             self.s3.head_object(Bucket= self.bucket_name, Key = filename)
+            print("failed while trying to delete object from bucket")
             assert False
         except ClientError:
             assert True
@@ -71,13 +77,15 @@ class TestInit():
  
         try:
             self.s3.head_object(Bucket= self.bucket_name, Key = unique_filename)
-        except ClientError:
+        except ClientError as e:
+            print("falied when checking if image was uploaded, {}".format(e))
             assert False
  
         self.s.delete_image(self.bucket_name, unique_filename)
         #checks if object is not in bucket 
         try:
             self.s3.head_object(Bucket= self.bucket_name, Key = unique_filename)
+            print("failed because the object was not deleted from the bucket")
             assert False
         except ClientError:
             assert True
