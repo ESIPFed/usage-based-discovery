@@ -1,0 +1,45 @@
+name: Zappa Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+        stage:
+            description: 'stage'
+            required: true
+            default: 'dev'
+jobs:
+  deploy:
+    name: Zappa Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@main
+    - name: Get Python3
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.6 
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-1
+
+    - name: get zappa settings
+      run: 'echo "$ZAPPA_SETTINGS" > zappa_settings.json'
+      shell: bash
+      env:
+        ZAPPA_SETTINGS: ${{secrets.ZAPPA_SETTINGS}}
+
+    - name: Run Zappa in venv
+      run: |
+        python -m pip install --upgrade pip
+        python -m venv ./venv
+        source venv/bin/activate
+        pip install setuptools
+        pip install -r requirements.txt
+        zappa update ${{ github.event.inputs.stage }}

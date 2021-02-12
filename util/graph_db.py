@@ -10,11 +10,11 @@ from gremlin_python.process.graph_traversal import unfold, inE, addV, addE, outV
 from gremlin_python.process.traversal import Cardinality
 from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
 
-def valid_endpoint(neptune_endpoint):
+def valid_endpoint(endpoint):
     '''
     checks whether or not the neptune_endpoint supplied is valid
     '''
-    return (neptune_endpoint.startswith("wss://") or neptune_endpoint.startswith("ws://")) and neptune_endpoint.endswith(":8182/gremlin")
+    return (endpoint.startswith("wss://") or endpoint.startswith("ws://")) and endpoint.endswith(":8182/gremlin")
 
 class GraphDB:
     '''

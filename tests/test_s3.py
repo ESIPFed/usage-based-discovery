@@ -1,6 +1,8 @@
 import sys
 sys.path.append("../util")
 import re
+import requests
+import time
 import boto3
 from botocore.errorfactory import ClientError
 from s3_functions import s3Functions
@@ -45,7 +47,14 @@ class TestInit():
             print("failed when checking if image was uploaded 2nd time {}".format(e))
             assert False
         assert True
- 
+
+    def test_create_presigned_url(self):
+        filename = "www-nasa-gov-.png"
+        url = self.s.create_presigned_url(self.bucket_name, filename)
+        assert requests.get(url).status_code == 200
+        time.sleep(120)
+        assert requests.get(url).status_code == 403
+
     def test_get_image(self):
         '''
         checks if www-nasa-gov-.png image is queried sucessfully and then removes it from s3
@@ -80,7 +89,6 @@ class TestInit():
         except ClientError as e:
             print("failed when checking if image was uploaded, {}".format(e))
             assert False
- 
         self.s.delete_image(self.bucket_name, unique_filename)
         #checks if object is not in bucket 
         try:
