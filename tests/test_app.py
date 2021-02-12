@@ -5,7 +5,6 @@ try:
     from util.graph_db import GraphDB
     from app import app as flask_app
     import pytest
-
 except Exception as e:
     print("Some Modules are Missing {} ".format(e))
 
@@ -34,7 +33,6 @@ class TestFlask():
 
     def test_about_route(self):
         url = '/about'
-        
         response= self.client.get(url)
         assert response.status_code == 200
 
@@ -45,9 +43,7 @@ class TestFlask():
         
         url = '/{}/{}'.format(TOPIC,NAME)
         response=self.client.get(url)
-        print(type(response.data)) 
         data = str(response.data)
-        print(type(data))
 
         assert response.status_code == 200
         assert NAME in data
