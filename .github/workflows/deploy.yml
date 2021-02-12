@@ -2,7 +2,11 @@ name: Zappa Deploy
 
 on:
   workflow_dispatch:
-
+    inputs:
+        stage:
+            description: 'stage'
+            required: true
+            default: 'dev'
 jobs:
   deploy:
     name: Zappa Deploy
@@ -38,4 +42,4 @@ jobs:
         source venv/bin/activate
         pip install setuptools
         pip install -r requirements.txt
-        zappa update dev
+        zappa update ${{ github.event.inputs.stage }}
