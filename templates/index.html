@@ -47,7 +47,7 @@
             <button style="width: 100%;" class="selected-app">
               <br />
               <h4 class="font">
-                <strong>{{a['name'].replace('~~','/')}}</strong>
+                <strong>{{a['name'].replace('~slash','/').replace('~pipe','|')}}</strong>
               </h4>
               <!--<em class="font">Datasets: 1</em>-->
               <strong>{{a['description'][:50]}}...</strong>
@@ -63,7 +63,7 @@
           >
             <button style="width: 100%;" class="font">
               <br />
-              <h4 class="font">{{a['name'].replace('~~','/')}}</h4>
+              <h4 class="font">{{a['name'].replace('~slash','/').replace('~pipe','|')}}</h4>
               <!--<em class="font">Datasets: 1</em>-->
               {{a['description'][:50]}}...
               <br /><br />
@@ -76,7 +76,7 @@
       <div class="col-md-6">
         {% if app == None %}
         <div class="heading">
-          <h1 class="font">{{apps[0]['name'].replace('~~','/')}}</h1>
+          <h1 class="font">{{apps[0]['name'].replace('~slash','/').replace('~pipe','|')}}</h1>
           <!-- <h4 class="font">{{apps[0]['description']}}</h4> -->
 
           {% if apps[0]['site'] != 'None' %}
@@ -122,14 +122,14 @@
             style="align-self: center;"
           >
             <img
-              src="https://s3.us-west-1.amazonaws.com/test-bucket-parth/{{apps[0]['screenshot']}}"
+              src="{{screenshot}}"
               class="screenshot"
             />
           </a>
         </div>
         {% else %}
         <div class="heading">
-          <h1 class="font">{{app[0]['name'].replace('~~','/')}}</h1>
+          <h1 class="font">{{app[0]['name'].replace('~slash','/').replace('~pipe','|')}}</h1>
           <!-- <h4 class="font">{{app[0]['description']}}</h4> -->
           {% if app[0]['site'] != 'None' %}
           <a
@@ -178,7 +178,7 @@
             style="align-self: center;"
           >
             <img
-              src="https://s3.us-west-1.amazonaws.com/test-bucket-parth/{{app[0]['screenshot']}}"
+              src="{{screenshot}}"
               class="screenshot"
             />
           </a>

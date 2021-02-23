@@ -8,6 +8,13 @@ import boto3
 
 class s3Functions():
 
+    def __init__(self):
+        self.CHROME_DRIVER = self.get_chrome_driver()
+        self.s3= boto3.client('s3')
+
+    def __del__(self):
+        self.CHROME_DRIVER.quit()
+
     def upload_image_from_url(self, bucket_name, url):
         """
         Fetch a snapshot of the application home page using Selenium
@@ -19,15 +26,16 @@ class s3Functions():
         Returns output filename, basically the meat of the URL,
         using '-' in place of non-alphnumeric chars, plus .png
         """
-        s3 = boto3.client('s3')
-        CHROME_DRIVER = self.get_chrome_driver()
         file_name = re.sub(r'^https?://', '', url)
         file_name = re.sub(r'\W', '-', file_name) + '.png'
+        print('now doing chromedriver.get(',url,')')
+        self.CHROME_DRIVER.get(url)
+        print("now chrome driver has got the url")
+        sleep(4)
+        with io.BytesIO(self.CHROME_DRIVER.get_screenshot_as_png()) as f:
+            print("now attempting to upload fileobj(file{},bucket{},file_name{})".format(f,bucket_name, file_name))
+            self.s3.upload_fileobj(f, bucket_name, file_name)
 
-        CHROME_DRIVER.get(url)
-        sleep(2)
-        with io.BytesIO(CHROME_DRIVER.get_screenshot_as_png()) as f:
-            s3.upload_fileobj(f, bucket_name, file_name)
         return file_name
 
     def get_chrome_driver(self):
@@ -40,6 +48,7 @@ class s3Functions():
         # initiate selenium webdriver
         option = webdriver.ChromeOptions()
         option.add_argument('headless')
+        option.add_argument("--incognito")
         return webdriver.Chrome(path, options=option)
 
     def upload_image(self, bucket_name, unique_filename, f):
@@ -70,3 +79,19 @@ class s3Functions():
         obj = s3.Object(bucket_name, file_name)
         obj.delete()
 
+    def create_presigned_url(self, bucket_name, file_name, expiration=60):
+        """Generate a presigned URL to share an S3 object
+        :param bucket_name: string
+        :param object_name: string
+        :param expiration: Time in seconds for the presigned URL to remain valid
+        :return: Presigned URL as string. If error, returns None.
+        """
+        # Generate a presigned URL for the S3 object
+        s3 = boto3.client('s3')
+        try:
+            response = s3.generate_presigned_url('get_object', Params={'Bucket': bucket_name,'Key': file_name}, ExpiresIn=expiration)
+        except ClientError as e:
+            logging.error(e)
+            return None
+        # The response contains the presigned URL
+        return response

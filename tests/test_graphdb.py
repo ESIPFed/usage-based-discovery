@@ -25,6 +25,15 @@ CHANGE_APP = {
         'description': 'Change example description 123'
 }
 
+CHANGE_PROP_APP = {
+        'topic': 'Fires',
+        'name': CHANGE_NAME,
+        'site': 'Change https://example.com',
+        'screenshot': 'Change Testing 123.jpg',
+        'publication': 'Change None',
+        'description': 'Change example description 123'
+}
+
 DATASET = {'title': 'dataset', 'doi': DOI}
 
 CHANGE_DATASET = {'title': 'Change dataset', 'doi': CHANGE_DOI}
@@ -47,7 +56,7 @@ class TestInit():
         self.db = None
 
     def test_clear_database_start(self):
-        self.db.clear_database()
+        print(self.db.clear_database())
         assert self.db.get_vertex_count() == 0
         assert self.db.get_edge_count() == 0
 
@@ -55,64 +64,76 @@ class TestInit():
         assert not self.db.has_app(NAME)
 
     def test_add_app(self):
-        self.db.add_app(APP)
+        print(self.db.add_app(APP))
         assert self.db.has_app(NAME)
 
     def test_add_app_dupe(self):
         startnum = self.db.get_vertex_count()
         self.db.add_app(APP)
         endnum = self.db.get_vertex_count()
+        print(startnum, endnum)
         assert startnum == endnum
 
     def test_has_dataset(self):
         assert not self.db.has_dataset(DOI)
 
     def test_add_dataset(self):
-        self.db.add_dataset(DATASET)
+        print(self.db.add_dataset(DATASET))
         assert self.db.has_dataset(DOI)
 
     def test_add_dataset_dupe(self):
         startnum = self.db.get_vertex_count()
         self.db.add_dataset(DATASET)
         endnum = self.db.get_vertex_count()
+        print(startnum, endnum)
         assert startnum == endnum
 
     def test_has_relationship(self):
         assert not self.db.has_relationship(NAME, DOI)
 
     def test_add_relationship(self):
-        self.db.add_relationship(NAME, DOI)
+        print(self.db.add_relationship(NAME, DOI))
         assert self.db.has_relationship(NAME, DOI)
 
     def test_add_relationship_dupe(self):
         startnum = self.db.get_edge_count()
         self.db.add_relationship(NAME, DOI)
         endnum = self.db.get_edge_count()
+        print(startnum, endnum)
         assert startnum == endnum
 
     def test_update_app(self):
-        self.db.update_app(NAME, CHANGE_APP)
+        print(self.db.update_app(NAME, CHANGE_APP))
         app = self.db.get_app(CHANGE_NAME)
         assert CHANGE_APP.items() <= app[0].items()
 
+    def test_update_app_property(self):
+        print(self.db.update_app_property(CHANGE_NAME, 'topic', 'Fires'))
+        app = self.db.get_app(CHANGE_NAME)
+        print(CHANGE_PROP_APP.items())
+        print(app[0].items())
+        assert CHANGE_PROP_APP.items() <= app[0].items()
+    
     def test_update_dataset(self):
-        self.db.update_dataset(DOI, CHANGE_DATASET)
+        print(self.db.update_dataset(DOI, CHANGE_DATASET))
         dataset = self.db.get_dataset(CHANGE_DOI)
+        print(CHANGE_DATASET.items())
+        print(dataset[0].items())
         assert CHANGE_DATASET.items() <= dataset[0].items()
 
     def test_delete_app(self):
-        self.db.add_app(APP)
+        print(self.db.add_app(APP))
         print(self.db.delete_app(NAME))
         assert not self.db.has_app(NAME)
         assert self.db.has_app(CHANGE_NAME)
 
     def test_delete_dataset(self):
-        self.db.add_dataset(DATASET)
+        print(self.db.add_dataset(DATASET))
         print(self.db.delete_dataset(DOI))
         assert not self.db.has_dataset(DOI)
         assert self.db.has_dataset(CHANGE_DOI)
 
     def test_clear_database_end(self):
-        self.db.clear_database()
+        print(self.db.clear_database())
         assert self.db.get_vertex_count() == 0
         assert self.db.get_edge_count() == 0
