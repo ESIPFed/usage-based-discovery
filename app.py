@@ -60,12 +60,12 @@ def main(topic, app):
 
 @app.route('/login')
 def login():
-    
+        
     code = request.args.get('code')
     '''
     headers = {
         'Accept': 'application/json',
-        'Access-Control-Allow-Orgin':'*',
+        'Content-Type':'application/json;charset=UTF-8'
     }
 
     data = {
@@ -73,22 +73,28 @@ def login():
       'client_secret': client_secret,
       'grant_type': 'authorization_code',
       'code': code,
-      'redirect_uri': 'https://p1of926o5h.execute-api.us-west-1.amazonaws.com/dev/login',
+      'redirect_uri': 'http://localhost:5000/login',
     }
-
-    response = requests.get('https://sandbox.orcid.org/oauth/token', headers=headers, data=data, timeout=None)
+    print(data)
+    url = 'https://sandbox.orcid.org/oauth/token'
+    response = requests.post(url, headers=headers, data=data)
+    
+    
+    api = orcid.PublicAPI(client_id, client_secret, sandbox=True)
+    response = api.get_token_from_authorization_code(code, "localhost:5000")
     '''
-    output = subprocess.run(["curl -i -L -H 'Accept: application/json' --data 'client_id=APP-674MCQQR985VZZQ2&client_secret=d08b711e-9411-788d-a474-46efd3956652&grant_type=authorization_code&code=*WkiYjn*' 'https://sandbox.orcid.org/oauth/token'"],check=True, stdout=subprocess.PIPE, universal_newlines=True)
-    #api = orcid.PublicAPI(client_id, client_secret, sandbox=True)
-    #response = api.get_token_from_authorization_code(code, "https://p1of926o5h.execute-api.us-west-1.amazonaws.com/dev/login")
+    inputstr = 'client_id=' + client_id + '&client_secret=' + client_secret + '&grant_type=authorization_code&code=' + code
+    response = subprocess.run(['curl', '-i', '-L', '-H', 'Accept: application/json', '--data', inputstr,  'https://sandbox.orcid.org/oauth/token']) 
+
+
     print('\n\n This is to TESTTTTTSSSSSTTTT \n')
-    print(response.text)
-    session['orcid']=response.orcid
+    print(response)
+    #session['orcid']=response.orcid
     return redirect('/')
 
 @app.route('/auth')
 def auth():
-    return redirect("https://sandbox.orcid.org/oauth/authorize?client_id={}&response_type=code&scope=/authenticate&redirect_uri=https://p1of926o5h.execute-api.us-west-1.amazonaws.com/dev/login".format(client_id))
+    return redirect("https://sandbox.orcid.org/oauth/authorize?client_id=APP-J5XDZ0YEXPLVSRMZ&response_type=code&scope=/authenticate&redirect_uri=http://localhost:5000/login")
 
 @app.route('/add-relationship', methods=["GET","POST"])
 def add_relationship():
