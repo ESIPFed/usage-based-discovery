@@ -9,7 +9,7 @@ import boto3
 class s3Functions():
 
     def __init__(self):
-        self.CHROME_DRIVER = self.get_chrome_driver()
+        #self.CHROME_DRIVER = self.get_chrome_driver()
         self.s3= boto3.client('s3')
 
     def __del__(self):

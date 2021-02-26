@@ -35,10 +35,11 @@
               </div>
             </div>
           </div>
+	  <a href="{{stage}}/auth">Login</a>
+	  <p>{{in_session}}</p>
         </div>
         <div class="appresults">
-          {% for a in apps %} {% if app != None and a['name'] == app[0]['name']
-          %}
+          {% for a in apps %} {% if app != None and a['name'] == app[0]['name'] %}
           <form
             class="app"
             action="{{a['name']}}"
