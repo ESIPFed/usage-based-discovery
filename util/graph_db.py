@@ -7,7 +7,7 @@ import os
 import sys
 from gremlin_python.structure.graph import Graph
 from gremlin_python.process.graph_traversal import unfold, inE, addV, addE, outV
-from gremlin_python.process.traversal import Cardinality
+from gremlin_python.process.traversal import Cardinality, T, Direction
 from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
 
 def valid_endpoint(endpoint):
@@ -61,6 +61,28 @@ class GraphDB:
         '''
         return self.graph_trav.V().has('application', 'name', name).as_('v').V() \
                 .has('dataset', 'doi', doi).inE('uses').hasNext()
+
+    def get_data(self):
+        '''
+        queries database for all vertices and edges
+        reformats the data for d3 network visualization
+        returns dict containing nodes and links
+        '''
+        vertices = self.graph_trav.V().elementMap().toList()
+        for v in vertices:
+            v['id'] = v.pop(T.id)
+            v['label'] = v.pop(T.label)
+        edges = self.graph_trav.E().elementMap().toList()
+        for e in edges:
+            e['id'] = e.pop(T.id)
+            e['label'] = e.pop(T.label)
+            e['source'] = e.pop(Direction.OUT)
+            e['source']['id'] = e['source'].pop(T.id)
+            e['source']['label'] = e['source'].pop(T.label)
+            e['target'] = e.pop(Direction.IN)
+            e['target']['id'] = e['target'].pop(T.id)
+            e['target']['label'] = e['target'].pop(T.label)
+        return {'nodes': vertices, 'links': edges}
 
     def get_topics(self):
         '''
