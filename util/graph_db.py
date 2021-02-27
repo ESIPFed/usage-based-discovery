@@ -76,12 +76,10 @@ class GraphDB:
         for e in edges:
             e['id'] = e.pop(T.id)
             e['label'] = e.pop(T.label)
-            e['source'] = e.pop(Direction.OUT)
-            e['source']['id'] = e['source'].pop(T.id)
-            e['source']['label'] = e['source'].pop(T.label)
-            e['target'] = e.pop(Direction.IN)
-            e['target']['id'] = e['target'].pop(T.id)
-            e['target']['label'] = e['target'].pop(T.label)
+            edge = e.pop(Direction.OUT)
+            e['source'] = edge[T.id]
+            edge = e.pop(Direction.IN)
+            e['target'] = edge[T.id]
         return {'nodes': vertices, 'links': edges}
 
     def get_topics(self):

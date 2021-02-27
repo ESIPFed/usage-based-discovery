@@ -30,7 +30,7 @@ def about():
 def explore():
     g = GraphDB()
     data = g.get_data()
-    return data
+    return render_template('graph.html', stage=stage, data=data)
 
 # Main screen
 @app.route('/<topic>/<app>')
