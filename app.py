@@ -26,6 +26,12 @@ def home():
 def about():
     return render_template('about.html', stage=stage)
 
+@app.route('/explore')
+def explore():
+    g = GraphDB()
+    data = g.get_data()
+    return render_template('graph.html', stage=stage, data=data)
+
 # Main screen
 @app.route('/<topic>/<app>')
 def main(topic, app):

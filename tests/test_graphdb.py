@@ -121,6 +121,16 @@ class TestInit():
         print(dataset[0].items())
         assert CHANGE_DATASET.items() <= dataset[0].items()
 
+    def test_get_data(self):
+        data = self.db.get_data()
+        print(data)
+        assert 'nodes' in data
+        assert 'links' in data
+        assert 'id' in data['nodes'][0]
+        assert 'id' in data['links'][0]
+        assert 'source' in data['links'][0]
+        assert 'target' in data['links'][0]
+
     def test_delete_app(self):
         print(self.db.add_app(APP))
         print(self.db.delete_app(NAME))
