@@ -5,84 +5,13 @@
     <title>Explore</title>
     <link href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap" rel="stylesheet">
     <link rel="shortcut icon" type="image/png" href="../static/nasalogo.png">
-    <style>
-        html, body {
-            background-color: white;
-            margin: 0;
-            height: 100%;
-            width: 100%;
-            padding: 0em;
-            overflow-y: hidden;
-            overflow-x: hidden;
-        }
-        .container {
-            width: 100%;
-        }
-        .topbar {
-            background-color: black;
-            height: 20%;
-            max-height: 75px;
-            width: 100%;
-            padding: 15px;
-        }
-        h1 {
-            color: white;
-            font-family: "Maven Pro", sans-serif;
-            vertical-align: middle;
-        }
-        .main {
-            background-color: white;
-            height: 80%;
-            vertical-align: middle;
-            width: 100%;
-            margin: 0;
-            overflow-y: auto;
-        }
-        .menu-container {
-            display: flex;
-            justify-content: space-around;
-            background-color: white;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
-        .button-container {
-            width: 70%;
-            background: white;
-            overflow-y: auto;
-            border-radius: 5px;
-            
-        }
-        .button-container>form {
-            width: 200px;
-            height: 200px;
-            float: left;
-            background: white;
-            margin: 15px;
-            border-radius: 5px;
-        }
-        button {
-            width: 100%;
-            height: 100%;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            border-radius: 5px;
-            font-family: "Maven Pro", sans-serif;
-            font-size: 20px;
-            background-color: rgb(148, 181, 202);
-        }
-        .font {
-            font-family: "Maven Pro", sans-serif;
-            text-align: center;
-        }
-    </style>
 </head>
 
 <body>
     <div class="container">
         <div class="topbar">
             <h1 style="text-align:left;">
-                EOSDIS Usage Based Discovery
+                <a href= "/{{stage}}/" style="color: white; text-decoration: none;"> EOSDIS Usage Based Discovery</a>
                 <span style="float:right;">
 			        <a href="/{{stage}}/about" style="color: white; font-size: x-large;">About</a>&emsp;
                 </span>
@@ -243,12 +172,12 @@
         }
 
         function linkcolor(){
-            const scale = d3.scaleOrdinal(d3.schemeAccent);
+            const scale = d3.scaleOrdinal(d3.schemeSet3);
             return d => scale(d.label);
         }
 
         function defcolor(){
-            const scale = d3.scaleOrdinal(d3.schemeAccent);
+            const scale = d3.scaleOrdinal(d3.schemeSet3);
             return d => scale(d);
         }
 
@@ -294,7 +223,79 @@
             d.fx = null;
             d.fy = null;
         }
-    </script
+    </script>
+    <style>
+        html, body {
+            background-color: white;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            padding: 0em;
+            overflow-y: hidden;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 100%;
+        }
+        .topbar {
+            background-color: black;
+            height: 20%;
+            max-height: 75px;
+            width: 100%;
+            padding: 15px;
+        }
+        h1 {
+            color: white;
+            font-family: "Maven Pro", sans-serif;
+            vertical-align: middle;
+        }
+        .main {
+            background-color: white;
+            height: 80%;
+            vertical-align: middle;
+            width: 100%;
+            margin: 0;
+            overflow-y: auto;
+        }
+        .menu-container {
+            display: flex;
+            justify-content: space-around;
+            background-color: white;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        .button-container {
+            width: 70%;
+            background: white;
+            overflow-y: auto;
+            border-radius: 5px;
+            
+        }
+        .button-container>form {
+            width: 200px;
+            height: 200px;
+            float: left;
+            background: white;
+            margin: 15px;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            height: 100%;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 5px;
+            font-family: "Maven Pro", sans-serif;
+            font-size: 20px;
+            background-color: rgb(148, 181, 202);
+        }
+        .font {
+            font-family: "Maven Pro", sans-serif;
+            text-align: center;
+        }
+    </style>
+
 </body>
 
 </html>
