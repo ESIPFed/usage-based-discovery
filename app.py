@@ -156,25 +156,31 @@ def add_relationship():
             }
             DATASET = {'title': f['Dataset_Name'], 'doi': f['DOI']}
 
-            #print(APP)
-            #print(DATASET)
             #post data to DB
             g.add_app(APP)
             g.add_dataset(DATASET)
             g.add_relationship(f['Application_Name'],f['DOI'])
             
             #iterate through dataset list
+            
+            list_of_datasets = []
+            list_of_DOIs = []
+            for key,value in f.items(): 
+                if key[-1].isdigit():
+                    if key[:4] =="Data":
+                        list_of_datasets.append(value)
+                    if key[:4] =="DOI_":
+                        list_of_DOIs.append(value)
+            print(list_of_datasets)
+            print(list_of_DOIs)
+            
             i = 0
-            '''
-            for key, value in f.items():
-                if i >5:
-                    DATASET = {'title': f[key], 'doi': f[key]}
-                    g.add_dataset(DATASET)
-                    g.add_relationship(f['Application_Name'],f[key])
-                    
-                    print(i, " : ", key, value)
+            for Dataset_name, DOI in zip(list_of_datasets, list_of_DOIs):
+                DATASET = {'title': Dataset_name, 'doi': DOI}
+                g.add_dataset(DATASET)
+                g.add_relationship(f['Application_Name'],DOI)
+                print(i, " : ", Dataset_name, DOI)
                 i+=1
-            '''
 
         '''
         headers = {

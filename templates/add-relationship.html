@@ -118,7 +118,7 @@
           ds_name.className = "form-control";
           ds_name.placeholder = "Dataset Name " + id_val;
           ds_name.id = id_val;
-          ds_name.name = "Dataset_Name_" + id_val;
+          ds_name.name = "Dataset_Name_"+id_val;
 
           var lbl = document.createElement("label");
           var text = document.createTextNode("Dataset " + id_val);
@@ -136,7 +136,7 @@
               type="text"
               class="form-control"
               id="DOI${id_val}"
-              name="DOI_${id_val}"
+	      name="DOI_${id_val}"
               placeholder="DOI ${id_val}"
             />
             </div>`
