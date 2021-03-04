@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, session, redirect
 #from model import RegForm
 import requests
 import orcid
+import json
 
 from gremlin_python import statics
 from gremlin_python.structure.graph import Graph
@@ -16,20 +17,46 @@ import subprocess
 
 app = Flask(__name__)
 
+app.secret_key = os.environ.get('SECRET_KEY')
 stage = os.environ.get('STAGE')
 client_secret = os.environ.get('CLIENT_SECRET')
 client_id = os.environ.get('CLIENT_ID')
+trusted= {
+            '0000-0002-3675-5603':'Parth Darji',
+        }
+'''
+g= GraphDB()
+APP = {
+        'topic': 'Test',
+        'name': 'test_name',
+        'site': 'https://example.com',
+        'screenshot': 'Testing 123.jpg',
+        'publication': 'None',
+        'description': 'example description 123'
+}
+g.add_app(app)
+topics = g.get_topics()
+'''
 # Initial screen
 @app.route('/')
 def home():
     g = GraphDB()
     topics = g.get_topics()
-    return render_template('init.html', stage=stage, topics=topics)
+    in_session=False
+    if 'orcid' in session:
+        in_session=True
+    return render_template('init.html', stage=stage, topics=topics, in_session=in_session)
 
 # About page
 @app.route('/about')
 def about():
     return render_template('about.html', stage=stage)
+
+@app.route('/explore')
+def explore():
+    g = GraphDB()
+    data = g.get_data()
+    return render_template('graph.html', stage=stage, data=data)
 
 # Main screen
 @app.route('/<topic>/<app>')
@@ -52,20 +79,23 @@ def main(topic, app):
         datasets = g.get_datasets_by_app(app)
     s3 = s3Functions()
     screenshot = s3.create_presigned_url('test-bucket-parth', filename)
-    in_session = "False"
+    in_session = False
+    trusted_user = False
     if 'orcid' in session:
-        in_session="True"
+        in_session=True
+        if session['orcid'] in trusted:
+            trusted_user = True
     return render_template('index.html', stage=stage, topic=topic, \
-        topics=topics, apps=relapps, app=appsel, datasets=datasets, screenshot=screenshot, in_session=in_session)
+        topics=topics, apps=relapps, app=appsel, datasets=datasets, screenshot=screenshot, in_session=in_session, trusted_user=trusted_user)
 
 @app.route('/login')
 def login():
-    
+
     code = request.args.get('code')
-    '''
+    ''' 
     headers = {
         'Accept': 'application/json',
-        'Access-Control-Allow-Orgin':'*',
+        'Content-Type':'application/json;charset=UTF-8'
     }
 
     data = {
@@ -73,44 +103,80 @@ def login():
       'client_secret': client_secret,
       'grant_type': 'authorization_code',
       'code': code,
-      'redirect_uri': 'https://p1of926o5h.execute-api.us-west-1.amazonaws.com/dev/login',
     }
+    print(data)
+    url = 'https://sandbox.orcid.org/oauth/token'
+    output_json = requests.post(url, headers=headers, data=data)
 
-    response = requests.get('https://sandbox.orcid.org/oauth/token', headers=headers, data=data, timeout=None)
-    '''
-    output = subprocess.run(["curl -i -L -H 'Accept: application/json' --data 'client_id=APP-674MCQQR985VZZQ2&client_secret=d08b711e-9411-788d-a474-46efd3956652&grant_type=authorization_code&code=*WkiYjn*' 'https://sandbox.orcid.org/oauth/token'"],check=True, stdout=subprocess.PIPE, universal_newlines=True)
     #api = orcid.PublicAPI(client_id, client_secret, sandbox=True)
-    #response = api.get_token_from_authorization_code(code, "https://p1of926o5h.execute-api.us-west-1.amazonaws.com/dev/login")
-    print('\n\n This is to TESTTTTTSSSSSTTTT \n')
-    print(response.text)
-    session['orcid']=response.orcid
-    return redirect('/')
+    #response = api.get_token_from_authorization_code(code, "localhost:5000")
+
+    print(output_json)
+    '''
+    inputstr = 'client_id=' + client_id + '&client_secret=' + client_secret + '&grant_type=authorization_code&code=' + code
+    output = subprocess.check_output(['curl', '-i', '-L', '-H', 'Accept: application/json', '--data', inputstr,  'https://sandbox.orcid.org/oauth/token'],universal_newlines=True)
+    
+    ind = output.index('{')
+    output = output[ind:]
+    output_json = json.loads(output)   
+    session['orcid']= output_json['orcid']
+    print(session['orcid'])
+    return redirect(stage)
+@app.route('/logout')
+def logout():
+    del session['orcid']
+    return redirect(request.referrer)
 
 @app.route('/auth')
 def auth():
-    return redirect("https://sandbox.orcid.org/oauth/authorize?client_id={}&response_type=code&scope=/authenticate&redirect_uri=https://p1of926o5h.execute-api.us-west-1.amazonaws.com/dev/login".format(client_id))
+    return redirect("https://sandbox.orcid.org/oauth/authorize?client_id=APP-J5XDZ0YEXPLVSRMZ&response_type=code&scope=/authenticate&redirect_uri=https://p1of926o5h.execute-api.us-west-1.amazonaws.com/dev/login")
 
 @app.route('/add-relationship', methods=["GET","POST"])
 def add_relationship():
     g = GraphDB()
     topics = g.get_topics()
+
     status= "none"
     f=None
-    orcid_data= " "
-    code = " "
-    if request.args.get('code')!=None:
-        code = request.args.get('code')
-    Trusted= {
-                "0000-0002-3675-5603":"Parth Darji",
-            }
-    
+
     if request.method == "POST":
         f = request.form
+        print(request.form)
         status = "failure"
         #do checks and determite if submission is valid
         if validate_form(f):
             status = "success"
-        
+            APP = {
+                    'topic': f['Topic'],
+                    'name': f['Application_Name'],
+                    'site': f['site'],
+                    'screenshot': 'Testing 123.png',
+                    'publication': f['Publication_Link'],
+                    'description': 'example description 123'
+            }
+            DATASET = {'title': f['Dataset_Name'], 'doi': f['DOI']}
+
+            #print(APP)
+            #print(DATASET)
+            #post data to DB
+            g.add_app(APP)
+            g.add_dataset(DATASET)
+            g.add_relationship(f['Application_Name'],f['DOI'])
+            
+            #iterate through dataset list
+            i = 0
+            '''
+            for key, value in f.items():
+                if i >5:
+                    DATASET = {'title': f[key], 'doi': f[key]}
+                    g.add_dataset(DATASET)
+                    g.add_relationship(f['Application_Name'],f[key])
+                    
+                    print(i, " : ", key, value)
+                i+=1
+            '''
+
+        '''
         headers = {
                 'Accept': 'application/json',
                 }
@@ -119,21 +185,34 @@ def add_relationship():
                 'client_secret': client_secret,
                 'grant_type': 'authorization_code',
                 'code': '*'+code+'*',
-                } 
+                }
         orcid_data = requests.post('https://sandbox.orcid.org/oauth/token', headers=headers,data=data)
-#    orcid= orcid_data.orcid
-#            if orcid in Trusted:
+        '''
 
-    #check if user is authorized by the code in url 
-    #if so then we curl with the code and get their orchid id, and if their orchid id is one of the following then we're good
-        
-    return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=code)
+    orcid = False
+    if 'orcid' in session:
+        orcid = True
+
+    return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid)
 
 def validate_form(f):
+    if f['Topic']=='Choose..':
+        return False
     for item in f.values():
         if len(item)==0:
             return False
-    return True
+    if 'orcid' in session and session['orcid'] in trusted:
+        return True
+    return False
+
+@app.route('/delete_dataset_relation/<app_name>/<doi>')
+def delete_dataset_relation(app_name, doi):
+    if 'orcid' in session and session['orcid'] in trusted:
+        g = GraphDB() 
+        #delete relationship function 
+        g.delete_relationship(app_name, doi)
+    return redirect(request.referrer)
 
 if __name__ == '__main__':
     app.run(debug=True)
+

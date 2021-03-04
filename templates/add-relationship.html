@@ -21,15 +21,19 @@
 
   <body>
     <div class="container-sm">
+	    <a href={{stage}} style="font-size: x-large;">Go Home</a>
       <!--
                 these set of if statements is to set the values in the input to none if the submission was valid
         -->
-      {% if status == "success" %}
-        {% set f = none %}
-      {% else %}
-        {% set f = form %}
-      {% endif %}
-      <form class="form" action="/dev/add-relationship" method="post">
+      {% if status == "success" %} {% set f = none %} {% else %} {% set f = form
+      %} {% endif %}
+      <form
+        class="form"
+        id="form1"
+        name="form1"
+        action="{{stage}}/add-relationship"
+        method="post"
+      >
         <div class="form-group">
           <label>Topic</label>
           <select class="form-control" name="Topic">
@@ -50,7 +54,7 @@
             value="{{f.Application_Name}}"
           />
         </div>
-	<div class="form-group">
+        <div class="form-group">
           <label>Application Website</label>
           <input
             type="text"
@@ -94,25 +98,94 @@
             value="{{f.DOI}}"
           />
         </div>
-
-        <button type="submit" class="btn btn-primary">Submit</button>
       </form>
+      <button
+        class="btn btn-success btn-add"
+        type="button"
+        onclick="addFields()"
+      >
+        Add dataset
+      </button>
+      <button type= "button" class= "btn btn-primary" onclick="validate()">Submit</button>
+      <script>
+        var id_val = 0;
+        var false_alert = "";
+        function addFields() {
+          id_val++;
+
+          var ds_name = document.createElement("input");
+          ds_name.type = "text";
+          ds_name.className = "form-control";
+          ds_name.placeholder = "Dataset Name " + id_val;
+          ds_name.id = id_val;
+          ds_name.name = "Dataset_Name_" + id_val;
+
+          var lbl = document.createElement("label");
+          var text = document.createTextNode("Dataset " + id_val);
+          lbl.appendChild(text);
+          var tag = document.createElement("div");
+          tag.className = "form-group";
+          tag.appendChild(lbl);
+          tag.appendChild(ds_name);
+          $("form").append(tag);
+          //$(tag).insertBefore(".btn-success");
+
+          var DOI = `<div class='form-group'>
+            <label>Dataset DOI ${id_val}</label>
+            <input
+              type="text"
+              class="form-control"
+              id="DOI${id_val}"
+              name="DOI_${id_val}"
+              placeholder="DOI ${id_val}"
+            />
+            </div>`
+          $("form").append(DOI);
+            //$(DOI).insertBefore(".btn-success");
+        }
+
+        function validate() {
+          var truth= true;
+          f = document.forms["form1"];
+          Object.entries(f).forEach(([key, value]) =>{
+            console.log(value.value.length);
+            console.log(value)
+            if (value.value.length==0){
+              truth=false;
+            }
+          }
+
+          );
+
+          if (truth){
+            f.submit();
+          }else{
+            if (false_alert.length>5){
+              return false;
+            };
+            false_alert =`<div class="alert alert-danger" id="failure" role="alert">
+              invalid fields
+            </div>`
+            $(".btn-primary").after(false_alert);
+          }
+        }
+      </script>
+
       <h1>your orcID:{{orcid}}</h1>
       {% if status == "success" %}
-      <div class="alert alert-success" role="alert">
-        This is a success alert—check it out!
+      <div class="alert alert-success" id="success" role="alert">
+        Success! We've added your values to our database.
       </div>
       <h3>Values added to database:</h3>
       {% for key, value in form.items() %}
       <p>{{key}}: {{value}}</p>
-      {% endfor %}
-      {% endif %}
-      {% if status == "failure" %}
-      <div class="alert alert-danger" role="alert">
-        This is a danger alert—check it out!
+      {% endfor %} {% endif %} {% if status == "failure" %}
+      <div class="alert alert-danger" id="failure" role="alert">
+        Either you are not authorized to add relations, or we have an internal server error.
       </div>
       {% endif %}
     </div>
+
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
       integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
