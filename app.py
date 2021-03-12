@@ -5,12 +5,14 @@ from flask import Flask, render_template, request, session, redirect
 import requests
 import orcid
 import json
+import urllib
 
 from gremlin_python import statics
 from gremlin_python.structure.graph import Graph
 from gremlin_python.process.graph_traversal import __
 from gremlin_python.process.strategies import *
 from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
+from gremlin_python.process.traversal import T
 
 import os
 import subprocess
@@ -23,6 +25,7 @@ client_secret = os.environ.get('CLIENT_SECRET')
 client_id = os.environ.get('CLIENT_ID')
 trusted= {
             '0000-0002-3675-5603':'Parth Darji',
+            '0000-0002-0868-7412':'Sophia Xia',
         }
 '''
 g= GraphDB()
@@ -61,10 +64,18 @@ def explore():
 # Main screen
 @app.route('/<topic>/<app>')
 def main(topic, app):
+    # encode all apps, and doi's , keep the original app name and doi in a seperate variable or as property
+    # we decode app in this route, and we decode the doi name in the delete ds route
+    
+    app = urllib.parse.unquote(urllib.parse.unquote(app))    
     g = GraphDB()
     topics = g.get_topics()
     # query only for application relating to specified topic
     relapps = g.get_apps_by_topic(topic)
+    # double encoding relapps to avoid special characters issues
+    for relapp in relapps:
+        relapp['encoded_name'] = urllib.parse.quote(urllib.parse.quote(relapp['name'], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
+
     # query for the first application in relapps list
     if(app == 'all'):
         appsel = None
@@ -74,6 +85,7 @@ def main(topic, app):
     # query for single application (vertex) with name specified by parameter
     else:
         appsel = g.get_app(app)
+        appsel[0]['encoded_name'] = urllib.parse.quote(urllib.parse.quote(appsel[0]['name'], safe=''), safe='')
         filename = appsel[0]['screenshot']
         # query for all datasets relating to specified application
         datasets = g.get_datasets_by_app(app)
@@ -85,8 +97,14 @@ def main(topic, app):
         in_session=True
         if session['orcid'] in trusted:
             trusted_user = True
+
+    for d in datasets:
+        d['encoded_doi']=urllib.parse.quote(urllib.parse.quote(d['doi'], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
+    
+    undo = session['change'][-1]
     return render_template('index.html', stage=stage, topic=topic, \
-        topics=topics, apps=relapps, app=appsel, datasets=datasets, screenshot=screenshot, in_session=in_session, trusted_user=trusted_user)
+        topics=topics, apps=relapps, app=appsel, datasets=datasets, screenshot=screenshot, \
+        in_session=in_session, trusted_user=trusted_user, undo=undo)
 
 @app.route('/login')
 def login():
@@ -122,6 +140,7 @@ def login():
     session['orcid']= output_json['orcid']
     print(session['orcid'])
     return redirect(stage)
+
 @app.route('/logout')
 def logout():
     del session['orcid']
@@ -156,12 +175,12 @@ def add_relationship():
             }
             DATASET = {'title': f['Dataset_Name'], 'doi': f['DOI']}
 
-            #post data to DB
+            #post data to db
             g.add_app(APP)
             g.add_dataset(DATASET)
             g.add_relationship(f['Application_Name'],f['DOI'])
             
-            #iterate through dataset list
+            #iterate through the forms dataset list
             
             list_of_datasets = []
             list_of_DOIs = []
@@ -173,7 +192,8 @@ def add_relationship():
                         list_of_DOIs.append(value)
             print(list_of_datasets)
             print(list_of_DOIs)
-            
+           
+            # upload lists of datasets/dois to db
             i = 0
             for Dataset_name, DOI in zip(list_of_datasets, list_of_DOIs):
                 DATASET = {'title': Dataset_name, 'doi': DOI}
@@ -211,13 +231,87 @@ def validate_form(f):
         return True
     return False
 
-@app.route('/delete_dataset_relation/<app_name>/<doi>')
-def delete_dataset_relation(app_name, doi):
+@app.route('/delete_dataset_relation/<encoded_app_name>/<encoded_doi>')
+def delete_dataset_relation(encoded_app_name, encoded_doi):
+    # double decode to avoid apache %2F translation, so %252F goes to %2F which goes to /
+    doi = urllib.parse.unquote(urllib.parse.unquote(encoded_doi)) 
+    app_name = urllib.parse.unquote(urllib.parse.unquote(encoded_app_name))
     if 'orcid' in session and session['orcid'] in trusted:
         g = GraphDB() 
+        #log this change in session to be able to undo later
+        dataset = g.get_dataset(doi)
+        change = {
+                    'type': 'delete_dataset_relation',
+                    'dataset': dataset,
+                    'app_name': app_name,
+                }
+        if 'changes' in session:
+            temp_changes = session['changes']
+            temp_changes.append(change)
+            session['changes'] = temp_changes
+        else:
+            session['changes'] = [change]
+        print("this is dataset change" , session['changes'])
         #delete relationship function 
         g.delete_relationship(app_name, doi)
     return redirect(request.referrer)
+
+@app.route('/delete_application/<encoded_app_name>')
+def delete_application(encoded_app_name):
+    # double decode to avoid apache %2F translation, so %252F goes to %2F which goes to /
+    app_name = urllib.parse.unquote(urllib.parse.unquote(encoded_app_name))
+    if 'orcid' in session and session['orcid'] in trusted:
+        g = GraphDB() 
+        #session 'changes' keeps a history of all changes made by that user
+        #before we delete application we need to store all the info so we can undo
+        app = g.get_app(app_name)
+        datasets = g.get_datasets_by_app(app_name)
+        change = {
+            'type': 'delete_application',
+            'app': app[0],
+            'datasets': datasets,
+        }
+        print(change)
+        if 'changes' in session:
+            temp_changes= session['changes']
+            temp_changes.append(change)
+            session['changes'] = temp_changes
+        else:
+            session['changes'] = [change]
+        print("this is application change", session['changes'])
+        #delete application
+        g.delete_app(app_name)
+    redirect_path = request.referrer.rsplit('/',1)[0] + '/all' # this is so we direct to /topic/all instead of topic/app
+    return redirect(redirect_path)
+
+@app.route('/undo')
+def undo():
+    ############ maybe try session.modified=True ########
+    change = None
+    #create stack implementation to make undo's 
+    if 'changes' in session and len(session['changes'])>0:
+        g = GraphDB()
+        print("entire session", session['changes'])
+        temp = session['changes']
+        change = temp.pop()
+        session['changes'] = temp
+        print("\n\nprinting Change\n\n", change)
+        print("printing entire session again", session['changes'])
+        if change['type'] =="delete_dataset_relation":
+            g.add_dataset(change['dataset'])
+            g.add_relationship(change['app_name'], change['dataset']['doi'])
+        elif change['type'] == "delete_application":
+            #adding the deleted app back
+            g.add_app(change['app'])
+            for d in change['datasets']:
+                #adding each dataset back and linking it to the app
+                g.add_dataset(d)
+                g.add_relationship(change['app']['name'], d['doi'])
+        else:
+            print("type not found")
+        return redirect(request.referrer)
+    return redirect(request.referrer)# send a message "no more changes to undo"
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -67,7 +67,9 @@ def main():
             #removes spaces before and after each data point
             for i in line:
                 line[i]= line[i].strip()
-            line['name'] = line['name'].replace('/', '~slash').replace('|','~pipe')
+            #following line is obsolete after url-encoding 
+            #line['name'] = line['name'].replace('/', '~slash').replace('|','~pipe')
+            
             # automated generation of application screenshot from website link
             # this conditional handles duplicate application values
             if line['name'] not in apps:

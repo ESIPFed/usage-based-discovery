@@ -93,13 +93,19 @@ class GraphDB:
         '''
         queries database for a specific application
         '''
-        return self.graph_trav.V().has('application', 'name', name).elementMap().toList()
+        app = self.graph_trav.V().has('application', 'name', name).elementMap().toList()
+        app[0].pop(T.id)
+        app[0].pop(T.label)
+        return app
 
     def get_dataset(self, doi):
         '''
         queries database for a specific database
         '''
-        return self.graph_trav.V().has('dataset','doi', doi).elementMap().toList()
+        res = self.graph_trav.V().has('dataset','doi', doi).elementMap().toList()
+        res[0].pop(T.id)
+        res[0].pop(T.label)
+        return res[0]
 
     def get_apps_by_topic(self, topic):
         '''
@@ -117,7 +123,11 @@ class GraphDB:
         '''
         queries database for a list of datasets that are connected to the given application
         '''
-        return self.graph_trav.V().has('application', 'name', name).out().elementMap().toList()
+        res = self.graph_trav.V().has('application', 'name', name).out().elementMap().toList()
+        for r in res: 
+            r.pop(T.id)
+            r.pop(T.label)
+        return res
 
     def get_vertex_count(self):
         '''

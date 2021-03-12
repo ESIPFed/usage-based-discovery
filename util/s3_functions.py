@@ -28,14 +28,17 @@ class s3Functions():
         """
         file_name = re.sub(r'^https?://', '', url)
         file_name = re.sub(r'\W', '-', file_name) + '.png'
+        #CHROME_DRIVER = self.get_chrome_driver()
         print('now doing chromedriver.get(',url,')')
         self.CHROME_DRIVER.get(url)
+        #driver.execute_script("document.getElementsByTagName('BODY')[0].style.overflow= 'hidden';") #hide scroll bar
         print("now chrome driver has got the url")
         sleep(4)
         with io.BytesIO(self.CHROME_DRIVER.get_screenshot_as_png()) as f:
             print("now attempting to upload fileobj(file{},bucket{},file_name{})".format(f,bucket_name, file_name))
             self.s3.upload_fileobj(f, bucket_name, file_name)
-
+        
+        #CHROME_DRIVER.quit()
         return file_name
 
     def get_chrome_driver(self):
@@ -49,6 +52,7 @@ class s3Functions():
         option = webdriver.ChromeOptions()
         option.add_argument('headless')
         option.add_argument("--incognito")
+        option.add_argument('--hide-scrollbars')
         return webdriver.Chrome(path, options=option)
 
     def upload_image(self, bucket_name, unique_filename, f):

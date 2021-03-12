@@ -1,7 +1,7 @@
 <body>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-3">
+      <div class="col-md-3 left-col">
         <div class="title">
           <h1 class="eosdis">
             <a href="{{stage}}/" style="color: white; text-decoration: none;"
@@ -38,7 +38,7 @@
           {% for a in apps %} {% if app != None and a['name'] == app[0]['name'] %}
           <form
             class="app"
-            action="{{a['name']}}"
+            action="{{a['encoded_name']}}"
             onclick="document.location.reload(true)"
           >
             <button style="width: 100%;" class="selected-app">
@@ -55,7 +55,7 @@
           {% else %}
           <form
             class="app"
-            action="{{a['name']}}"
+            action="{{a['encoded_name']}}"
             onclick="document.location.reload(true)"
           >
             <button style="width: 100%;" class="font">
@@ -71,6 +71,15 @@
       </div>
 
       <div class="col-md-6">
+	{% if trusted_user %} 
+	<!-- undo btn -->
+	<button 
+      	  onclick="if (confirm ( 'Are you sure you want to undo your last change?')) {window.location.href = '{{stage}}/undo';}" 
+     	  type="button"
+      	  class="btn btn-warning btn-md"
+      	  >Undo last change</button
+        >
+	{% endif %}
         {% if app == None %}
         <div class="heading">
           <h1 class="font">{{apps[0]['name'].replace('~slash','/').replace('~pipe','|')}}</h1>
@@ -87,7 +96,7 @@
 
           {% endif %}
           <!--publication link-->
-          {% if apps[0]['publication'] != 'None' %} &emsp;&emsp;
+          {% if apps[0]['publication'] != 'None' %} 
           <a
             href="{{apps[0]['publication']}}"
             target="_blank"
@@ -139,7 +148,7 @@
           >
           {% endif %}
           <!--publication link, if none then DON'T INCLUDE-->
-          {% if app[0]['publication'] != 'None' %} &emsp;&emsp;
+          {% if app[0]['publication'] != 'None' %}
           <a
             href="{{app[0]['publication']}}"
             target="_blank"
@@ -150,6 +159,15 @@
             >Publication</a
           >
           {% endif %}
+	  {% if trusted_user %}
+	    <button 
+	      onclick="if (confirm ( 'Are you sure you want to delete the application {{app[0]["name"]}}')) {window.location.href = '{{stage}}/delete_application/{{app[0]['encoded_name']}}';}" 
+	      type="button"
+	      class="btn btn-danger btn-md"
+	      >Delete Application</button
+      	    >
+
+	  {% endif %} 
           <br />
           <!--application website description-->
           {% if app[0]['site'] != 'None' %}
@@ -179,7 +197,7 @@
         </div>
         {% endif %}
       </div>
-      <div class="col-md-3">
+      <div class="col-md-3 right-col">
         <div class="dataset-head">
           <h2 class="eosdis">Datasets</h2>
         </div>
@@ -196,23 +214,34 @@
               aria-pressed="true"
               >See Dataset &rarr;</a
             >
-	    {% if trusted_user and app%} 
-	    <a
-	      href="{{stage}}/delete_dataset_relation/{{app[0]['name']}}/{{d['doi']}}"
-	      target="_blank"
+	    {% if trusted_user and app%}
+	    <!-- only shows if you are a trusted user and the app is selected -->
+	    <button 
+	      onclick="if (confirm ( 'Are you sure you want to unlink the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/delete_dataset_relation/{{app[0]['encoded_name']}}/{{d['encoded_doi']}}';}" 
+	      type="button"
 	      class="btn btn-danger btn-sm"
-	      role="button"
-	      aria-pressed="true"
-	      >Delete Dataset Relation</a
+	      >Unlink Dataset Relation</button
       	    >
+   <!--<script>
+	   perhaps go back to this script in the future, but for now the confim inside onclick works fine for confirmation
+    function deleteCheck(val) {
+	if (confirm("Are you sure you want to delete this relationship with?")){
+		console.log(val.getAttribute("data-value");
+		window.location.href = val.data-value;
+	}
+    }
+    
+  </script>
+	-->
 	    {% endif %}
             <br /><br />
           </div>
           {% endfor %}
-        </div>
+       </div>
       </div>
     </div>
   </div>
+
 
   <!-- JavaScript Bundle with Popper -->
   <script
@@ -278,6 +307,14 @@
       flex-direction:column;
     }
 
+    .right-col {
+      border-left:groove;
+    }
+
+    .left-col{
+      border-right:groove;
+    }
+
     .title {
       background-color: black;
       width: 100%;
@@ -298,7 +335,6 @@
       height: auto;
       direction: rtl;
       overflow-y: auto;
-      border-right: groove;
     }
 
     .btn {
@@ -370,7 +406,6 @@
 
     .datasets {
       background-color: white;
-      border-left: groove;
       height: 100%;
       width: 30%;
       max-width: 350px;
@@ -393,7 +428,6 @@
       width: 100%;
       height: auto;
       overflow-y: auto;
-      border-left: groove;
       padding: 0.5rem;
     }
 
