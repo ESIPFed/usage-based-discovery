@@ -52,6 +52,13 @@ class s3Functions():
         image = bucket.Object(file_name)
         img_data = image.get().get('Body').read()
         return Image.open(io.BytesIO(img_data))
+
+    def get_file(self, bucket_name, file_name):
+        s3 = boto3.resource('s3')
+        bucket = s3.Bucket(bucket_name)
+        f = bucket.Object(file_name)
+        file_data = f.get().get('Body').read()
+        return file_data
     
 #    def get_image_list(self, bucket_name, file_list:list):
 #        s3 = boto3.resource('s3')

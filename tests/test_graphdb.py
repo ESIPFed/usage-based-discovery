@@ -113,6 +113,14 @@ class TestInit():
         print(CHANGE_PROP_APP.items())
         print(app[0].items())
         assert CHANGE_PROP_APP.items() <= app[0].items()
+
+    def test_add_app_property(self):
+        prop = 'query'
+        print(self.db.add_app_property(CHANGE_NAME, prop, 'earthdatasearch query here'))
+        app = self.db.get_app(CHANGE_NAME)
+        print(app[0])
+        assert prop in app[0]
+        assert 'invalid' not in app[0]
     
     def test_update_dataset(self):
         print(self.db.update_dataset(DOI, CHANGE_DATASET))
@@ -130,6 +138,12 @@ class TestInit():
         assert 'id' in data['links'][0]
         assert 'source' in data['links'][0]
         assert 'target' in data['links'][0]
+
+    def test_delete_relationship(self):
+        print(self.db.delete_relationship(CHANGE_NAME, CHANGE_DOI))
+        assert self.db.has_app(CHANGE_NAME)
+        assert self.db.has_dataset(CHANGE_DOI)
+        assert self.db.get_edge_count() == 0
 
     def test_delete_app(self):
         print(self.db.add_app(APP))

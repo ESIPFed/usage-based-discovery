@@ -195,11 +195,20 @@
                 str += d.site + "<br><br>";
                 str += d.description;
             }
-            else{
+            if(d.label == "dataset"){
                 str += d.label + "<br><br>";
                 str += d.title + "<br><br>";
                 str += d.doi;
             }
+            if(d.label == "person"){
+                str += d.label + "<br><br>";
+                str += d.name + "<br><br>";
+            }
+            if(d.label == "software"){
+                str += d.label + "<br><br>";
+                str += d.name;
+            }
+
             return str;
         }
 

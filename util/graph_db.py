@@ -6,7 +6,7 @@ from __future__  import print_function  # Python 2/3 compatibility
 import os
 import sys
 from gremlin_python.structure.graph import Graph
-from gremlin_python.process.graph_traversal import unfold, inE, addV, addE, outV
+from gremlin_python.process.graph_traversal import unfold, inE, addV, addE, outV, otherV
 from gremlin_python.process.traversal import Cardinality, T, Direction
 from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
 
@@ -178,11 +178,17 @@ class GraphDB:
     def update_app_property(self, name, prop, value):
         '''
         updates only one of the application's properties
+        if application property does not exist it will not do anything
         '''
-        if prop not in ['topic', 'name', 'site', 'screenshot', 'publication', 'description']:
-            raise Exception("property provided is not a valid option")
         return self.graph_trav.V().has('application', 'name', name) \
                 .property(Cardinality.single, prop, value).next()
+
+    def add_app_property(self, name, prop, value):
+        '''
+        updates only one of the application's properties
+        '''
+        return self.graph_trav.V().has('application', 'name', name) \
+                .property(Cardinality.list_, prop, value).next()
 
     def update_dataset(self, doi, dataset):
         '''
@@ -209,3 +215,9 @@ class GraphDB:
         deletes dataset vertex in the database
         '''
         return self.graph_trav.V().has('dataset', 'doi', doi).drop().iterate()
+
+    def delete_relationship(self, name, doi):
+        '''
+        deletes relationship edge in the database
+        '''
+        return self.graph_trav.V().has('name', name).outE("uses").where(otherV().has("doi", doi)).drop().iterate();
