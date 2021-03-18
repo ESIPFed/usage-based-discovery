@@ -71,10 +71,10 @@
       </div>
 
       <div class="col-md-6">
-	{% if trusted_user %} 
+	{% if trusted_user and undo%} 
 	<!-- undo btn -->
 	<button 
-      	  onclick="if (confirm ( 'Are you sure you want to undo your last change?')) {window.location.href = '{{stage}}/undo';}" 
+	   onclick="if (confirm ( 'Are you sure you want to undo your last change?\nChange: \n{{undo}}')) {window.location.href = '{{stage}}/undo';}" 
      	  type="button"
       	  class="btn btn-warning btn-md"
       	  >Undo last change</button

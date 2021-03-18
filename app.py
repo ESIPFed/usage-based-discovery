@@ -3,9 +3,10 @@ from util.s3_functions import s3Functions
 from flask import Flask, render_template, request, session, redirect
 #from model import RegForm
 import requests
-import orcid
+#import orcid
 import json
 import urllib
+from util.autofill import autofill
 
 from gremlin_python import statics
 from gremlin_python.structure.graph import Graph
@@ -91,17 +92,16 @@ def main(topic, app):
         datasets = g.get_datasets_by_app(app)
     s3 = s3Functions()
     screenshot = s3.create_presigned_url('test-bucket-parth', filename)
-    in_session = False
-    trusted_user = False
-    if 'orcid' in session:
-        in_session=True
-        if session['orcid'] in trusted:
-            trusted_user = True
-
+    
+    in_session = 'orcid' in session
+    trusted_user = 'orcid' in session and session['orcid'] in trusted 
+    
     for d in datasets:
         d['encoded_doi']=urllib.parse.quote(urllib.parse.quote(d['doi'], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
-    
-    undo = session['change'][-1]
+
+    undo = None 
+    if 'changes' in session and len(session['changes'])>0:
+        undo = json.dumps(session['changes'][-1])
     return render_template('index.html', stage=stage, topic=topic, \
         topics=topics, apps=relapps, app=appsel, datasets=datasets, screenshot=screenshot, \
         in_session=in_session, trusted_user=trusted_user, undo=undo)
@@ -110,7 +110,7 @@ def main(topic, app):
 def login():
 
     code = request.args.get('code')
-    ''' 
+    '''
     headers = {
         'Accept': 'application/json',
         'Content-Type':'application/json;charset=UTF-8'
@@ -126,12 +126,16 @@ def login():
     url = 'https://sandbox.orcid.org/oauth/token'
     output_json = requests.post(url, headers=headers, data=data)
 
-    #api = orcid.PublicAPI(client_id, client_secret, sandbox=True)
-    #response = api.get_token_from_authorization_code(code, "localhost:5000")
-
+    api = orcid.PublicAPI(client_id, client_secret, sandbox=True)
+    response = api.get_token_from_authorization_code(code, "https://ep9qg4gxr9.execute-api.us-west-1.amazonaws.com/dev/")
     print(output_json)
     '''
     inputstr = 'client_id=' + client_id + '&client_secret=' + client_secret + '&grant_type=authorization_code&code=' + code
+    '''
+    process = subprocess.Popen(['curl', '-i', '-L', '-H', 'Accept: application/json', '--data', inputstr,  'https://sandbox.orcid.org/oauth/token'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    stdout, stdeer = process.communicate()
+    print(stdout)
+    ''' 
     output = subprocess.check_output(['curl', '-i', '-L', '-H', 'Accept: application/json', '--data', inputstr,  'https://sandbox.orcid.org/oauth/token'],universal_newlines=True)
     
     ind = output.index('{')
@@ -148,21 +152,56 @@ def logout():
 
 @app.route('/auth')
 def auth():
-    return redirect("https://sandbox.orcid.org/oauth/authorize?client_id=APP-J5XDZ0YEXPLVSRMZ&response_type=code&scope=/authenticate&redirect_uri=https://p1of926o5h.execute-api.us-west-1.amazonaws.com/dev/login")
+    return redirect("https://sandbox.orcid.org/oauth/authorize?client_id=APP-J5XDZ0YEXPLVSRMZ&response_type=code&scope=/authenticate&redirect_uri=https://ep9qg4gxr9.execute-api.us-west-1.amazonaws.com/dev/login")
 
 @app.route('/add-relationship', methods=["GET","POST"])
 def add_relationship():
+    #only allowing people with orcid accounts to be able to add-relationships, and for it to be posted to the database they much also be trusted users
+    if 'orcid' not in session:
+        return redirect("https://sandbox.orcid.org/oauth/authorize?client_id=APP-J5XDZ0YEXPLVSRMZ&response_type=code&scope=/authenticate&redirect_uri=https://ep9qg4gxr9.execute-api.us-west-1.amazonaws.com/dev/login")
+    orcid = 'orcid' in session
+    
     g = GraphDB()
     topics = g.get_topics()
-
     status= "none"
     f=None
 
     if request.method == "POST":
-        f = request.form
-        print(request.form)
+        f={}
+        #since request.form is an immutable obj, we would like to copy it to something mutable
+        for key, value in request.form.items():
+            f[key] = value
+        print(f)
         status = "failure"
-        #do checks and determite if submission is valid
+        try:
+            if 'autofill' in f and f['autofill']=='true':
+                status= ""
+                fill = autofill(f['site'])
+                datasets_obj = fill['datasets']
+                print(fill)
+                if f['description'] == '':
+                    f['description'] = fill['description']
+                
+                if f['Application_Name'] == '':
+                    f['Application_Name'] = fill['name']
+                
+                if 'Topic' not in f:
+                    f['Topic'] = fill['topic'] if fill['topic']!='Miscellaneous' else ''
+                
+                for index, item in enumerate(datasets_obj):
+                    title = item[0]
+                    doi = item[1]
+                    print("title: " + title, "doi: " + doi)
+                    f["Dataset_Name_"+ str(index+10)]=title
+                    f["DOI_" + str(index+10)]= doi
+                    print("new: ",f)
+                
+                return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid)
+        except:
+            status = "invalid URL"
+            return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid)
+
+        #check if submission is valid 
         if validate_form(f):
             status = "success"
             APP = {
@@ -171,20 +210,14 @@ def add_relationship():
                     'site': f['site'],
                     'screenshot': 'Testing 123.png',
                     'publication': f['Publication_Link'],
-                    'description': 'example description 123'
+                    'description': f['description'] 
             }
-            DATASET = {'title': f['Dataset_Name'], 'doi': f['DOI']}
-
-            #post data to db
             g.add_app(APP)
-            g.add_dataset(DATASET)
-            g.add_relationship(f['Application_Name'],f['DOI'])
-            
             #iterate through the forms dataset list
-            
             list_of_datasets = []
             list_of_DOIs = []
             for key,value in f.items(): 
+                #added datasets all have the last character as a digit
                 if key[-1].isdigit():
                     if key[:4] =="Data":
                         list_of_datasets.append(value)
@@ -201,32 +234,14 @@ def add_relationship():
                 g.add_relationship(f['Application_Name'],DOI)
                 print(i, " : ", Dataset_name, DOI)
                 i+=1
-
-        '''
-        headers = {
-                'Accept': 'application/json',
-                }
-        data = {
-                'client_id': client_id,
-                'client_secret': client_secret,
-                'grant_type': 'authorization_code',
-                'code': '*'+code+'*',
-                }
-        orcid_data = requests.post('https://sandbox.orcid.org/oauth/token', headers=headers,data=data)
-        '''
-
-    orcid = False
-    if 'orcid' in session:
-        orcid = True
-
     return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid)
 
 def validate_form(f):
     if f['Topic']=='Choose..':
         return False
-    for item in f.values():
-        if len(item)==0:
-            return False
+    #for item in f.values():
+    #potentially do some checks here before submission into the db
+
     if 'orcid' in session and session['orcid'] in trusted:
         return True
     return False
@@ -291,12 +306,9 @@ def undo():
     #create stack implementation to make undo's 
     if 'changes' in session and len(session['changes'])>0:
         g = GraphDB()
-        print("entire session", session['changes'])
         temp = session['changes']
         change = temp.pop()
         session['changes'] = temp
-        print("\n\nprinting Change\n\n", change)
-        print("printing entire session again", session['changes'])
         if change['type'] =="delete_dataset_relation":
             g.add_dataset(change['dataset'])
             g.add_relationship(change['app_name'], change['dataset']['doi'])
@@ -310,9 +322,10 @@ def undo():
         else:
             print("type not found")
         return redirect(request.referrer)
-    return redirect(request.referrer)# send a message "no more changes to undo"
-
+    return redirect(request.referrer)
+def unhandled_exceptions(e, event, context):
+    send_to_raygun(e, event)  # gather data you need and send
+    return True # Prevent invocation retry
 
 if __name__ == '__main__':
     app.run(debug=True)
-

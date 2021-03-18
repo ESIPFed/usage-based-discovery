@@ -31,7 +31,6 @@ class s3Functions():
         #CHROME_DRIVER = self.get_chrome_driver()
         print('now doing chromedriver.get(',url,')')
         self.CHROME_DRIVER.get(url)
-        #driver.execute_script("document.getElementsByTagName('BODY')[0].style.overflow= 'hidden';") #hide scroll bar
         print("now chrome driver has got the url")
         sleep(4)
         with io.BytesIO(self.CHROME_DRIVER.get_screenshot_as_png()) as f:
