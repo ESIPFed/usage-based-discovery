@@ -54,3 +54,11 @@ class TestFlask():
         data = str(response.data)
         assert NAME in data
         assert TOPIC in data
+
+    def test_explore_route(self):
+        url = 'explore'
+        response = self.client.get(url)
+        assert response.status_code == 200
+        data = str(response.data)
+        assert NAME in data
+        assert TOPIC in data

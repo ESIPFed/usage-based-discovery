@@ -27,7 +27,7 @@ client_id = os.environ.get('CLIENT_ID')
 trusted= {
             '0000-0002-3675-5603':'Parth Darji',
             '0000-0002-0868-7412':'Sophia Xia',
-        }
+         }
 '''
 #general app layout for reference
 APP = {
@@ -353,6 +353,7 @@ def undo():
             print("type not found")
         return redirect(request.referrer)
     return redirect(request.referrer)
+
 def unhandled_exceptions(e, event, context):
     send_to_raygun(e, event)  # gather data you need and send
     return True # Prevent invocation retry
