@@ -24,10 +24,6 @@ app.secret_key = os.environ.get('SECRET_KEY')
 stage = os.environ.get('STAGE')
 client_secret = os.environ.get('CLIENT_SECRET')
 client_id = os.environ.get('CLIENT_ID')
-trusted= {
-            '0000-0002-3675-5603':'Parth Darji',
-            '0000-0002-0868-7412':'Sophia Xia',
-         }
 '''
 #general app layout for reference
 APP = {
