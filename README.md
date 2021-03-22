@@ -92,15 +92,15 @@ To get the subnet_ids, click the Subnet groups on the side panel of the Neptune 
         "runtime": "python3.7",
         "s3_bucket": "YOUR_S3_BUCKET"
         "vpc_config": {
-                "SubnetIds": ["YOUR_SUBNET_ID1", "YOUR_SUBNET_ID2"], (make sure subnets are connected to NAT gateway)
+                "SubnetIds": ["YOUR_SUBNET_ID1", "YOUR_SUBNET_ID2"], /(make sure subnets are connected to NAT gateway)
                 "SecurityGroupIds": [ "YOUR_SECURITY_GROUP_ID" ]
         }
         "environment_variables": {
                 "NEPTUNEDBRO": "wss://<neptune endpoint>:<port>/gremlin", 
-                "STAGE": "/["YOUR_STAGE_NAME"]", (ex. "dev", "prod")
-                "CLIENT_SECRET": ["YOUR_CLIENT_SECRET"], (for orcid oauth)
-                "CLIENT_ID": ["YOUR_CLIENT_ID"], (for orcid oauth)
-                "SECRET_KEY": ["YOUR_SECRET_KEY"], (for flask session to work)
+                "STAGE": "/[YOUR_STAGE_NAME]", //(ex. "dev", "prod")
+                "CLIENT_SECRET": ["YOUR_CLIENT_SECRET"], //(for orcid oauth)
+                "CLIENT_ID": ["YOUR_CLIENT_ID"], //(for orcid oauth)
+                "SECRET_KEY": ["YOUR_SECRET_KEY"], //(for flask session to work)
         }
     }
 }
