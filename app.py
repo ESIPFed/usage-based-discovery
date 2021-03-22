@@ -92,7 +92,7 @@ def main(topic, app):
     screenshot = s3.create_presigned_url('test-bucket-parth', filename)
     
     in_session = 'orcid' in session
-    trusted_user = 'orcid' in session and session['orcid'] in trusted 
+    trusted_user = 'role' in session and session['role']=='supervisor' 
     
     for d in datasets:
         d['encoded_doi']=urllib.parse.quote(urllib.parse.quote(d['doi'], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
@@ -151,6 +151,7 @@ def login():
 @app.route('/logout')
 def logout():
     del session['orcid']
+    del session['role']
     return redirect(request.referrer)
 
 @app.route('/auth')
@@ -271,7 +272,7 @@ def validate_form(f):
     if f['Topic']=='Choose..':
         return False
     #potentially do some checks here before submission into the db
-    if 'orcid' in session and session['orcid'] in trusted:
+    if 'role' in session and session['role']=='supervisor':
         return True
     return False
 
@@ -280,7 +281,7 @@ def delete_dataset_relation(encoded_app_name, encoded_doi):
     # double decode to avoid apache %2F translation, so %252F goes to %2F which goes to /
     doi = urllib.parse.unquote(urllib.parse.unquote(encoded_doi)) 
     app_name = urllib.parse.unquote(urllib.parse.unquote(encoded_app_name))
-    if 'orcid' in session and session['orcid'] in trusted:
+    if 'role' in session and session['role']=='supervisor':
         g = GraphDB() 
         #log this change in session to be able to undo later
         dataset = g.get_dataset(doi)
@@ -304,7 +305,7 @@ def delete_dataset_relation(encoded_app_name, encoded_doi):
 def delete_application(encoded_app_name):
     # double decode to avoid apache %2F translation, so %252F goes to %2F which goes to /
     app_name = urllib.parse.unquote(urllib.parse.unquote(encoded_app_name))
-    if 'orcid' in session and session['orcid'] in trusted:
+    if 'role' in session and session['role']=='supervisor':
         g = GraphDB() 
         #session 'changes' keeps a history of all changes made by that user
         #before we delete application we need to store all the info so we can undo
