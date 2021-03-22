@@ -44,7 +44,7 @@
             <button style="width: 100%;" class="selected-app">
               <br />
               <h4 class="font">
-                <strong>{{a['name'].replace('~slash','/').replace('~pipe','|')}}</strong>
+                <strong>{{a['name']}}</strong>
               </h4>
               <!--<em class="font">Datasets: 1</em>-->
               <strong>{{a['description'][:50]}}...</strong>
@@ -60,7 +60,7 @@
           >
             <button style="width: 100%;" class="font">
               <br />
-              <h4 class="font">{{a['name'].replace('~slash','/').replace('~pipe','|')}}</h4>
+              <h4 class="font">{{a['name']}}</h4>
               <!--<em class="font">Datasets: 1</em>-->
               {{a['description'][:50]}}...
               <br /><br />
@@ -74,7 +74,7 @@
 	{% if trusted_user and undo%} 
 	<!-- undo btn -->
 	<button 
-	   onclick="if (confirm ( 'Are you sure you want to undo your last change?\nChange: \n{{undo}}')) {window.location.href = '{{stage}}/undo';}" 
+	   onclick="if (confirm ( 'Are you sure you want to undo your last change?\nChange type: \n{{undo}}')) {window.location.href = '{{stage}}/undo';}" 
      	  type="button"
       	  class="btn btn-warning btn-md"
       	  >Undo last change</button
@@ -82,7 +82,7 @@
 	{% endif %}
         {% if app == None %}
         <div class="heading">
-          <h1 class="font">{{apps[0]['name'].replace('~slash','/').replace('~pipe','|')}}</h1>
+          <h1 class="font">{{apps[0]['name']}}</h1>
           <!-- <h4 class="font">{{apps[0]['description']}}</h4> -->
 
           {% if apps[0]['site'] != 'None' %}
@@ -134,7 +134,7 @@
         </div>
         {% else %}
         <div class="heading">
-          <h1 class="font">{{app[0]['name'].replace('~slash','/').replace('~pipe','|')}}</h1>
+          <h1 class="font">{{app[0]['name']}}</h1>
           <!-- <h4 class="font">{{app[0]['description']}}</h4> -->
           {% if app[0]['site'] != 'None' %}
           <a
@@ -166,7 +166,12 @@
 	      class="btn btn-danger btn-md"
 	      >Delete Application</button
       	    >
-
+	    <button
+	      onclick="edit_application('{{app[0]['name']}}')"  
+	      type="button"
+	      class="btn btn-warning btn-md"
+	      >Edit</button>
+	    <!--we need to make a post with a filled out form-->
 	  {% endif %} 
           <br />
           <!--application website description-->
@@ -222,17 +227,6 @@
 	      class="btn btn-danger btn-sm"
 	      >Unlink Dataset Relation</button
       	    >
-   <!--<script>
-	   perhaps go back to this script in the future, but for now the confim inside onclick works fine for confirmation
-    function deleteCheck(val) {
-	if (confirm("Are you sure you want to delete this relationship with?")){
-		console.log(val.getAttribute("data-value");
-		window.location.href = val.data-value;
-	}
-    }
-    
-  </script>
-	-->
 	    {% endif %}
             <br /><br />
           </div>
@@ -241,7 +235,26 @@
       </div>
     </div>
   </div>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script>
+	    function edit_application(app_name){
+		var payload = {"name" : app_name, "type":"edit_application"};
+		var form = document.createElement('form');
+		form.style.visibility = 'hidden'; // no user interaction is necessary
+		form.method = 'POST'; // forms by default use GET query strings
+		form.action = '{{stage}}/add-relationship';
+		for (var key in payload) {
+		  console.log(key);
+		  var input = document.createElement('input');
+		  input.name = key;
+		  input.value = payload[key];
+		  form.appendChild(input); // add key/value pair to form
+		}
+		document.body.appendChild(form); // forms cannot be submitted outside of body
+		console.log(form)
+		form.submit(); // send the payload and navigate
+	    }
+	</script>
 
   <!-- JavaScript Bundle with Popper -->
   <script

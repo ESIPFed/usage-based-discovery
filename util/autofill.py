@@ -3,7 +3,8 @@ from bs4 import BeautifulSoup
 import re
 import xml.etree.ElementTree as ET
 from w3lib.html import remove_tags
-import lxml, lxml.html, lxml.html.clean
+#import lxml, lxml.html, lxml.html.clean
+
 import json
 
 applications_list = []
@@ -305,7 +306,7 @@ def makedict(site, soup, data):
     result['keywords'] = get_keywords(data, soup)
     result['datasets'] = get_datasets(result['keywords'])
     return result
-
+'''
 def autofill(url):
     print(url)
     response = requests.get(url)
@@ -327,6 +328,19 @@ def autofill(url):
     data = re.sub("\s\s+", " ", data)
     result = makedict(url, soup, data)
     print(json.dumps(result, indent=4, sort_keys=True))
+    return result
+'''
+
+def autofill(url):
+    print(url)
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser') #contains all of the tags, raw HTML 
+    data = soup.get_text()
+    #remove html entities like &#13;
+    data = re.sub("&\W*\w{2,4};", "", data)
+    data = re.sub("\s\s+", " ", data)
+    result = makedict(url, soup, data)
+    print(json.dumps(result, indent=4))
     return result
 
 '''

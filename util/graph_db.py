@@ -6,8 +6,8 @@ from __future__  import print_function  # Python 2/3 compatibility
 import os
 import sys
 from gremlin_python.structure.graph import Graph
-from gremlin_python.process.graph_traversal import unfold, inE, addV, addE, outV, otherV
-from gremlin_python.process.traversal import Cardinality, T, Direction
+from gremlin_python.process.graph_traversal import unfold, inE, addV, addE, outV, otherV, bothE
+from gremlin_python.process.traversal import Cardinality, T, Direction, P
 from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
 
 def valid_endpoint(endpoint):
@@ -142,6 +142,9 @@ class GraphDB:
         another nice sanity check if you will
         '''
         return self.graph_trav.E().count().next()
+
+    def get_common_datasets(self):
+         return self.graph_trav.V().hasLabel('dataset').where(bothE().count().is_(P.gte(4))).elementMap().toList()
 
     def add_app(self, app):
         '''

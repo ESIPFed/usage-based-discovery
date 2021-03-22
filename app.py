@@ -29,7 +29,7 @@ trusted= {
             '0000-0002-0868-7412':'Sophia Xia',
         }
 '''
-g= GraphDB()
+#general app layout for reference
 APP = {
         'topic': 'Test',
         'name': 'test_name',
@@ -38,8 +38,6 @@ APP = {
         'publication': 'None',
         'description': 'example description 123'
 }
-g.add_app(app)
-topics = g.get_topics()
 '''
 # Initial screen
 @app.route('/')
@@ -101,7 +99,7 @@ def main(topic, app):
 
     undo = None 
     if 'changes' in session and len(session['changes'])>0:
-        undo = json.dumps(session['changes'][-1])
+        undo = json.dumps(session['changes'][-1]['type'])
     return render_template('index.html', stage=stage, topic=topic, \
         topics=topics, apps=relapps, app=appsel, datasets=datasets, screenshot=screenshot, \
         in_session=in_session, trusted_user=trusted_user, undo=undo)
@@ -130,17 +128,22 @@ def login():
     response = api.get_token_from_authorization_code(code, "https://ep9qg4gxr9.execute-api.us-west-1.amazonaws.com/dev/")
     print(output_json)
     '''
-    inputstr = 'client_id=' + client_id + '&client_secret=' + client_secret + '&grant_type=authorization_code&code=' + code
-    '''
-    process = subprocess.Popen(['curl', '-i', '-L', '-H', 'Accept: application/json', '--data', inputstr,  'https://sandbox.orcid.org/oauth/token'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    stdout, stdeer = process.communicate()
-    print(stdout)
-    ''' 
+    inputstr = 'client_id=' + client_id + '&client_secret=' + client_secret + '&grant_type=authorization_code&code=' + code 
     output = subprocess.check_output(['curl', '-i', '-L', '-H', 'Accept: application/json', '--data', inputstr,  'https://sandbox.orcid.org/oauth/token'],universal_newlines=True)
     
     ind = output.index('{')
     output = output[ind:]
-    output_json = json.loads(output)   
+    output_json = json.loads(output)
+    
+    s3 = s3Functions()
+    data = s3.get_file('test-bucket-parth', 'orcid.json')
+    data = json.loads(data)
+    if output_json['orcid'] in data['supervisor']:
+        print("hi i'm supervisor, welcome to earth")
+        session['role'] = 'supervisor'
+    else:
+        session['role'] = 'general'
+    print(session['role'])
     session['orcid']= output_json['orcid']
     print(session['orcid'])
     return redirect(stage)
@@ -168,17 +171,20 @@ def add_relationship():
 
     if request.method == "POST":
         f={}
+        print(request.form.items())
         #since request.form is an immutable obj, we would like to copy it to something mutable
         for key, value in request.form.items():
             f[key] = value
         print(f)
         status = "failure"
         try:
+            #check if the form is submitted with the autofill tag
             if 'autofill' in f and f['autofill']=='true':
                 status= ""
                 fill = autofill(f['site'])
                 datasets_obj = fill['datasets']
                 print(fill)
+                #if description/App name is not filled in then autofill them
                 if f['description'] == '':
                     f['description'] = fill['description']
                 
@@ -200,15 +206,43 @@ def add_relationship():
         except:
             status = "invalid URL"
             return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid)
+        #Filling in the form when users try to edit an app
+        if 'type' in f and f['type'] == 'edit_application':
+            status = "edit_application"
+            datasets_obj = g.get_datasets_by_app(f['name'])
+            app = g.get_app(f['name'])[0]
+            print("Datasets: ",datasets_obj)
+            print("App: ", app)
+            f['Application_Name'] = f['name']
+            f['description'] = app['description']
+            f['Topic'] = app['topic']
+            f['site'] = app['site']
+            f['Publication_Link'] = app['publication']
+            #iterating through datasets so they also show up in form
+            for index, item in enumerate(datasets_obj):
+                title = item['title']
+                doi = item['doi']
+                f['Dataset_Name_'+str(index+10)] = title
+                f['DOI_'+str(index+10)] = doi
+            return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid)
 
-        #check if submission is valid 
+
+        #check if submission is valid, if valid then we upload the content
         if validate_form(f):
+            #delete previous application if there was one 
+            if 'prev_app_name' in f:
+                datasets = g.get_datasets_by_app(f['prev_app_name'])
+                g.delete_app(f['prev_app_name'])
+                for dataset in datasets:
+                    g.delete_dataset(dataset['doi'])
+
             status = "success"
+            f['screenshot'] = 'testing 123.png'
             APP = {
                     'topic': f['Topic'],
                     'name': f['Application_Name'],
                     'site': f['site'],
-                    'screenshot': 'Testing 123.png',
+                    'screenshot': f['screenshot'],
                     'publication': f['Publication_Link'],
                     'description': f['description'] 
             }
@@ -223,25 +257,20 @@ def add_relationship():
                         list_of_datasets.append(value)
                     if key[:4] =="DOI_":
                         list_of_DOIs.append(value)
-            print(list_of_datasets)
-            print(list_of_DOIs)
-           
             # upload lists of datasets/dois to db
             i = 0
             for Dataset_name, DOI in zip(list_of_datasets, list_of_DOIs):
                 DATASET = {'title': Dataset_name, 'doi': DOI}
                 g.add_dataset(DATASET)
                 g.add_relationship(f['Application_Name'],DOI)
-                print(i, " : ", Dataset_name, DOI)
+                print(i, " : ", "Dataset name: ", Dataset_name, " DOI: ", DOI)
                 i+=1
     return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid)
 
 def validate_form(f):
     if f['Topic']=='Choose..':
         return False
-    #for item in f.values():
     #potentially do some checks here before submission into the db
-
     if 'orcid' in session and session['orcid'] in trusted:
         return True
     return False
@@ -267,7 +296,7 @@ def delete_dataset_relation(encoded_app_name, encoded_doi):
         else:
             session['changes'] = [change]
         print("this is dataset change" , session['changes'])
-        #delete relationship function 
+        # after logging, delete relationship function 
         g.delete_relationship(app_name, doi)
     return redirect(request.referrer)
 
