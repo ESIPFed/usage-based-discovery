@@ -1,6 +1,6 @@
 from util.graph_db import GraphDB
 from util.s3_functions import s3Functions
-from flask import Flask, render_template, request, session, redirect
+from flask import Flask, url_for, render_template, request, session, redirect
 #from model import RegForm
 import requests
 #import orcid
@@ -102,28 +102,7 @@ def main(topic, app):
 
 @app.route('/login')
 def login():
-
     code = request.args.get('code')
-    '''
-    headers = {
-        'Accept': 'application/json',
-        'Content-Type':'application/json;charset=UTF-8'
-    }
-
-    data = {
-      'client_id': client_id,
-      'client_secret': client_secret,
-      'grant_type': 'authorization_code',
-      'code': code,
-    }
-    print(data)
-    url = 'https://sandbox.orcid.org/oauth/token'
-    output_json = requests.post(url, headers=headers, data=data)
-
-    api = orcid.PublicAPI(client_id, client_secret, sandbox=True)
-    response = api.get_token_from_authorization_code(code, "https://ep9qg4gxr9.execute-api.us-west-1.amazonaws.com/dev/")
-    print(output_json)
-    '''
     inputstr = 'client_id=' + client_id + '&client_secret=' + client_secret + '&grant_type=authorization_code&code=' + code 
     output = subprocess.check_output(['curl', '-i', '-L', '-H', 'Accept: application/json', '--data', inputstr,  'https://sandbox.orcid.org/oauth/token'],universal_newlines=True)
     
@@ -152,13 +131,15 @@ def logout():
 
 @app.route('/auth')
 def auth():
-    return redirect("https://sandbox.orcid.org/oauth/authorize?client_id=APP-J5XDZ0YEXPLVSRMZ&response_type=code&scope=/authenticate&redirect_uri=https://ep9qg4gxr9.execute-api.us-west-1.amazonaws.com/dev/login")
+    redirect_uri = request.url_root + "/login"
+    return redirect("https://sandbox.orcid.org/oauth/authorize?client_id=APP-J5XDZ0YEXPLVSRMZ&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
 
 @app.route('/add-relationship', methods=["GET","POST"])
 def add_relationship():
     #only allowing people with orcid accounts to be able to add-relationships, and for it to be posted to the database they much also be trusted users
     if 'orcid' not in session:
-        return redirect("https://sandbox.orcid.org/oauth/authorize?client_id=APP-J5XDZ0YEXPLVSRMZ&response_type=code&scope=/authenticate&redirect_uri=https://ep9qg4gxr9.execute-api.us-west-1.amazonaws.com/dev/login")
+        redirect_uri = request.url_root + "/login"
+        return redirect("https://sandbox.orcid.org/oauth/authorize?client_id=APP-J5XDZ0YEXPLVSRMZ&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
     orcid = 'orcid' in session
     
     g = GraphDB()
@@ -322,7 +303,7 @@ def delete_application(encoded_app_name):
         print("this is application change", session['changes'])
         #delete application
         g.delete_app(app_name)
-    redirect_path = request.referrer.rsplit('/',1)[0] + '/all' # this is so we direct to /topic/all instead of topic/app
+    redirect_path = request.referrer.rsplit('/',1)[0] + '/all' # this is so we direct to /topic/all instead of topic/app (topic/app doesn't exit after it gets deleted)
     return redirect(redirect_path)
 
 @app.route('/undo')
