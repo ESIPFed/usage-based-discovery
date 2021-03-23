@@ -19,11 +19,13 @@ import os
 import subprocess
 
 app = Flask(__name__)
-
-app.secret_key = os.environ.get('SECRET_KEY')
+secret_key = os.urandom(24)
+app.secret_key = secret_key
 stage = os.environ.get('STAGE')
 client_secret = os.environ.get('CLIENT_SECRET')
 client_id = os.environ.get('CLIENT_ID')
+s3_bucket = os.environ.get('S3_BUCKET')
+
 '''
 #general app layout for reference
 APP = {
@@ -85,7 +87,7 @@ def main(topic, app):
         # query for all datasets relating to specified application
         datasets = g.get_datasets_by_app(app)
     s3 = s3Functions()
-    screenshot = s3.create_presigned_url('test-bucket-parth', filename)
+    screenshot = s3.create_presigned_url(s3_bucket, filename)
     
     in_session = 'orcid' in session
     trusted_user = 'role' in session and session['role']=='supervisor' 
@@ -104,7 +106,7 @@ def main(topic, app):
 def login():
     code = request.args.get('code')
     inputstr = 'client_id=' + client_id + '&client_secret=' + client_secret + '&grant_type=authorization_code&code=' + code 
-    output = subprocess.check_output(['curl', '-i', '-L', '-H', 'Accept: application/json', '--data', inputstr,  'https://sandbox.orcid.org/oauth/token'],universal_newlines=True)
+    output = subprocess.check_output(['curl', '-i', '-L', '-H', 'Accept: application/json', '--data', inputstr,  'https://orcid.org/oauth/token'],universal_newlines=True)
     
     ind = output.index('{')
     output = output[ind:]
@@ -132,14 +134,14 @@ def logout():
 @app.route('/auth')
 def auth():
     redirect_uri = request.url_root + "/login"
-    return redirect("https://sandbox.orcid.org/oauth/authorize?client_id=APP-J5XDZ0YEXPLVSRMZ&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
+    return redirect("https://orcid.org/oauth/authorize?client_id=" + client_id + "&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
 
 @app.route('/add-relationship', methods=["GET","POST"])
 def add_relationship():
     #only allowing people with orcid accounts to be able to add-relationships, and for it to be posted to the database they much also be trusted users
     if 'orcid' not in session:
         redirect_uri = request.url_root + "/login"
-        return redirect("https://sandbox.orcid.org/oauth/authorize?client_id=APP-J5XDZ0YEXPLVSRMZ&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
+        return redirect("https://orcid.org/oauth/authorize?client_id=" + client_id + "&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
     orcid = 'orcid' in session
     
     g = GraphDB()
