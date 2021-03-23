@@ -132,14 +132,14 @@ def logout():
 @app.route('/auth')
 def auth():
     redirect_uri = request.url_root + "/login"
-    return redirect("https://sandbox.orcid.org/oauth/authorize?client_id=APP-J5XDZ0YEXPLVSRMZ&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
+    return redirect("https://sandbox.orcid.org/oauth/authorize?client_id=" + client_id + "&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
 
 @app.route('/add-relationship', methods=["GET","POST"])
 def add_relationship():
     #only allowing people with orcid accounts to be able to add-relationships, and for it to be posted to the database they much also be trusted users
     if 'orcid' not in session:
         redirect_uri = request.url_root + "/login"
-        return redirect("https://sandbox.orcid.org/oauth/authorize?client_id=APP-J5XDZ0YEXPLVSRMZ&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
+        return redirect("https://sandbox.orcid.org/oauth/authorize?client_id=" + client_id + "&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
     orcid = 'orcid' in session
     
     g = GraphDB()
