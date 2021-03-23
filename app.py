@@ -9,6 +9,7 @@ from gremlin_python.process.strategies import *
 from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
 
 import os
+import pprint
 
 app = Flask(__name__)
 
@@ -44,6 +45,7 @@ def main(topic, app):
         appsel = None
         # query for datasets related to the topic
         datasets = g.get_datasets_by_topic(topic)
+        pprint.pprint(datasets)
         filename = relapps[0]['screenshot']
     # query for single application (vertex) with name specified by parameter
     else:

@@ -20,6 +20,7 @@ def db_input_csv(input_file):
     neptune_endpoint: secure web socket Neptune endpoint
     """
     graph = GraphDB()
+    graph.clear_database()
     # load csv file
     with open(input_file, 'r') as file:
         # initiate csv reader
@@ -30,7 +31,6 @@ def db_input_csv(input_file):
             print(graph.add_app(line))
             print(graph.add_dataset(line))
             print(graph.add_relationship(line['name'], line['doi']))
-            
     # counts vertices, used for troubleshooting purposes
     print(graph.get_vertex_count())
     print(graph.get_edge_count())

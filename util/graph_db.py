@@ -6,8 +6,8 @@ from __future__  import print_function  # Python 2/3 compatibility
 import os
 import sys
 from gremlin_python.structure.graph import Graph
-from gremlin_python.process.graph_traversal import unfold, inE, addV, addE, outV, otherV
-from gremlin_python.process.traversal import Cardinality, T, Direction
+from gremlin_python.process.graph_traversal import unfold, inE, addV, addE, outV, otherV, bothE, __
+from gremlin_python.process.traversal import Cardinality, T, Direction, P
 from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
 
 def valid_endpoint(endpoint):
@@ -107,17 +107,23 @@ class GraphDB:
         '''
         return self.graph_trav.V().has('application', 'topic', topic).elementMap().toList()
 
+    def get_valid_apps_by_topic(self, topic):
+        '''
+        queries database for a list of all applications related to the given topic
+        '''
+        return self.graph_trav.V().has('application', 'topic',topic).where(bothE().count().is_(P.gt(0))).elementMap().toList()
+
     def get_datasets_by_topic(self, topic):
         '''
         queries database for a list of datasets related to the given topic
         '''
-        return self.graph_trav.V().has('application', 'topic', topic).out().elementMap().toList()
+        return self.graph_trav.V().has('application', 'topic', topic).outE().inV().path().by(__.valueMap()).toList()
 
     def get_datasets_by_app(self, name):
         '''
         queries database for a list of datasets that are connected to the given application
         '''
-        return self.graph_trav.V().has('application', 'name', name).out().elementMap().toList()
+        return self.graph_trav.V().has('application', 'name', name).outE().inV().path().by(__.valueMap()).toList()
 
     def get_vertex_count(self):
         '''
@@ -132,6 +138,9 @@ class GraphDB:
         another nice sanity check if you will
         '''
         return self.graph_trav.E().count().next()
+
+    def get_common_datasets(self):
+        return self.graph_trav.V().hasLabel('dataset').where(bothE().count().is_(P.gte(4))).elementMap().toList()
 
     def add_app(self, app):
         '''
@@ -155,13 +164,16 @@ class GraphDB:
                 .property('doi', dataset['doi']) \
                 .property('title', dataset['title'])).next()
 
-    def add_relationship(self, name, doi):
+    def add_relationship(self, name, doi, orcid="", verified=False):
         '''
         adds relationship to database if it doesn't already exist
         '''
         return self.graph_trav.V().has('application', 'name', name).as_('v') \
                 .V().has('dataset', 'doi', doi) \
-                .coalesce(inE('uses').where(outV().as_('v')), addE('uses').from_('v')).next()
+                .coalesce(inE('uses').where(outV().as_('v')), addE('uses') \
+                    .property('orcid', orcid) \
+                    .property('verified', verified) \
+                .from_('v')).next()
 
     def update_app(self, name, app):
         '''
@@ -212,9 +224,9 @@ class GraphDB:
 
     def delete_dataset(self, doi):
         '''
-        deletes dataset vertex in the database
+        deletes dataset vertex in the database if it has no connections
         '''
-        return self.graph_trav.V().has('dataset', 'doi', doi).drop().iterate()
+        return self.graph_trav.V().has('dataset', 'doi', doi).where(bothE().count().is_(0)).drop().iterate()
 
     def delete_relationship(self, name, doi):
         '''

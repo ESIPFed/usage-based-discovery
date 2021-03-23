@@ -274,17 +274,7 @@ def autofill(url):
     print(url)
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser') #contains all of the tags, raw HTML 
-    cleaner = lxml.html.clean.Cleaner(
-        scripts = True,
-        javascript = True,
-        comments = False,
-        style = True,
-        inline_style = True,
-    )
-    html = lxml.html.document_fromstring(response.text)
-    html_clean = cleaner.clean_html(html)
-    data = lxml.html.tostring(html_clean)
-    data = remove_tags(data)
+    data = soup.get_text()
     #remove html entities like &#13;
     data = re.sub("&\W*\w{2,4};", "", data)
     data = re.sub("\s\s+", " ", data)
