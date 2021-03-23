@@ -19,8 +19,7 @@ import os
 import subprocess
 
 app = Flask(__name__)
-secret_key = os.urandom(24)
-app.secret_key = secret_key
+app.secret_key = os.urandom(32)
 stage = os.environ.get('STAGE')
 client_secret = os.environ.get('CLIENT_SECRET')
 client_id = os.environ.get('CLIENT_ID')
