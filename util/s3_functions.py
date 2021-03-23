@@ -2,11 +2,18 @@ import io
 import platform
 import re
 from time import sleep
-from PIL import Image
+#from PIL import Image
 from selenium import webdriver
 import boto3
 
 class s3Functions():
+
+    def __init__(self):
+        #self.CHROME_DRIVER = self.get_chrome_driver()
+        self.s3= boto3.client('s3')
+
+    def __del__(self):
+        self.CHROME_DRIVER.quit()
 
     def upload_image_from_url(self, bucket_name, url):
         """
@@ -19,15 +26,18 @@ class s3Functions():
         Returns output filename, basically the meat of the URL,
         using '-' in place of non-alphnumeric chars, plus .png
         """
-        s3 = boto3.client('s3')
-        CHROME_DRIVER = self.get_chrome_driver()
         file_name = re.sub(r'^https?://', '', url)
         file_name = re.sub(r'\W', '-', file_name) + '.png'
-
-        CHROME_DRIVER.get(url)
-        sleep(2)
-        with io.BytesIO(CHROME_DRIVER.get_screenshot_as_png()) as f:
-            s3.upload_fileobj(f, bucket_name, file_name)
+        #CHROME_DRIVER = self.get_chrome_driver()
+        print('now doing chromedriver.get(',url,')')
+        self.CHROME_DRIVER.get(url)
+        print("now chrome driver has got the url")
+        sleep(4)
+        with io.BytesIO(self.CHROME_DRIVER.get_screenshot_as_png()) as f:
+            print("now attempting to upload fileobj(file{},bucket{},file_name{})".format(f,bucket_name, file_name))
+            self.s3.upload_fileobj(f, bucket_name, file_name)
+        
+        #CHROME_DRIVER.quit()
         return file_name
 
     def get_chrome_driver(self):
@@ -40,6 +50,8 @@ class s3Functions():
         # initiate selenium webdriver
         option = webdriver.ChromeOptions()
         option.add_argument('headless')
+        option.add_argument("--incognito")
+        option.add_argument('--hide-scrollbars')
         return webdriver.Chrome(path, options=option)
 
     def upload_image(self, bucket_name, unique_filename, f):
@@ -52,7 +64,14 @@ class s3Functions():
         image = bucket.Object(file_name)
         img_data = image.get().get('Body').read()
         return Image.open(io.BytesIO(img_data))
-    
+
+    def get_file(self, bucket_name, file_name):
+        s3 = boto3.resource('s3')
+        bucket = s3.Bucket(bucket_name)
+        f = bucket.Object(file_name)
+        file_data = f.get().get('Body').read()
+        return file_data
+
 #    def get_image_list(self, bucket_name, file_list:list):
 #        s3 = boto3.resource('s3')
 #        bucket = s3.Bucket(bucket_name)
