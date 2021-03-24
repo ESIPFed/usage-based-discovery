@@ -221,7 +221,6 @@ def add_relationship():
                 g.delete_app(f['prev_app_name'])
                 for dataset in datasets:# unlink and delete datasets with 0 relationships
                     g.delete_relationship(temp_app[0]['name'], dataset[2]['doi'][0])
-                    g.delete_dataset(dataset[2]['doi'][0])
             
             status = "success"
             APP = {
