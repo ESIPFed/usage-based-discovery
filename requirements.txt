@@ -59,6 +59,7 @@ troposphere==2.6.2
 Unidecode==1.1.1
 urllib3==1.24.3
 virtualenv==20.0.26
+w3lib==1.22.0
 wcwidth==0.2.5
 Werkzeug==0.16.1
 wsgi-request-logger==0.4.6

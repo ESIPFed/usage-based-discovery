@@ -88,15 +88,19 @@ To get the subnet_ids, click the Subnet groups on the side panel of the Neptune 
         "aws_region" : "us-west-1",
         "manage_roles" : true,
         "profile_name": null,
-        "project_name": "ubd-tool"
+        "project_name": "ubd-tool",
         "runtime": "python3.7",
-        "s3_bucket": "YOUR_S3_BUCKET"
+        "s3_bucket": "YOUR_S3_BUCKET",
         "vpc_config": {
-                "SubnetIds": ["YOUR_SUBNET_ID1", "YOUR_SUBNET_ID2"],
+                "SubnetIds": ["YOUR_SUBNET_ID1", "YOUR_SUBNET_ID2"] (make sure subnets are connected to NAT gateway),
                 "SecurityGroupIds": [ "YOUR_SECURITY_GROUP_ID" ]
-        }
+        },
         "environment_variables": {
-                "NEPTUNEDBRO": "wss://<neptune endpoint>:<port>/gremlin"
+                "NEPTUNEDBRO": "wss://<neptune endpoint>:<port>/gremlin", 
+                "STAGE": "/[YOUR_STAGE_NAME(ex. DEV/PROD)]",
+                "CLIENT_SECRET": ["YOUR_CLIENT_SECRET_FOR_ORCID_OAUTH"],
+                "CLIENT_ID": ["YOUR_CLIENT_ID_FOR_ORCID_OAUTH"],
+                "SECRET_KEY": ["YOUR_SECRET_KEY_FOR_FLASK_SESSION"],
         }
     }
 }

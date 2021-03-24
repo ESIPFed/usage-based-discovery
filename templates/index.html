@@ -1,16 +1,14 @@
 <body>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-3">
+      <div class="col-md-3 left-col">
         <div class="title">
-          <br />
           <h1 class="eosdis">
-            <a href="/{{stage}}/" style="color: white; text-decoration: none;">
+            <a href="{{stage}}/" style="color: white; text-decoration: none;">
               EOSDIS Usage Based Discovery
             </a>
           </h1>
-          <br />
-          <div class="d-flex justify-content-center">
+          <div class="d-flex justify-content-around">
             <div class="dropdown show">
               <a
                 class="btn btn-lg btn-secondary dropdown-toggle"
@@ -26,28 +24,27 @@
 
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 {% for t in topics %} {% if topic == t %}
-                <a class="dropdown-item active" href="/{{stage}}/{{t}}/all"
+                <a class="dropdown-item active" href="{{stage}}/{{t}}/all"
                   >{{t}}</a
                 >
                 {% else %}
-                <a class="dropdown-item" href="/{{stage}}/{{t}}/all">{{t}}</a>
+                <a class="dropdown-item" href="{{stage}}/{{t}}/all">{{t}}</a>
                 {% endif %} {% endfor %}
               </div>
             </div>
           </div>
         </div>
         <div class="appresults">
-          {% for a in apps %} {% if app != None and a['name'] == app[0]['name']
-          %}
+          {% for a in apps %} {% if app != None and a['name'] == app[0]['name'] %}
           <form
             class="app"
-            action="{{a['name']}}"
+            action="{{a['encoded_name']}}"
             onclick="document.location.reload(true)"
           >
             <button style="width: 100%;" class="selected-app">
               <br />
               <h4 class="font">
-                <strong>{{a['name'].replace('~~','/')}}</strong>
+                <strong>{{a['name']}}</strong>
               </h4>
               <!--<em class="font">Datasets: 1</em>-->
               <strong>{{a['description'][:50]}}...</strong>
@@ -58,12 +55,12 @@
           {% else %}
           <form
             class="app"
-            action="{{a['name']}}"
+            action="{{a['encoded_name']}}"
             onclick="document.location.reload(true)"
           >
             <button style="width: 100%;" class="font">
               <br />
-              <h4 class="font">{{a['name'].replace('~~','/')}}</h4>
+              <h4 class="font">{{a['name']}}</h4>
               <!--<em class="font">Datasets: 1</em>-->
               {{a['description'][:50]}}...
               <br /><br />
@@ -74,9 +71,18 @@
       </div>
 
       <div class="col-md-6">
+	{% if trusted_user and undo%} 
+	<!-- undo btn -->
+	<button 
+	   onclick="if (confirm ( 'Are you sure you want to undo your last change?\nChange type: \n{{undo}}')) {window.location.href = '{{stage}}/undo';}" 
+     	  type="button"
+      	  class="btn btn-warning btn-md"
+      	  >Undo last change</button
+        >
+	{% endif %}
         {% if app == None %}
         <div class="heading">
-          <h1 class="font">{{apps[0]['name'].replace('~~','/')}}</h1>
+          <h1 class="font">{{apps[0]['name']}}</h1>
           <!-- <h4 class="font">{{apps[0]['description']}}</h4> -->
 
           {% if apps[0]['site'] != 'None' %}
@@ -90,7 +96,7 @@
 
           {% endif %}
           <!--publication link-->
-          {% if apps[0]['publication'] != 'None' %} &emsp;&emsp;
+          {% if apps[0]['publication'] != 'None' %} 
           <a
             href="{{apps[0]['publication']}}"
             target="_blank"
@@ -106,7 +112,6 @@
             {{apps[0]['description'][:320]}}...
           </p>
           {% endif %}
-          <br /><br />
           <!--
                 {% if apps[0]['query'] != 'None' %}
                     &emsp;&emsp;
@@ -129,7 +134,7 @@
         </div>
         {% else %}
         <div class="heading">
-          <h1 class="font">{{app[0]['name'].replace('~~','/')}}</h1>
+          <h1 class="font">{{app[0]['name']}}</h1>
           <!-- <h4 class="font">{{app[0]['description']}}</h4> -->
           {% if app[0]['site'] != 'None' %}
           <a
@@ -143,7 +148,7 @@
           >
           {% endif %}
           <!--publication link, if none then DON'T INCLUDE-->
-          {% if app[0]['publication'] != 'None' %} &emsp;&emsp;
+          {% if app[0]['publication'] != 'None' %}
           <a
             href="{{app[0]['publication']}}"
             target="_blank"
@@ -154,6 +159,20 @@
             >Publication</a
           >
           {% endif %}
+	  {% if trusted_user %}
+	    <button 
+	      onclick="if (confirm ( 'Are you sure you want to delete the application {{app[0]["name"]}}')) {window.location.href = '{{stage}}/delete_application/{{app[0]['encoded_name']}}';}" 
+	      type="button"
+	      class="btn btn-danger btn-md"
+	      >Delete Application</button
+      	    >
+	    <button
+	      onclick="edit_application('{{app[0]['name']}}')"  
+	      type="button"
+	      class="btn btn-warning btn-md"
+	      >Edit</button>
+	    <!--we need to make a post with a filled out form-->
+	  {% endif %} 
           <br />
           <!--application website description-->
           {% if app[0]['site'] != 'None' %}
@@ -161,7 +180,6 @@
             {{app[0]['description'][:320]}}...
           </p>
           {% endif %}
-          <br /><br />
           <!--
               {% if app[0]['query'] != 'None' %}
                   &emsp;&emsp;
@@ -169,7 +187,6 @@
               {% endif %}
           -->
         </div>
-        <br /><br /><br /><br />
         <div>
           <a
             href="{{app[0]['site']}}"
@@ -185,7 +202,7 @@
         </div>
         {% endif %}
       </div>
-      <div class="col-md-3">
+      <div class="col-md-3 right-col">
         <div class="dataset-head">
           <h2 class="eosdis">Datasets</h2>
         </div>
@@ -204,13 +221,42 @@
             >
             <br>
             {{d[1]['orcid']}}
+            {% if trusted_user and app%}
+            <!-- only shows if you are a trusted user and the app is selected -->
+            <button 
+              onclick="if (confirm ( 'Are you sure you want to unlink the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/delete_dataset_relation/{{app[0]['encoded_name']}}/{{d['encoded_doi']}}';}" 
+              type="button"
+              class="btn btn-danger btn-sm"
+              >Unlink Dataset Relation</button
+                >
+            {% endif %}
             <br /><br />
           </div>
           {% endfor %}
-        </div>
+       </div>
       </div>
     </div>
   </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script>
+	    function edit_application(app_name){
+		var payload = {"name" : app_name, "type":"edit_application"};
+		var form = document.createElement('form');
+		form.style.visibility = 'hidden'; // no user interaction is necessary
+		form.method = 'POST'; // forms by default use GET query strings
+		form.action = '{{stage}}/add-relationship';
+		for (var key in payload) {
+		  console.log(key);
+		  var input = document.createElement('input');
+		  input.name = key;
+		  input.value = payload[key];
+		  form.appendChild(input); // add key/value pair to form
+		}
+		document.body.appendChild(form); // forms cannot be submitted outside of body
+		console.log(form)
+		form.submit(); // send the payload and navigate
+	    }
+	</script>
 
   <!-- JavaScript Bundle with Popper -->
   <script
@@ -271,15 +317,28 @@
 
     .col-md-3 {
       padding: 0;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .right-col {
+      border-left:groove;
+    }
+
+    .left-col{
+      border-right:groove;
     }
 
     .title {
       background-color: black;
       width: 100%;
-      height: 20%;
+      height: auto;
     }
 
     .eosdis {
+      margin:0rem;
+      padding:.5rem;
       color: white;
       font-family: "Maven Pro", sans-serif;
       text-align: center;
@@ -288,12 +347,19 @@
     .appresults {
       background-color: white;
       width: 100%;
-      height: 80%;
+      height: auto;
       direction: rtl;
       overflow-y: auto;
-      border-right: groove;
     }
 
+    .btn {
+      margin:.3rem;
+    }
+	
+    .btn-lg {
+      margin-bottom:.5rem;
+    }
+    
     .app {
       width: 100%;
       direction: ltr;
@@ -346,7 +412,7 @@
 
     .heading {
       margin-top: 7vh;
-      height: 20%;
+      height: auto;
       width: 100%;
       text-align: center;
       overflow-wrap: normal;
@@ -355,31 +421,28 @@
 
     .datasets {
       background-color: white;
-      border-left: groove;
       height: 100%;
       width: 30%;
       max-width: 350px;
       display: inline-table;
       position: absolute;
-      /*overflow-x: hidden;*/
       right: 0;
     }
 
     .dataset-head {
       background-color: black;
       width: 100%;
-      height: 7%;
+      height: auto;
+      padding:.5rem;
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow-y: hidden;
     }
 
     .dataset-results {
       width: 100%;
-      height: 93%;
+      height: auto;
       overflow-y: auto;
-      border-left: groove;
       padding: 0.5rem;
     }
 

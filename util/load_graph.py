@@ -22,6 +22,7 @@ def db_input_csv(input_file):
     graph = GraphDB()
     graph.clear_database()
     # load csv file
+    graph.clear_database()
     with open(input_file, 'r') as file:
         # initiate csv reader
         reader = csv.DictReader(file)

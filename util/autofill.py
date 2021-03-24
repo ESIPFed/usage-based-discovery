@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import re
 import xml.etree.ElementTree as ET
 from w3lib.html import remove_tags
-import lxml, lxml.html, lxml.html.clean
 import json
 from s3_functions import s3Functions
 
@@ -44,12 +43,6 @@ def get_descriptive_words(data):
             specific_measure = name
     if len(specific_measure) != 0:
         return specific_measure
-    for name in natural_phenomenons:
-        if name in data.lower():
-            phenomenon.append(name)
-    for name in general_measurements:
-        if name in data.lower():
-            measurement = name
     #combine the general measurements and natural phenomenons to get a more specific search 
     if len(phenomenon) != 0 and len(measurement) != 0:
         return phenomenon[0] + "+" + measurement
@@ -89,6 +82,7 @@ def get_dataset(url, nrt, descriptive_words):
             root = nrt_root
             hits = nrt_hits
     
+    descriptive_words = re.sub(" ", "%20", descriptive_words)
     desc_url = url + "&keyword=" + descriptive_words
     desc_response = requests.get(desc_url)
     desc_root = ET.fromstring(desc_response.content)
@@ -101,8 +95,6 @@ def get_dataset(url, nrt, descriptive_words):
 
     if hits > 15:
         return None
-
-    print(url)
     datasets = []
     for reference in root.find('references'):
         dataset_title = ""
@@ -135,15 +127,18 @@ def get_datasets(keywords):
                     covered_platforms.add(platform)
         queries.append(url)
 
+    #if the instrument name doesn't exist, then add the platform name 
     for platform in keywords['platforms']:
         if platform not in covered_platforms:
             url = cmr_url + '&platform=' + platform
             queries.append(url)
+
     '''
     for word in keywords['other']:
         url = cmr_url + "&keyword=" + word
         queries.append(url)
     '''
+
     #removes duplicate query links
     queries = list(dict.fromkeys(queries))
     datasets = []

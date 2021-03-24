@@ -50,7 +50,7 @@ def main():
 
         # keeps track of which apps have already been seen
         apps = set()
-        
+        s3F= s3Functions()
         for line in READER:
 
             # automated generation of dataset name from the doi
@@ -67,13 +67,19 @@ def main():
             #removes spaces before and after each data point
             for i in line:
                 line[i]= line[i].strip()
-            line['name'] = line['name'].replace('/', '~~')
+            #following line is obsolete after url-encoding 
+            #line['name'] = line['name'].replace('/', '~slash').replace('|','~pipe')
+            
             # automated generation of application screenshot from website link
             # this conditional handles duplicate application values
             if line['name'] not in apps:
                 print(f"Getting snapshot for {line['site']}", file=sys.stderr)
-                line['screenshot'] = s3Functions().upload_image_from_url('test-bucket-parth',line['site'])
-
+                try:
+                    line['screenshot'] = s3F.upload_image_from_url('test-bucket-parth',line['site'])
+                    print("\n\n")
+                except:
+                    print("ERROR getting {}".format(line['site']))
+                    continue
             # add app to set to indicate it has already been seen
             apps.add(line['name'])
 
