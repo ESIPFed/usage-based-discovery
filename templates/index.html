@@ -210,9 +210,9 @@
           {% for d in datasets %}
           <div class="dataset-div">
             <br />
-            <h4 class="font">{{d['title']}}</h4>
+            <h4 class="font">{{d[2]['title'][0]}}</h4>
             <a
-              href="{{d['doi']}}"
+              href="{{d[2]['doi'][0]}}"
               target="_blank"
               class="btn btn-secondary btn-sm"
               role="button"
@@ -222,7 +222,7 @@
 	    {% if trusted_user and app%}
 	    <!-- only shows if you are a trusted user and the app is selected -->
 	    <button 
-	      onclick="if (confirm ( 'Are you sure you want to unlink the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/delete_dataset_relation/{{app[0]['encoded_name']}}/{{d['encoded_doi']}}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to unlink the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/delete_dataset_relation/{{app[0]['encoded_name']}}/{{d[2]['encoded_doi']}}';}" 
 	      type="button"
 	      class="btn btn-danger btn-sm"
 	      >Unlink Dataset Relation</button

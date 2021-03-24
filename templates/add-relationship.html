@@ -275,13 +275,13 @@
 	  console.log($('#form1'));
 	  form1.submit();
 	}
-	
+	if ('{{status}}' == 'edit_application'){ //then append the prev app name 	
 	  $('<input />').attr('type', 'hidden')
 		.attr('name','prev_app_name')
 		.attr('value','{{f['Application_Name']}}')
 		.appendTo('#form1');
 	  console.log($('#form1'));
-	
+	}
 	(function () {
 	  'use strict'
 
