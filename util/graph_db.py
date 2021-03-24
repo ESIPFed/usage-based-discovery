@@ -230,9 +230,9 @@ class GraphDB:
 
     def delete_dataset(self, doi):
         '''
-        deletes dataset vertex in the database if it has no connections
+        deletes dataset vertex in the database
         '''
-        return self.graph_trav.V().has('dataset', 'doi', doi).where(bothE().count().is_(0)).drop().iterate()
+        return self.graph_trav.V().has('dataset', 'doi', doi).drop().iterate()
 
     def delete_relationship(self, name, doi):
         '''
