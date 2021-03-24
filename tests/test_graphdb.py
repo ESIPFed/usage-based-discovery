@@ -41,11 +41,11 @@ CHANGE_DATASET = {'title': 'Change dataset', 'doi': CHANGE_DOI}
 def test_valid_endpoint():
     assert valid_endpoint("wss://endpoint:8182/gremlin")
 
-def test_invalid_endpoint_start():
-    assert not valid_endpoint("endpoint:8182/gremlin")
-
-def test_invalid_endpoint_end():
+def test_invalid_endpoint():
+    assert not valid_endpoint("")
+    assert not valid_endpoint("endpoint")
     assert not valid_endpoint("wss://endpoint")
+    assert not valid_endpoint("endpoint:8182/gremlin")
 
 class TestInit():
 
@@ -110,8 +110,7 @@ class TestInit():
     def test_update_app_property(self):
         print(self.db.update_app_property(CHANGE_NAME, 'topic', 'Fires'))
         app = self.db.get_app(CHANGE_NAME)
-        print(CHANGE_PROP_APP.items())
-        print(app[0].items())
+        print(CHANGE_PROP_APP.items(), app[0].items())
         assert CHANGE_PROP_APP.items() <= app[0].items()
 
     def test_add_app_property(self):
@@ -154,6 +153,15 @@ class TestInit():
     def test_delete_dataset(self):
         print(self.db.add_dataset(DATASET))
         print(self.db.delete_dataset(DOI))
+        assert not self.db.has_dataset(DOI)
+        assert self.db.has_dataset(CHANGE_DOI)
+
+    def test_delete_orphan_datasets(self):
+        self.db.add_app(CHANGE_APP)
+        self.db.add_dataset(CHANGE_DATASET)
+        self.db.add_relationship(CHANGE_NAME, CHANGE_DOI)
+        self.db.add_dataset(DATASET)
+        self.db.delete_orphan_datasets()
         assert not self.db.has_dataset(DOI)
         assert self.db.has_dataset(CHANGE_DOI)
 

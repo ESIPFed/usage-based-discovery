@@ -116,12 +116,24 @@ class GraphDB:
     def get_datasets_by_topic(self, topic):
         '''
         queries database for a list of datasets related to the given topic
+        Sample return:
+        [ path[
+            { 'site': [''], 'publication': [''], 'name': [], 'publication': [], 'description': [] },
+            { verified: True, orcid: '0000-0000-0000-0000' },
+            { 'title': [''], 'doi': [''] }],
+          path[ {APP}, {EDGE}, {DATASET} ] , ...]
         '''
         return self.graph_trav.V().has('application', 'topic', topic).outE().inV().path().by(__.valueMap()).toList()
 
     def get_datasets_by_app(self, name):
         '''
         queries database for a list of datasets that are connected to the given application
+        Sample return:
+        [ path[
+            { 'site': [''], 'publication': [''], 'name': [], 'publication': [], ... },
+            { verified: True, orcid: '0000-0000-0000-0000' },
+            { 'title': [''], 'doi': [''] }],
+          path[ {APP}, {EDGE}, {DATASET} ], ... ]
         '''
         return self.graph_trav.V().has('application', 'name', name).outE().inV().path().by(__.valueMap()).toList()
 
@@ -184,7 +196,7 @@ class GraphDB:
             .property(Cardinality.single, 'name', app['name']) \
             .property(Cardinality.single, 'site', app['site']) \
             .property(Cardinality.single, 'screenshot', app['screenshot']) \
-            .property(Cardinality.single, 'publication', app['publication'])  \
+            .property(Cardinality.single, 'publication', app['publication']) \
             .property(Cardinality.single, 'description', app['description']).next()
 
     def update_app_property(self, name, prop, value):
@@ -224,9 +236,15 @@ class GraphDB:
 
     def delete_dataset(self, doi):
         '''
-        deletes dataset vertex in the database if it has no connections
+        deletes dataset vertex in the database
         '''
-        return self.graph_trav.V().has('dataset', 'doi', doi).where(bothE().count().is_(0)).drop().iterate()
+        return self.graph_trav.V().has('dataset', 'doi', doi).drop().iterate()
+
+    def delete_orphan_datasets(self):
+        '''
+        deletes all dataset vertexes in the database that have no connections
+        '''
+        return self.graph_trav.V().hasLabel('dataset').where(bothE().count().is_(0)).drop().iterate()
 
     def delete_relationship(self, name, doi):
         '''
