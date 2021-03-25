@@ -127,6 +127,7 @@
                 d3.select("#tooltip").style("opacity", 0)
                     .style("left", "0px")
                     .style("top", "0px")
+                    .html("")
              })
             .on("click", function(event, d) {
                 d3.select("#sidebar")
@@ -166,8 +167,18 @@
             .scaleExtent([1, 8])
             .on("zoom", zoomed));
 
+        
         function color(){
-            const scale = d3.scaleOrdinal(d3.schemePaired);
+            var colordomain = [
+                "Storms", "Precipitation", "Snowfall", "Hurricanes", "Soil Moisture", "Earthquakes",
+                "Water", "Cyclones", "Floods", "River heights", "Energy", "Agriculture",
+                "Lake heights", "Air", "Hazards", "Landslides", "Fires", "Volcanoes"]
+            var colordata = [
+                "#D9CCE3", "#CAACCB", "#BA8DB4", "#AA6F9E", "#994F88", "#882E72",
+                "#1965B0", "#437DBF", "#6195CF", "#7BAFDE", "#4EB265", "#90C987",
+                "#CAE0AB", "#F7F056", "#F7CB45", "#F4A736", "#EE8026", "#E65518",
+                "#777777", "#DC050C", "#A5170E", "#72190E", "#42150A"];
+            const scale = d3.scaleOrdinal().domain(colordomain).range(colordata);
             return d => scale(d.topic);
         }
 
