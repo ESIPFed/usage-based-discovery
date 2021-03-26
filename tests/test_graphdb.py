@@ -125,8 +125,8 @@ class TestInit():
         print(self.db.update_dataset(DOI, CHANGE_DATASET))
         dataset = self.db.get_dataset(CHANGE_DOI)
         print(CHANGE_DATASET.items())
-        print(dataset[0].items())
-        assert CHANGE_DATASET.items() <= dataset[0].items()
+        print(dataset.items())
+        assert CHANGE_DATASET.items() <= dataset.items()
 
     def test_get_data(self):
         data = self.db.get_data()

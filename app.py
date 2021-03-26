@@ -68,6 +68,7 @@ def main(topic, app):
     topics = g.get_topics()
     # query only for application relating to specified topic
     relapps = g.get_apps_by_topic(topic)
+    print(relapps)
     # double encoding relapps to avoid special characters issues
     for relapp in relapps:
         relapp['encoded_name'] = urllib.parse.quote(urllib.parse.quote(relapp['name'], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls

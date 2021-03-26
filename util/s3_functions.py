@@ -2,7 +2,7 @@ import io
 import platform
 import re
 from time import sleep
-#from PIL import Image
+from PIL import Image
 from selenium import webdriver
 import boto3
 
@@ -13,7 +13,8 @@ class s3Functions():
         self.s3= boto3.client('s3')
 
     def __del__(self):
-        self.CHROME_DRIVER.quit()
+        #self.CHROME_DRIVER.quit()
+        pass
 
     def upload_image_from_url(self, bucket_name, url):
         """

@@ -4,7 +4,7 @@ import re
 import xml.etree.ElementTree as ET
 from w3lib.html import remove_tags
 import json
-from s3_functions import s3Functions
+from .s3_functions import s3Functions
 
 s3 = s3Functions()
 data = s3.get_file('test-bucket-parth', 'facets.json')
