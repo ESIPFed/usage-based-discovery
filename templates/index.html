@@ -210,9 +210,9 @@
           {% for d in datasets %}
           <div class="dataset-div">
             <br />
-            <h4 class="font">{{d[2]['title']}}</h4>
+            <h4 class="font">{{d[2]['title'][0]}}</h4>
             <a
-              href="{{d[2]['doi']}}"
+              href="{{d[2]['doi'][0]}}"
               target="_blank"
               class="btn btn-secondary btn-sm"
               role="button"

@@ -86,7 +86,7 @@ class GraphDB:
         '''
         queries database for a set of all topics
         '''
-        topics = self.graph_trav.V().hasLabel('application').values('topic').toSet()
+        topics = self.graph_trav.V().hasLabel('application').values('topic').unfold().toSet()
         return topics
 
     def get_app(self, name):
@@ -111,13 +111,13 @@ class GraphDB:
         '''
         queries database for a list of all applications related to the given topic
         '''
-        return self.graph_trav.V().has('application', 'topic', topic).elementMap().toList()
+        return self.graph_trav.V().hasLabel('application').where(__.values('topic').unfold().is_(topic)).elementMap().toList()
 
     def get_valid_apps_by_topic(self, topic):
         '''
         queries database for a list of all applications related to the given topic
         '''
-        return self.graph_trav.V().has('application', 'topic',topic).where(bothE().count().is_(P.gt(0))).elementMap().toList()
+        return self.graph_trav.V().hasLabel('application').where(__.values('topic').unfold().is_(topic)).where(bothE().count().is_(P.gt(0))).elementMap().toList()
 
     def get_datasets_by_topic(self, topic):
         '''
@@ -129,7 +129,7 @@ class GraphDB:
             { 'title': [''], 'doi': [''] }],
           path[ {APP}, {EDGE}, {DATASET} ] , ...]
         '''
-        return self.graph_trav.V().has('application', 'topic', topic).outE().inV().path().by(__.valueMap()).toList()
+        return self.graph_trav.V().hasLabel('application').where(__.values('topic').unfold().is_(topic)).outE().inV().path().by(__.valueMap()).toList()
 
     def get_datasets_by_app(self, name):
         '''
@@ -158,11 +158,20 @@ class GraphDB:
         return self.graph_trav.E().count().next()
 
     def get_common_datasets(self):
-         return self.graph_trav.V().hasLabel('dataset').where(bothE().count().is_(P.gte(4))).elementMap().toList()
+        return self.graph_trav.V().hasLabel('dataset').where(bothE().count().is_(P.gte(4))).elementMap().toList()
 
     def add_app(self, app):
         '''
         adds application to database if it doesn't already exist
+        sample input:
+        {
+            'topic': ['topic1', 'topic2'],
+            'name': 'samplename',
+            'site': 'https://example.com',
+            'screenshot': 'image.png',
+            'publication': ['publication1', 'publication2'],
+            'description': 'sample description for a sample app'
+        }
         '''
         return self.graph_trav.V().has('application', 'name', app['name']) \
                 .fold().coalesce(unfold(), addV('application') \
@@ -246,14 +255,14 @@ class GraphDB:
         '''
         return self.graph_trav.V().has('dataset', 'doi', doi).drop().iterate()
 
-    def delete_orphan_datasets(self):
-        '''
-        deletes all dataset vertexes in the database that have no connections
-        '''
-        return self.graph_trav.V().hasLabel('dataset').where(bothE().count().is_(0)).drop().iterate()
-
     def delete_relationship(self, name, doi):
         '''
         deletes relationship edge in the database
         '''
         return self.graph_trav.V().has('name', name).outE("uses").where(otherV().has("doi", doi)).drop().iterate();
+    
+    def delete_orphan_datasets(self):
+        '''
+        deletes all dataset vertexes in the database that have no connections
+        '''
+        return self.graph_trav.V().hasLabel('dataset').where(bothE().count().is_(0)).drop().iterate()

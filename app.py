@@ -92,7 +92,7 @@ def main(topic, app):
     trusted_user = 'role' in session and session['role']=='supervisor' 
     
     for d in datasets:
-        d['encoded_doi']=urllib.parse.quote(urllib.parse.quote(d['doi'], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
+        d[2]['encoded_doi']=urllib.parse.quote(urllib.parse.quote(d[2]['doi'][0], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
 
     undo = None 
     if 'changes' in session and len(session['changes'])>0:
@@ -199,8 +199,8 @@ def add_relationship():
             f['Publication_Link'] = app['publication']
             #iterating through datasets so they also show up in form
             for index, item in enumerate(datasets_obj):
-                title = item['title']
-                doi = item['doi']
+                title = item[2]['title'][0]
+                doi = item[2]['doi'][0]
                 f['Dataset_Name_'+str(index+10)] = title
                 f['DOI_'+str(index+10)] = doi
             return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid)
@@ -208,15 +208,21 @@ def add_relationship():
 
         #check if submission is valid, if valid then we upload the content
         if validate_form(f):
+            f['screenshot'] = 'testing 123.png'
+            
             #delete previous application if there was one 
             if 'prev_app_name' in f:
                 datasets = g.get_datasets_by_app(f['prev_app_name'])
+                
+                #store screenshot info before app deletion
+                temp_app = g.get_app(f['prev_app_name'])
+                f['screenshot'] = temp_app[0]['screenshot']
+                #delete app so we can replace it with the newer version
                 g.delete_app(f['prev_app_name'])
-                for dataset in datasets:
-                    g.delete_dataset(dataset['doi'])
-
+                for dataset in datasets:# unlink and delete datasets with 0 relationships
+                    g.delete_relationship(temp_app[0]['name'], dataset[2]['doi'][0])
+            
             status = "success"
-            f['screenshot'] = 'testing 123.png'
             APP = {
                     'topic': f['Topic'],
                     'name': f['Application_Name'],
@@ -244,6 +250,7 @@ def add_relationship():
                 g.add_relationship(f['Application_Name'],DOI)
                 print(i, " : ", "Dataset name: ", Dataset_name, " DOI: ", DOI)
                 i+=1
+            g.delete_orphan_datasets()
     return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid)
 
 def validate_form(f):
@@ -277,6 +284,7 @@ def delete_dataset_relation(encoded_app_name, encoded_doi):
         print("this is dataset change" , session['changes'])
         # after logging, delete relationship function 
         g.delete_relationship(app_name, doi)
+        g.delete_orphan_datasets()
     return redirect(request.referrer)
 
 @app.route('/delete_application/<encoded_app_name>')
@@ -288,7 +296,10 @@ def delete_application(encoded_app_name):
         #session 'changes' keeps a history of all changes made by that user
         #before we delete application we need to store all the info so we can undo
         app = g.get_app(app_name)
-        datasets = g.get_datasets_by_app(app_name)
+        dataset_paths = g.get_datasets_by_app(app_name)
+        datasets = []
+        for path in dataset_paths:
+            datasets.append({'title': path[2]['title'][0], 'doi': path[2]['doi'][0]})
         change = {
             'type': 'delete_application',
             'app': app[0],
@@ -304,6 +315,7 @@ def delete_application(encoded_app_name):
         print("this is application change", session['changes'])
         #delete application
         g.delete_app(app_name)
+        g.delete_orphan_datasets()
     redirect_path = request.referrer.rsplit('/',1)[0] + '/all' # this is so we direct to /topic/all instead of topic/app (topic/app doesn't exit after it gets deleted)
     return redirect(redirect_path)
 
