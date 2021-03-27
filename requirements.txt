@@ -24,7 +24,7 @@ importlib-metadata==1.7.0
 iniconfig==1.1.1
 isodate==0.6.0
 itsdangerous==1.1.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 jmespath==0.9.3
 joblib==0.17.0
 kappa==0.6.0
@@ -44,7 +44,7 @@ pytest==6.2.2
 python-dateutil==2.6.1
 python-slugify==1.2.4
 pytz==2020.1
-PyYAML==5.3.1
+PyYAML==5.4.1
 regex==2020.11.13
 requests==2.24.0
 s3transfer==0.3.3
@@ -57,7 +57,7 @@ tornado==5.1.1
 tqdm==4.32.2
 troposphere==2.6.2
 Unidecode==1.1.1
-urllib3==1.24.3
+urllib3==1.26.4
 virtualenv==20.0.26
 w3lib==1.22.0
 wcwidth==0.2.5
