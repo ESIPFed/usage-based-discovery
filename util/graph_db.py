@@ -68,7 +68,7 @@ class GraphDB:
         reformats the data for d3 network visualization
         returns dict containing nodes and links
         '''
-        vertices = self.graph_trav.V().valueMap().toList()
+        vertices = self.graph_trav.V().valueMap(True).toList()
         print(vertices)
         for v in vertices:
             v['id'] = v.pop(T.id)
@@ -83,6 +83,13 @@ class GraphDB:
             e['target'] = edge[T.id]
         return {'nodes': vertices, 'links': edges}
 
+    def mapify(self, valuemap):
+        for item in valuemap:
+            for prop in item.keys():
+                if len(item[prop]) == 1:
+                    item[prop] = item[prop][0]
+        return valuemap
+
     def get_topics(self):
         '''
         queries database for a set of all topics
@@ -94,31 +101,25 @@ class GraphDB:
         '''
         queries database for a specific application
         '''
-        app = self.graph_trav.V().has('application', 'name', name).elementMap().toList()
-        app[0].pop(T.id)
-        app[0].pop(T.label)
-        return app
+        return self.graph_trav.V().has('application', 'name', name).valueMap().toList()
 
     def get_dataset(self, doi):
         '''
         queries database for a specific database
         '''
-        res = self.graph_trav.V().has('dataset','doi', doi).elementMap().toList()
-        res[0].pop(T.id)
-        res[0].pop(T.label)
-        return res[0]
+        return self.graph_trav.V().has('dataset','doi', doi).valueMap().toList()
 
     def get_apps_by_topic(self, topic):
         '''
         queries database for a list of all applications related to the given topic
         '''
-        return self.graph_trav.V().has('application', 'topic', topic).elementMap().toList()
+        return self.graph_trav.V().has('application', 'topic', topic).valueMap().toList()
 
     def get_valid_apps_by_topic(self, topic):
         '''
         queries database for a list of all applications related to the given topic
         '''
-        return self.graph_trav.V().has('application', 'topic', topic).where(bothE().count().is_(P.gt(0))).elementMap().toList()
+        return self.graph_trav.V().has('application', 'topic', topic).where(bothE().count().is_(P.gt(0))).valueMap().toList()
 
     def get_datasets_by_topic(self, topic):
         '''

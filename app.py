@@ -67,7 +67,7 @@ def main(topic, app):
     g = GraphDB()
     topics = g.get_topics()
     # query only for application relating to specified topic
-    relapps = g.get_apps_by_topic(topic)
+    relapps = g.mapify(g.get_apps_by_topic(topic))
     print(relapps)
     # double encoding relapps to avoid special characters issues
     for relapp in relapps:
