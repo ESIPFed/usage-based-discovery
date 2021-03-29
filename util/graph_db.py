@@ -204,6 +204,13 @@ class GraphDB:
                     .property('verified', verified) \
                 .from_('v')).next()
 
+    def add_app_property(self, name, prop, value):
+        '''
+        updates only one of the application's properties
+        '''
+        return self.graph_trav.V().has('application', 'name', name) \
+                .property(Cardinality.set_, prop, value).next()
+
     def update_app(self, name, app):
         '''
         updates application vertex in the database with new information
@@ -223,13 +230,6 @@ class GraphDB:
         '''
         return self.graph_trav.V().has('application', 'name', name) \
                 .property(Cardinality.single, prop, value).next()
-
-    def add_app_property(self, name, prop, value):
-        '''
-        updates only one of the application's properties
-        '''
-        return self.graph_trav.V().has('application', 'name', name) \
-                .property(Cardinality.list_, prop, value).next()
 
     def update_dataset(self, doi, dataset):
         '''
