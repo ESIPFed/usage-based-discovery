@@ -42,7 +42,7 @@
             .style("max-width", "700px")
             .style("position", "absolute")
             .style("opacity", 0)
-            .style("background-color", "#d5ffd990")
+            .style("background-color", "#d5ffd9")
             .style("font-family", "Verdana")
             .style("border-radius", "5px")
             .style("padding", "10px");
@@ -55,7 +55,7 @@
             .style("right", "20px")
             .style("top", "120px")
             .style("opacity", 0)
-            .style("background-color", "#d5ffd990")
+            .style("background-color", "#d5ffd9")
             .style("font-family", "Verdana")
             .style("border-radius", "5px")
             .style("padding", "10px");
@@ -169,26 +169,20 @@
 
         
         function color(){
-            var colordomain = [
-                "Storms", "Precipitation", "Snowfall", "Hurricanes", "Soil Moisture", "Earthquakes",
-                "Water", "Cyclones", "Floods", "River heights", "Energy", "Agriculture",
-                "Lake heights", "Air", "Hazards", "Landslides", "Fires", "Volcanoes"]
-            var colordata = [
-                "#D9CCE3", "#CAACCB", "#BA8DB4", "#AA6F9E", "#994F88", "#882E72",
-                "#1965B0", "#437DBF", "#6195CF", "#7BAFDE", "#4EB265", "#90C987",
-                "#CAE0AB", "#F7F056", "#F7CB45", "#F4A736", "#EE8026", "#E65518",
-                "#777777", "#DC050C", "#A5170E", "#72190E", "#42150A"];
-            const scale = d3.scaleOrdinal().domain(colordomain).range(colordata);
-            return d => scale(d.topic);
+            var colordata = ['#004488', '#DDAA33']
+            const scale = d3.scaleOrdinal().range(colordata);
+            return d => scale(d.label);
         }
 
         function linkcolor(){
-            const scale = d3.scaleOrdinal(d3.schemeSet3);
+            var colordata = ['#BB5566']
+            const scale = d3.scaleOrdinal().range(colordata);
             return d => scale(d.label);
         }
 
         function defcolor(){
-            const scale = d3.scaleOrdinal(d3.schemeSet3);
+            var colordata = ['#BB5566']
+            const scale = d3.scaleOrdinal().range(colordata);
             return d => scale(d);
         }
 
