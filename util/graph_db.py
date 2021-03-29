@@ -68,7 +68,8 @@ class GraphDB:
         reformats the data for d3 network visualization
         returns dict containing nodes and links
         '''
-        vertices = self.graph_trav.V().elementMap().toList()
+        vertices = self.graph_trav.V().valueMap().toList()
+        print(vertices)
         for v in vertices:
             v['id'] = v.pop(T.id)
             v['label'] = v.pop(T.label)
@@ -86,7 +87,7 @@ class GraphDB:
         '''
         queries database for a set of all topics
         '''
-        topics = self.graph_trav.V().hasLabel('application').values('topic').unfold().toSet()
+        topics = self.graph_trav.V().hasLabel('application').values('topic').toSet()
         return topics
 
     def get_app(self, name):
@@ -111,13 +112,13 @@ class GraphDB:
         '''
         queries database for a list of all applications related to the given topic
         '''
-        return self.graph_trav.V().hasLabel('application').where(__.values('topic').unfold().is_(topic)).elementMap().toList()
+        return self.graph_trav.V().has('application', 'topic', topic).elementMap().toList()
 
     def get_valid_apps_by_topic(self, topic):
         '''
         queries database for a list of all applications related to the given topic
         '''
-        return self.graph_trav.V().hasLabel('application').where(__.values('topic').unfold().is_(topic)).where(bothE().count().is_(P.gt(0))).elementMap().toList()
+        return self.graph_trav.V().has('application', 'topic', topic).where(bothE().count().is_(P.gt(0))).elementMap().toList()
 
     def get_datasets_by_topic(self, topic):
         '''
@@ -129,7 +130,7 @@ class GraphDB:
             { 'title': [''], 'doi': [''] }],
           path[ {APP}, {EDGE}, {DATASET} ] , ...]
         '''
-        return self.graph_trav.V().hasLabel('application').where(__.values('topic').unfold().is_(topic)).outE().inV().path().by(__.valueMap()).toList()
+        return self.graph_trav.V().has('application', 'topic', topic).outE().inV().path().by(__.valueMap()).toList()
 
     def get_datasets_by_app(self, name):
         '''
@@ -165,11 +166,11 @@ class GraphDB:
         adds application to database if it doesn't already exist
         sample input:
         {
-            'topic': ['topic1', 'topic2'],
+            'topic': 'topic',
             'name': 'samplename',
             'site': 'https://example.com',
             'screenshot': 'image.png',
-            'publication': ['publication1', 'publication2'],
+            'publication': 'publication1',
             'description': 'sample description for a sample app'
         }
         '''
