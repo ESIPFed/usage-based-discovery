@@ -57,7 +57,7 @@ tornado==5.1.1
 tqdm==4.32.2
 troposphere==2.6.2
 Unidecode==1.1.1
-urllib3==1.26.4
+urllib3==1.25.9
 virtualenv==20.0.26
 w3lib==1.22.0
 wcwidth==0.2.5
