@@ -168,17 +168,13 @@ def add_relationship():
                 status= ""
                 fill = autofill(f['site'])
                 datasets_obj = fill['datasets']
-                print(fill)
                 #if description/App name is not filled in then autofill them
                 if f['description'] == '':
                     f['description'] = fill['description']
-                
                 if f['Application_Name'] == '':
                     f['Application_Name'] = fill['name']
-                
-                if 'Topic[]' not in f:
-                    f['Topic[]'] = fill['topic'] if fill['topic']!='Miscellaneous' else ''
-                
+                if len(f['Topic[]'])==0:
+                    f['Topic[]'] = [fill['topic'] if fill['topic']!='Miscellaneous' else '']
                 for index, item in enumerate(datasets_obj):
                     title = item[0]
                     doi = item[1]
@@ -200,7 +196,7 @@ def add_relationship():
             print("App: ", app)
             f['Application_Name'] = f['name']
             f['description'] = app['description']
-            f['Topic'] = app['topic']
+            f['Topic[]'] = app['topic']
             f['site'] = app['site']
             f['Publication_Link'] = app['publication']
             #iterating through datasets so they also show up in form
