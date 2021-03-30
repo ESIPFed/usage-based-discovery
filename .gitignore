@@ -1,7 +1,9 @@
 venv/
+ubd-tool-remotedb-venv/
 env/
 zappa_settings.json
 __pycache__/
 .DS_Store
 *.csv
 *.pem
+.vscode/settings.json
