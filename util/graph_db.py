@@ -68,7 +68,8 @@ class GraphDB:
         reformats the data for d3 network visualization
         returns dict containing nodes and links
         '''
-        vertices = self.graph_trav.V().elementMap().toList()
+        vertices = self.graph_trav.V().valueMap(True).toList()
+        print(vertices)
         for v in vertices:
             v['id'] = v.pop(T.id)
             v['label'] = v.pop(T.label)
@@ -82,6 +83,13 @@ class GraphDB:
             e['target'] = edge[T.id]
         return {'nodes': vertices, 'links': edges}
 
+    def mapify(self, valuemap):
+        for item in valuemap:
+            for prop in item.keys():
+                if len(item[prop]) == 1 and prop != 'topic':
+                    item[prop] = item[prop][0]
+        return valuemap
+
     def get_topics(self):
         '''
         queries database for a set of all topics
@@ -93,41 +101,49 @@ class GraphDB:
         '''
         queries database for a specific application
         '''
-        app = self.graph_trav.V().has('application', 'name', name).elementMap().toList()
-        app[0].pop(T.id)
-        app[0].pop(T.label)
+        app = self.graph_trav.V().has('application', 'name', name).valueMap().toList()
         return app
 
     def get_dataset(self, doi):
         '''
         queries database for a specific database
         '''
-        res = self.graph_trav.V().has('dataset','doi', doi).elementMap().toList()
-        res[0].pop(T.id)
-        res[0].pop(T.label)
-        return res[0]
+        res = self.graph_trav.V().has('dataset','doi', doi).valueMap().toList()
+        return res
 
     def get_apps_by_topic(self, topic):
         '''
         queries database for a list of all applications related to the given topic
         '''
-        return self.graph_trav.V().has('application', 'topic', topic).elementMap().toList()
+        return self.graph_trav.V().has('application', 'topic', topic).valueMap().toList()
 
     def get_valid_apps_by_topic(self, topic):
         '''
         queries database for a list of all applications related to the given topic
         '''
-        return self.graph_trav.V().has('application', 'topic',topic).where(bothE().count().is_(P.gt(0))).elementMap().toList()
+        return self.graph_trav.V().has('application', 'topic', topic).where(bothE().count().is_(P.gt(0))).valueMap().toList()
 
     def get_datasets_by_topic(self, topic):
         '''
         queries database for a list of datasets related to the given topic
+        Sample return:
+        [ path[
+            { 'site': [''], 'publication': [''], 'name': [], 'publication': [], 'description': [] },
+            { verified: True, orcid: '0000-0000-0000-0000' },
+            { 'title': [''], 'doi': [''] }],
+          path[ {APP}, {EDGE}, {DATASET} ] , ...]
         '''
         return self.graph_trav.V().has('application', 'topic', topic).outE().inV().path().by(__.valueMap()).toList()
 
     def get_datasets_by_app(self, name):
         '''
         queries database for a list of datasets that are connected to the given application
+        Sample return:
+        [ path[
+            { 'site': [''], 'publication': [''], 'name': [], 'publication': [], ... },
+            { verified: True, orcid: '0000-0000-0000-0000' },
+            { 'title': [''], 'doi': [''] }],
+          path[ {APP}, {EDGE}, {DATASET} ], ... ]
         '''
         return self.graph_trav.V().has('application', 'name', name).outE().inV().path().by(__.valueMap()).toList()
 
@@ -151,15 +167,26 @@ class GraphDB:
     def add_app(self, app):
         '''
         adds application to database if it doesn't already exist
+        sample input:
+        {
+            'topic': 'topic',
+            'name': 'samplename',
+            'site': 'https://example.com',
+            'screenshot': 'image.png',
+            'publication': 'publication1',
+            'description': 'sample description for a sample app'
+        }
         '''
-        return self.graph_trav.V().has('application', 'name', app['name']) \
+        self.graph_trav.V().has('application', 'name', app['name']) \
                 .fold().coalesce(unfold(), addV('application') \
-                .property('topic', app['topic']) \
+                .property('topic', app['topic'][0]) \
                 .property('name', app['name']) \
                 .property('site', app['site']) \
                 .property('screenshot', app['screenshot']) \
                 .property('publication', app['publication'])  \
                 .property('description', app['description'])).next()
+        for i in range(1,len(app['topic'])):
+            self.add_app_property(app['name'], 'topic', app['topic'][i])
 
     def add_dataset(self, dataset):
         '''
@@ -190,7 +217,7 @@ class GraphDB:
             .property(Cardinality.single, 'name', app['name']) \
             .property(Cardinality.single, 'site', app['site']) \
             .property(Cardinality.single, 'screenshot', app['screenshot']) \
-            .property(Cardinality.single, 'publication', app['publication'])  \
+            .property(Cardinality.single, 'publication', app['publication']) \
             .property(Cardinality.single, 'description', app['description']).next()
 
     def update_app_property(self, name, prop, value):
@@ -206,7 +233,7 @@ class GraphDB:
         updates only one of the application's properties
         '''
         return self.graph_trav.V().has('application', 'name', name) \
-                .property(Cardinality.list_, prop, value).next()
+                .property(Cardinality.set_, prop, value).next()
 
     def update_dataset(self, doi, dataset):
         '''

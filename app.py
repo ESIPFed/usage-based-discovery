@@ -28,23 +28,28 @@ s3_bucket = os.environ.get('S3_BUCKET')
 '''
 #general app layout for reference
 APP = {
-        'topic': 'Test',
-        'name': 'test_name',
-        'site': 'https://example.com',
-        'screenshot': 'Testing 123.jpg',
-        'publication': 'None',
-        'description': 'example description 123'
+    'topic': 'Test',
+    'name': 'test_name',
+    'site': 'https://example.com',
+    'screenshot': 'Testing 123.jpg',
+    'publication': 'None',
+    'description': 'example description 123'
 }
 '''
 # Initial screen
 @app.route('/')
 def home():
     g = GraphDB()
-    topics = g.get_topics()
+    topic_list = sorted(g.get_topics())
+    s3 = s3Functions()
+    screenshot_list = []
+    for topic in topic_list:
+        screenshot_list.append(s3.create_presigned_url(s3_bucket, topic+'.png'))
+    topics_screenshot_zip = zip(topic_list, screenshot_list)
     in_session=False
     if 'orcid' in session:
         in_session=True
-    return render_template('init.html', stage=stage, topics=topics, in_session=in_session)
+    return render_template('init.html', stage=stage, topics_screenshot_zip=topics_screenshot_zip, in_session=in_session)
 
 # About page
 @app.route('/about')
@@ -60,14 +65,13 @@ def explore():
 # Main screen
 @app.route('/<topic>/<app>')
 def main(topic, app):
-    # encode all apps, and doi's , keep the original app name and doi in a seperate variable or as property
-    # we decode app in this route, and we decode the doi name in the delete ds route
-    
+    # encode all apps, and doi's, original app name and doi is in a seperate variable 
     app = urllib.parse.unquote(urllib.parse.unquote(app))    
     g = GraphDB()
     topics = g.get_topics()
     # query only for application relating to specified topic
     relapps = g.get_apps_by_topic(topic)
+    g.mapify(relapps)
     # double encoding relapps to avoid special characters issues
     for relapp in relapps:
         relapp['encoded_name'] = urllib.parse.quote(urllib.parse.quote(relapp['name'], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
@@ -80,7 +84,7 @@ def main(topic, app):
         filename = relapps[0]['screenshot']
     # query for single application (vertex) with name specified by parameter
     else:
-        appsel = g.get_app(app)
+        appsel = g.mapify(g.get_app(app))
         appsel[0]['encoded_name'] = urllib.parse.quote(urllib.parse.quote(appsel[0]['name'], safe=''), safe='')
         filename = appsel[0]['screenshot']
         # query for all datasets relating to specified application
@@ -94,7 +98,7 @@ def main(topic, app):
     for d in datasets:
         d[2]['encoded_doi']=urllib.parse.quote(urllib.parse.quote(d[2]['doi'][0], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
 
-    undo = None 
+    undo = None
     if 'changes' in session and len(session['changes'])>0:
         undo = json.dumps(session['changes'][-1]['type'])
     return render_template('index.html', stage=stage, topic=topic, \
@@ -150,12 +154,14 @@ def add_relationship():
 
     if request.method == "POST":
         f={}
-        print(request.form.items())
         #since request.form is an immutable obj, we would like to copy it to something mutable
         for key, value in request.form.items():
+            print(key,value)
             f[key] = value
+        f['Topic[]'] = request.form.getlist('Topic[]')
         print(f)
         status = "failure"
+        #we use try block block because autofill errors out when the url is not real
         try:
             #check if the form is submitted with the autofill tag
             if 'autofill' in f and f['autofill']=='true':
@@ -170,8 +176,8 @@ def add_relationship():
                 if f['Application_Name'] == '':
                     f['Application_Name'] = fill['name']
                 
-                if 'Topic' not in f:
-                    f['Topic'] = fill['topic'] if fill['topic']!='Miscellaneous' else ''
+                if 'Topic[]' not in f:
+                    f['Topic[]'] = fill['topic'] if fill['topic']!='Miscellaneous' else ''
                 
                 for index, item in enumerate(datasets_obj):
                     title = item[0]
@@ -189,7 +195,7 @@ def add_relationship():
         if 'type' in f and f['type'] == 'edit_application':
             status = "edit_application"
             datasets_obj = g.get_datasets_by_app(f['name'])
-            app = g.get_app(f['name'])[0]
+            app = g.mapify(g.get_app(f['name']))[0]
             print("Datasets: ",datasets_obj)
             print("App: ", app)
             f['Application_Name'] = f['name']
@@ -208,14 +214,14 @@ def add_relationship():
 
         #check if submission is valid, if valid then we upload the content
         if validate_form(f):
-            f['screenshot'] = 'testing 123.png'
+            f['screenshot'] = 'NA'
             
             #delete previous application if there was one 
             if 'prev_app_name' in f:
                 datasets = g.get_datasets_by_app(f['prev_app_name'])
                 
                 #store screenshot info before app deletion
-                temp_app = g.get_app(f['prev_app_name'])
+                temp_app = g.mapify(g.get_app(f['prev_app_name']))
                 f['screenshot'] = temp_app[0]['screenshot']
                 #delete app so we can replace it with the newer version
                 g.delete_app(f['prev_app_name'])
@@ -224,7 +230,7 @@ def add_relationship():
             
             status = "success"
             APP = {
-                    'topic': f['Topic'],
+                    'topic': f['Topic[]'],
                     'name': f['Application_Name'],
                     'site': f['site'],
                     'screenshot': f['screenshot'],
@@ -254,8 +260,6 @@ def add_relationship():
     return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid)
 
 def validate_form(f):
-    if f['Topic']=='Choose..':
-        return False
     #potentially do some checks here before submission into the db
     if 'role' in session and session['role']=='supervisor':
         return True
@@ -269,7 +273,7 @@ def delete_dataset_relation(encoded_app_name, encoded_doi):
     if 'role' in session and session['role']=='supervisor':
         g = GraphDB() 
         #log this change in session to be able to undo later
-        dataset = g.get_dataset(doi)
+        dataset = g.mapify(g.get_dataset(doi))[0]
         change = {
                     'type': 'delete_dataset_relation',
                     'dataset': dataset,
@@ -296,6 +300,10 @@ def delete_application(encoded_app_name):
         #session 'changes' keeps a history of all changes made by that user
         #before we delete application we need to store all the info so we can undo
         app = g.get_app(app_name)
+        print("pre mapify     : ", app)
+        g.mapify(app)
+        print("post        ", app)
+        #app = g.mapify(g.get_app(app_name))
         dataset_paths = g.get_datasets_by_app(app_name)
         datasets = []
         for path in dataset_paths:
@@ -305,7 +313,7 @@ def delete_application(encoded_app_name):
             'app': app[0],
             'datasets': datasets,
         }
-        print(change)
+        print("Change is:    ", change)
         if 'changes' in session:
             temp_changes= session['changes']
             temp_changes.append(change)
@@ -321,13 +329,13 @@ def delete_application(encoded_app_name):
 
 @app.route('/undo')
 def undo():
-    ############ maybe try session.modified=True ########
     change = None
     #create stack implementation to make undo's 
     if 'changes' in session and len(session['changes'])>0:
         g = GraphDB()
         temp = session['changes']
         change = temp.pop()
+        print("change to undo:   ", change)
         session['changes'] = temp
         if change['type'] =="delete_dataset_relation":
             g.add_dataset(change['dataset'])

@@ -29,9 +29,9 @@ def db_input_csv(input_file):
         for line in reader:
             print("Onto the Next One")
             print(graph.add_app(line))
+            print(graph.add_app_property(line['name'], 'topic', 'Test'))
             print(graph.add_dataset(line))
             print(graph.add_relationship(line['name'], line['doi']))
-            
     # counts vertices, used for troubleshooting purposes
     print(graph.get_vertex_count())
     print(graph.get_edge_count())
