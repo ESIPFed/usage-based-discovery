@@ -90,6 +90,7 @@ def main(topic, app):
         # query for all datasets relating to specified application
         datasets = g.get_datasets_by_app(app)
     s3 = s3Functions()
+    filename = topic+'.png' if filename == 'NA' else filename
     screenshot = s3.create_presigned_url(s3_bucket, filename)
     
     in_session = 'orcid' in session
