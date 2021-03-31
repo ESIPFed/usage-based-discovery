@@ -5,15 +5,15 @@ from time import sleep
 from PIL import Image
 from selenium import webdriver
 import boto3
+import os
+import subprocess
 
 class s3Functions():
 
     def __init__(self):
-        self.CHROME_DRIVER = self.get_chrome_driver()
         self.s3= boto3.client('s3')
 
     def __del__(self):
-        #self.CHROME_DRIVER.quit()
         pass
 
     def upload_image_from_url(self, bucket_name, url):
@@ -27,18 +27,17 @@ class s3Functions():
         Returns output filename, basically the meat of the URL,
         using '-' in place of non-alphnumeric chars, plus .png
         """
+        CHROME_DRIVER = self.get_chrome_driver()
         file_name = re.sub(r'^https?://', '', url)
         file_name = re.sub(r'\W', '-', file_name) + '.png'
-        #CHROME_DRIVER = self.get_chrome_driver()
-        print('now doing chromedriver.get(',url,')')
-        self.CHROME_DRIVER.get(url)
-        print("now chrome driver has got the url")
-        sleep(4)
+        print('chromedriver is getting ', url)
+        CHROME_DRIVER.get(url)
+        print("chrome driver got the url")
+        sleep(5)
         with io.BytesIO(self.CHROME_DRIVER.get_screenshot_as_png()) as f:
             print("now attempting to upload fileobj(file{},bucket{},file_name{})".format(f,bucket_name, file_name))
             self.s3.upload_fileobj(f, bucket_name, file_name)
-        
-        #CHROME_DRIVER.quit()
+        CHROME_DRIVER.quit()
         return file_name
 
     def get_chrome_driver(self):
@@ -46,7 +45,7 @@ class s3Functions():
         https://chromedriver.storage.googleapis.com/:
         linux64 or mac64
         """
-        path = "../drivers/chromedriver"
+        path = "../driver/chromedriver"
         # initiate selenium webdriver
         option = webdriver.ChromeOptions()
         option.add_argument('headless')
