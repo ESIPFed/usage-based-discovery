@@ -69,7 +69,6 @@ class GraphDB:
         returns dict containing nodes and links
         '''
         vertices = self.graph_trav.V().valueMap(True).toList()
-        print(vertices)
         for v in vertices:
             v['id'] = v.pop(T.id)
             v['label'] = v.pop(T.label)
@@ -213,6 +212,12 @@ class GraphDB:
         '''
         return self.graph_trav.V().has('application', 'name', name) \
                 .property(Cardinality.set_, prop, value).next()
+
+    def verify_relationship(self, name, doi):
+        '''
+        adds relationship to database if it doesn't already exist
+        '''
+        return self.graph_trav.V().has('name', name).outE("uses").where(otherV().has("doi", doi)).property('verified', True).next()
 
     def update_app(self, name, app):
         '''
