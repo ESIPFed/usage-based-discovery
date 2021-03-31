@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import xml.etree.ElementTree as ET
-from w3lib.html import remove_tags
 import json
 from .s3_functions import s3Functions
 
