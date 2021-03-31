@@ -9,7 +9,7 @@ import boto3
 class s3Functions():
 
     def __init__(self):
-        #self.CHROME_DRIVER = self.get_chrome_driver()
+        self.CHROME_DRIVER = self.get_chrome_driver()
         self.s3= boto3.client('s3')
 
     def __del__(self):
@@ -46,8 +46,7 @@ class s3Functions():
         https://chromedriver.storage.googleapis.com/:
         linux64 or mac64
         """
-        os_suffix = {'Linux':'linux64', 'Darwin':'mac64'}
-        path = "../drivers/chromedriver87." + os_suffix.get(platform.system())
+        path = "../drivers/chromedriver"
         # initiate selenium webdriver
         option = webdriver.ChromeOptions()
         option.add_argument('headless')

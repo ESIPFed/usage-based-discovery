@@ -86,7 +86,7 @@ class GraphDB:
     def mapify(self, valuemap):
         for item in valuemap:
             for prop in item.keys():
-                if len(item[prop]) == 1:
+                if len(item[prop]) == 1 and prop != 'topic':
                     item[prop] = item[prop][0]
         return valuemap
 
@@ -120,6 +120,9 @@ class GraphDB:
         queries database for a list of all applications related to the given topic
         '''
         return self.graph_trav.V().has('application', 'topic', topic).where(bothE().count().is_(P.gt(0))).valueMap().toList()
+
+    def get_apps_without_screenshot(self):
+        return self.graph_trav.V().has('application', 'screenshot', 'NA').valueMap().toList()
 
     def get_datasets_by_topic(self, topic):
         '''
