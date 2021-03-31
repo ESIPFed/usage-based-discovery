@@ -195,15 +195,16 @@ class GraphDB:
                 .property('doi', dataset['doi']) \
                 .property('title', dataset['title'])).next()
 
-    def add_relationship(self, name, doi, orcid="", verified=False):
+    def add_relationship(self, name, doi, orcid="", verified=False, verifier=""):
         '''
         adds relationship to database if it doesn't already exist
         '''
         return self.graph_trav.V().has('application', 'name', name).as_('v') \
                 .V().has('dataset', 'doi', doi) \
                 .coalesce(inE('uses').where(outV().as_('v')), addE('uses') \
-                    .property('orcid', orcid) \
+                    .property('discoverer', orcid) \
                     .property('verified', verified) \
+                    .property('verifier', verifier) \
                 .from_('v')).next()
 
     def add_app_property(self, name, prop, value):
@@ -213,11 +214,13 @@ class GraphDB:
         return self.graph_trav.V().has('application', 'name', name) \
                 .property(Cardinality.set_, prop, value).next()
 
-    def verify_relationship(self, name, doi):
+    def verify_relationship(self, name, doi, verifier):
         '''
         adds relationship to database if it doesn't already exist
         '''
-        return self.graph_trav.V().has('name', name).outE("uses").where(otherV().has("doi", doi)).property('verified', True).next()
+        return self.graph_trav.V().has('name', name).outE("uses").where(otherV().has("doi", doi)) \
+            .property('verified', True) \
+            .property('verifier', verifier).next()
 
     def update_app(self, name, app):
         '''
