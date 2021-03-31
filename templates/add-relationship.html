@@ -36,7 +36,7 @@
       >
         <div class="form-group">
           <label>Topic*</label>
-	  <select class="selectpicker" name="Topic[]" multiple required>
+	  <select class="selectpicker" name="Topic[]" id="Topic" multiple required>
             {% for t in topics %}
 	      {% if t in f['Topic[]'] %}
 	      <option value="{{t}}" selected>{{t}}</option>
@@ -45,10 +45,30 @@
 	      {% endif %}
             {% endfor %}
           </select>
+	  
 	  <div class="valid-feedback">
             Looks good!
           </div>
-          <div class="form-group">
+	</div>
+	{% if role == 'supervisor' %}
+	<div class="form-group">
+          <label>Add custom topic</label>
+	  <div class='input-group mb-3'>
+            <input
+              type="text"
+              class="form-control"
+              id="custom_topic"
+              name="custom_topic"
+              placeholder="Custom Topic"
+            />
+	    <div class="input-group-append">
+	      <button class="btn btn-primary" type="button" onclick="add_topic()">Add Custom Topic</button>
+	    </div>
+	    <p id="custom_topic_list"></p>
+	  </div>  
+        </div>
+	{% endif %}
+        <div class="form-group">
           <label>Application Website*</label>
 	  <div class='input-group mb-3'>
             <input
@@ -67,7 +87,6 @@
               Looks good!
             </div>
 	  </div>  
-        </div>
         </div>
         <div class="form-group">
           <label>Application Name*</label>
@@ -286,6 +305,17 @@
 		.appendTo('#form1');
 	  console.log($('#form1'));
 	}
+
+	function add_topic(){
+	    var topic_to_add = $('#custom_topic').val(); 
+		console.log(topic_to_add);
+	    $('#custom_topic').val('');//reset input field
+		var topic_to_add_html = `<option value='${topic_to_add}' selected>${topic_to_add}</option>`
+   	    $('#Topic').append(topic_to_add_html);
+	    $('#custom_topic_list').append(topic_to_add+', ');
+   
+	}
+
 	(function () {
 	  'use strict'
 

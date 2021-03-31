@@ -32,6 +32,7 @@
 	  </form>
           {% endfor %}
         </div>
+	<p>Source of all icons - <a href="https://thenounproject.com">thenounproject.com</a></p>
       </div>
     </div>
   </div>
@@ -93,16 +94,18 @@
 
     .menu-container {
       display: flex;
+      flex-direction:column;
       justify-content: space-around;
       overflow-x: hidden;
       overflow-y: auto;
+      align-items: center;
     }
 
     .button-container {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      width: 75%;
+      width: 80%;
       background: white;
       overflow-y: auto;
       border-radius: 5px;
@@ -110,7 +113,7 @@
 
     .button-container > form {
       width: 190px;
-      height: 125px;
+      height: 145px;
       float: left;
       margin: 15px;
     }
@@ -130,7 +133,7 @@
     }
 
     .screenshot {
-      max-height:90px;
+      height:110px;
     }
 
     .font {

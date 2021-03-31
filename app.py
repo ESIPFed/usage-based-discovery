@@ -142,27 +142,28 @@ def auth():
 
 @app.route('/add-relationship', methods=["GET","POST"])
 def add_relationship():
-    #only allowing people with orcid accounts to be able to add-relationships, and for it to be posted to the database they much also be trusted users
+    #only allowing people with ORCiD to be able to add-relationships, and for it to be posted to the database they must also be trusted users
     if 'orcid' not in session:
         redirect_uri = request.url_root + "/login"
         return redirect("https://orcid.org/oauth/authorize?client_id=" + client_id + "&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
-    orcid = 'orcid' in session
-    
+    orcid = 'orcid' in session #T/F
+    role = session['role'] 
+
     g = GraphDB()
     topics = g.get_topics()
     status= "none"
     f=None
 
     if request.method == "POST":
-        f={}
         #since request.form is an immutable obj, we would like to copy it to something mutable
+        f={}
         for key, value in request.form.items():
             print(key,value)
             f[key] = value
-        f['Topic[]'] = request.form.getlist('Topic[]')
+        f['Topic[]'] = request.form.getlist('Topic[]') # used to get the multiple values of 'Topic[]'
         print(f)
         status = "failure"
-        #we use try block block because autofill errors out when the url is not real
+        #we use try block because autofill errors out when the url is not found
         try:
             #check if the form is submitted with the autofill tag
             if 'autofill' in f and f['autofill']=='true':
@@ -183,11 +184,10 @@ def add_relationship():
                     f["Dataset_Name_"+ str(index+10)]=title
                     f["DOI_" + str(index+10)]= doi
                     print("new: ",f)
-                
-                return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid)
+                return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, role=role)
         except:
             status = "invalid URL"
-            return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid)
+            return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
         #Filling in the form when users try to edit an app
         if 'type' in f and f['type'] == 'edit_application':
             status = "edit_application"
@@ -206,7 +206,7 @@ def add_relationship():
                 doi = item[2]['doi'][0]
                 f['Dataset_Name_'+str(index+10)] = title
                 f['DOI_'+str(index+10)] = doi
-            return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid)
+            return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
 
 
         #check if submission is valid, if valid then we upload the content
@@ -254,7 +254,7 @@ def add_relationship():
                 print(i, " : ", "Dataset name: ", Dataset_name, " DOI: ", DOI)
                 i+=1
             g.delete_orphan_datasets()
-    return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid)
+    return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
 
 def validate_form(f):
     #potentially do some checks here before submission into the db
