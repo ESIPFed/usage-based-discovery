@@ -89,17 +89,16 @@
             .enter().append("g")
             .append("path")
             .attr("fill", "none")
-            .attr("stroke-width", 1)
+            .attr("stroke-width", 0.6)
             .attr("stroke", linkcolor())
             .attr("marker-end", d => `url(${new URL(`#arrow-${d.label}`, location)})`);
         
-        d3.select(".links").selectAll("g").append("text")
+        d3.select(".links").selectAll("g").append('text')
             .data(links)
             .attr("fill", "#40404080")
             .attr("stroke-width", .1)
-            .attr("x", 5)
-            .attr("y", "0.31em")
-            .text(d => d.label + d.orcid);
+            .attr("text-anchor", "middle")
+            .text(d => d.label);
 
         const node = container.append("g")
             .selectAll("g")
@@ -134,7 +133,7 @@
                     .style("opacity", 1)
                     .html(info(d))
                 d3.select(this)
-                    .style("stroke-width", "1px")
+                    .style("stroke-width", "2px")
              })
              .on("dblclick", function(event, d) {
                 d3.select(this)
