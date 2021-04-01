@@ -195,14 +195,14 @@ class GraphDB:
                 .property('doi', dataset['doi']) \
                 .property('title', dataset['title'])).next()
 
-    def add_relationship(self, name, doi, orcid="", verified=False, verifier=""):
+    def add_relationship(self, name, doi, discoverer="", verified=False, verifier=""):
         '''
         adds relationship to database if it doesn't already exist
         '''
         return self.graph_trav.V().has('application', 'name', name).as_('v') \
                 .V().has('dataset', 'doi', doi) \
                 .coalesce(inE('uses').where(outV().as_('v')), addE('uses') \
-                    .property('discoverer', orcid) \
+                    .property('discoverer', discoverer) \
                     .property('verified', verified) \
                     .property('verifier', verifier) \
                 .from_('v')).next()

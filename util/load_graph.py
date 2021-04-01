@@ -27,10 +27,10 @@ def db_input_csv(input_file):
         reader = csv.DictReader(file)
         # loop through every line in csv file
         for line in reader:
-            print("Onto the Next One")
-            print(graph.add_app(line))
-            print(graph.add_dataset(line))
-            print(graph.add_relationship(line['name'], line['doi']))
+            graph.add_app(line)
+            graph.add_dataset(line)
+            #graph.add_relationship(line['name'], line['doi'])
+            graph.add_relationship(line['name'], line['doi'], discoverer=line['discoverer'], verified=line['verified'], verifier=line['verifier'])
     # counts vertices, used for troubleshooting purposes
     print(graph.get_vertex_count())
     print(graph.get_edge_count())
