@@ -8,6 +8,7 @@ the graph database.
 
 import sys
 import io
+import os
 import csv
 import platform
 import re
@@ -30,6 +31,7 @@ def parse_options():
     return parser.parse_args()
 
 def main():
+    s3_bucket = os.environ.get('S3_BUCKET')
     # Main program
     OPTIONS = parse_options()
     print(OPTIONS)
@@ -75,7 +77,7 @@ def main():
             if line['name'] not in apps:
                 print(f"Getting snapshot for {line['site']}", file=sys.stderr)
                 try:
-                    line['screenshot'] = s3F.upload_image_from_url('test-bucket-parth',line['site'])
+                    line['screenshot'] = s3F.upload_image_from_url(s3_bucket, line['site'])
                     print("\n\n")
                 except:
                     print("ERROR getting {}".format(line['site']))
