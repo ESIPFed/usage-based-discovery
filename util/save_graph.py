@@ -7,7 +7,7 @@ import csv
 from graph_db import GraphDB
 
 def db_output_csv():
-    header = ['topic', 'name', 'site', 'screenshot', 'description', 'publication', 'doi', 'title']
+    header = ['topic', 'name', 'site', 'screenshot', 'description', 'publication', 'doi', 'title', 'discoverer', 'verifier', 'verified']
     graph = GraphDB()
     data = graph.get_data()
     with open("graph_snapshot.csv", 'w') as file:
@@ -32,6 +32,9 @@ def db_output_csv():
             row.append(app['publication'][0])
             row.append(dataset['doi'][0])
             row.append(dataset['title'][0])
+            row.append(link['discoverer'])
+            row.append(link['verifier'])
+            row.append(link['verified'])
             writer.writerow(row)
     file.close()
 
