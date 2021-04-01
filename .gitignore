@@ -1,5 +1,6 @@
 venv/
 ubd-tool-remotedb-venv/
+awscli-venv/
 env/
 zappa_settings.json
 __pycache__/
