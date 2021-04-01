@@ -250,6 +250,9 @@ class GraphDB:
                 .property(Cardinality.single, 'title', dataset['title']) \
                 .property(Cardinality.single, 'doi', dataset['doi']).next()
 
+    def rename_app_topic(self, oldtopic, newtopic):
+        return self.graph_trav.V().hasLabel('application').sideEffect(__.properties('topic').hasValue(oldtopic).drop()).property(Cardinality.set_,'topic', newtopic).iterate()
+
     def clear_database(self):
         '''
         warning: this function clears everything in the database
