@@ -147,6 +147,17 @@ class GraphDB:
         '''
         return self.graph_trav.V().has('application', 'name', name).outE().inV().path().by(__.valueMap()).toList()
 
+    def get_dataset_by_app(self, name, doi):
+        '''
+        queries database for a list of datasets that are connected to the given application
+        Sample return:
+        [ path[
+            { 'site': [''], 'publication': [''], 'name': [], 'publication': [], ... },
+            { verified: True, orcid: '0000-0000-0000-0000' },
+            { 'title': [''], 'doi': [''] }]]
+        '''
+        return self.graph_trav.V().has('application', 'name', name).outE("uses").where(otherV().has("doi", doi)).inV().path().by(__.valueMap()).toList()
+
     def get_vertex_count(self):
         '''
         returns number of vertexes in the database
@@ -169,22 +180,23 @@ class GraphDB:
         adds application to database if it doesn't already exist
         sample input:
         {
-            'topic': 'topic',
+            'topic': ['topic1', 'topic2', ...],
             'name': 'samplename',
             'site': 'https://example.com',
             'screenshot': 'image.png',
-            'publication': 'publication1',
+            'publication': 'publication',
             'description': 'sample description for a sample app'
         }
         '''
-        return self.graph_trav.V().has('application', 'name', app['name']) \
+        self.graph_trav.V().has('application', 'name', app['name']) \
                 .fold().coalesce(unfold(), addV('application') \
-                .property('topic', app['topic']) \
                 .property('name', app['name']) \
                 .property('site', app['site']) \
                 .property('screenshot', app['screenshot']) \
                 .property('publication', app['publication'])  \
                 .property('description', app['description'])).next()
+        for i in range(len(app['topic'])):
+            self.add_app_property(app['name'], 'topic', app['topic'][i])
 
     def add_dataset(self, dataset):
         '''
@@ -226,13 +238,15 @@ class GraphDB:
         '''
         updates application vertex in the database with new information
         '''
-        return self.graph_trav.V().has('application', 'name', name) \
-            .property(Cardinality.single, 'topic', app['topic']) \
+        self.graph_trav.V().has('application', 'name', name) \
+            .sideEffect(__.properties('topic').drop()) \
             .property(Cardinality.single, 'name', app['name']) \
             .property(Cardinality.single, 'site', app['site']) \
             .property(Cardinality.single, 'screenshot', app['screenshot']) \
             .property(Cardinality.single, 'publication', app['publication']) \
             .property(Cardinality.single, 'description', app['description']).next()
+        for i in range(len(app['topic'])):
+            self.add_app_property(app['name'], 'topic', app['topic'][i])
 
     def update_app_property(self, name, prop, value):
         '''
@@ -251,7 +265,9 @@ class GraphDB:
                 .property(Cardinality.single, 'doi', dataset['doi']).next()
 
     def rename_app_topic(self, oldtopic, newtopic):
-        return self.graph_trav.V().hasLabel('application').sideEffect(__.properties('topic').hasValue(oldtopic).drop()).property(Cardinality.set_,'topic', newtopic).iterate()
+        return self.graph_trav.V().hasLabel('application') \
+            .sideEffect(__.properties('topic').hasValue(oldtopic).drop()) \
+            .property(Cardinality.set_,'topic', newtopic).iterate()
 
     def clear_database(self):
         '''
