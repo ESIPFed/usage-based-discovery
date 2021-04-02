@@ -32,6 +32,9 @@ natural_phenomenons = ['hurricane', 'earthquake', 'landslide', 'fire', 'flood',
 
 general_measurements = ['thickness', 'humidity', 'temperature', 'surface', 'precipitation']
 
+cmr_url = "https://cmr.earthdata.nasa.gov/search/collections.umm_json_v1_4?"
+eds_url = "https://cmr.earthdata.nasa.gov/search/collections?"
+
 def get_descriptive_words(data):
     specific_measure = ''
     phenomenon = []
@@ -49,8 +52,7 @@ def get_descriptive_words(data):
         return phenomenon[0]
 
 def convert_cmr_query(query):
-    stub = "https://search.earthdata.nasa.gov/search?"
-    query = query.replace('https://cmr.earthdata.nasa.gov/search/collections?', stub)
+    query = query.replace(cmr_url, eds_url)
     query = query.replace('+', '%20')
     query = query.replace('&keyword=', '&q=')
     query = query.replace('&instrument=', '&fi=', 1)
@@ -65,54 +67,49 @@ def get_dataset(url, nrt, descriptive_words):
     url = re.sub(" ", "%20", url)
     descriptive_words = re.sub(" ", "%20", descriptive_words)
     response = requests.get(url)
-    root = ET.fromstring(response.content)
-    hits = int(root.find("hits").text)
+    data = response.json()
+    hits = data['hits']
     if hits == 0:
         return None
-    
     if nrt:
         nrt_url = url + "&collection_data_type=NEAR_REAL_TIME"
         nrt_response = requests.get(nrt_url)
-        nrt_root = ET.fromstring(nrt_response.content)
-        nrt_hits = int(nrt_root.find("hits").text)
+        nrt_data = response.json()
+        nrt_hits = nrt_data['hits']
         if nrt_hits != 0:
             url = nrt_url
-            response = nrt_response
-            root = nrt_root
+            data = nrt_data
             hits = nrt_hits
-    
-    descriptive_words = re.sub(" ", "%20", descriptive_words)
-    desc_url = url + "&keyword=" + descriptive_words
-    desc_response = requests.get(desc_url)
-    desc_root = ET.fromstring(desc_response.content)
-    desc_hits = int(desc_root.find("hits").text)
-    if desc_hits != 0:
-        url = desc_url
-        response = desc_response
-        root = desc_root
-        hits = desc_hits
-
+    if descriptive_words:
+        desc_url = url + "&keyword=" + descriptive_words
+        desc_response = requests.get(desc_url)
+        desc_data = desc_response.json()
+        desc_hits = desc_data['hits']
+        if desc_hits != 0:
+            url = desc_url
+            data = desc_data
+            hits = desc_hits
+    print(url, " ", hits)
     if hits > 15:
         return None
     datasets = []
-    for reference in root.find('references'):
-        dataset_title = ""
-        dataset_link = ""
-        for elem in reference:
-            if elem.tag == 'name':
-                dataset_title = elem.text
-            if elem.tag == 'location':
-                dataset_link = elem.text
+    for dataset in data['items']:
+        dataset_title = dataset['umm']['EntryTitle']
+        dataset_link = "https://cmr.earthdata.nasa.gov/search/concepts/" + dataset['meta']['concept-id']
+        if 'CollectionCitations' in dataset['umm'].keys():
+            for citation in dataset['umm']['CollectionCitations']:
+                if 'DOI' in citation.keys():
+                    dataset_link = "https://doi.org/" + dataset['umm']['CollectionCitations'][0]['DOI']['DOI']
+                    break
         datasets.append((dataset_title, dataset_link, convert_cmr_query(url)))
     return datasets
 
 def get_datasets(keywords):
 
-    cmr_url = 'https://cmr.earthdata.nasa.gov/search/collections?' 
     queries = []
 
     for shortname in keywords['shortnames']:
-        queries.append(base_url + 'short_name=' + shortname)
+        queries.append(cmr_url + 'short_name=' + shortname)
 
     covered_platforms = set()
 
