@@ -5,6 +5,8 @@ Load a set of application-dataset relationships in CSV form into a Neptune graph
 """
 import csv
 import argparse
+import json
+import re
 from graph_db import GraphDB
 
 def parse_options():
@@ -27,10 +29,15 @@ def db_input_csv(input_file):
         reader = csv.DictReader(file)
         # loop through every line in csv file
         for line in reader:
+            line['topic'] = re.sub("\]|\[|\'", '', line['topic'])
+            line['topic'] = line['topic'].split(',')
+            print(line['topic'])
             graph.add_app(line)
             graph.add_dataset(line)
-            #graph.add_relationship(line['name'], line['doi'])
-            graph.add_relationship(line['name'], line['doi'], discoverer=line['discoverer'], verified=line['verified'], verifier=line['verifier'])
+            if 'discoverer' in line.keys():
+                graph.add_relationship(line['name'], line['doi'], discoverer=line['discoverer'], verified=line['verified'], verifier=line['verifier'])
+            else:
+                graph.add_relationship(line['name'], line['doi'])
     # counts vertices, used for troubleshooting purposes
     print(graph.get_vertex_count())
     print(graph.get_edge_count())

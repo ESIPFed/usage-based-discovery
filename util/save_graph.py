@@ -24,7 +24,7 @@ def db_output_csv():
                 if node['id'] == dataset_index:
                     dataset = node
             row = []
-            row.append(app['topic'][0])
+            row.append(app['topic'])
             row.append(app['name'][0])
             row.append(app['site'][0])
             row.append(app['screenshot'][0])
