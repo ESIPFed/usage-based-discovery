@@ -98,9 +98,10 @@ To get the subnet_ids, click the Subnet groups on the side panel of the Neptune 
         "environment_variables": {
                 "NEPTUNEDBRO": "wss://<neptune endpoint>:<port>/gremlin", 
                 "STAGE": "/[YOUR_STAGE_NAME(ex. DEV/PROD)]",
-                "CLIENT_SECRET": ["YOUR_CLIENT_SECRET_FOR_ORCID_OAUTH"],
-                "CLIENT_ID": ["YOUR_CLIENT_ID_FOR_ORCID_OAUTH"],
-                "SECRET_KEY": ["YOUR_SECRET_KEY_FOR_FLASK_SESSION"],
+                "CLIENT_SECRET": "YOUR_CLIENT_SECRET_FOR_ORCID_OAUTH",
+                "CLIENT_ID": "YOUR_CLIENT_ID_FOR_ORCID_OAUTH",
+                "SECRET_KEY": "YOUR_SECRET_KEY_FOR_FLASK_SESSION",
+                "S3_BUCKET": "YOUR_S3_BUCKET"
         }
     }
 }

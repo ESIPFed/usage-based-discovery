@@ -3,8 +3,9 @@
 GraphDB: facilitates all interactions to the Neptune Graph Database
 '''
 from __future__  import print_function  # Python 2/3 compatibility
-import os
+import os   
 import sys
+from util.env_loader import load_env
 from gremlin_python.structure.graph import Graph
 from gremlin_python.process.graph_traversal import unfold, inE, addV, addE, outV, otherV, bothE, __
 from gremlin_python.process.traversal import Cardinality, T, Direction, P
@@ -24,6 +25,7 @@ class GraphDB:
         '''
         connects to the neptune database upon class creation
         '''
+        load_env()
         graph = Graph()
         neptune_endpoint = os.environ.get('NEPTUNEDBRO')
         if neptune_endpoint is None:

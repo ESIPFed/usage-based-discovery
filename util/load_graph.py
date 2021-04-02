@@ -3,6 +3,8 @@
 load_graph.py
 Load a set of application-dataset relationships in CSV form into a Neptune graph database
 """
+import sys
+sys.path.append("../")
 import csv
 import argparse
 from graph_db import GraphDB
