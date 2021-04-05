@@ -93,8 +93,7 @@ class GraphDB:
         '''
         queries database for a set of all topics
         '''
-        topics = self.graph_trav.V().hasLabel('application').values('topic').toSet()
-        return topics
+        return self.graph_trav.V().hasLabel('topic').values('topic').toSet()
 
     def get_app(self, name):
         '''
@@ -112,13 +111,13 @@ class GraphDB:
         '''
         queries database for a list of all applications related to the given topic
         '''
-        return self.graph_trav.V().has('application', 'topic', topic).valueMap().toList()
+        return self.graph_trav.V().hasLabel('application').where(__.outE("about").otherV().has("topic", topic)).valueMap().toList()
 
     def get_valid_apps_by_topic(self, topic):
         '''
         queries database for a list of all applications related to the given topic
         '''
-        return self.graph_trav.V().has('application', 'topic', topic).where(bothE().count().is_(P.gt(0))).valueMap().toList()
+        return self.graph_trav.V().hasLabel('application').where(__.outE("about").otherV().has("topic", topic).and_().outE().count().is_(P.gt(0))).valueMap().toList()
 
     def get_apps_without_screenshot(self):
         return self.graph_trav.V().has('application', 'screenshot', 'NA').valueMap().toList()
@@ -133,7 +132,7 @@ class GraphDB:
             { 'title': [''], 'doi': [''] }],
           path[ {APP}, {EDGE}, {DATASET} ] , ...]
         '''
-        return self.graph_trav.V().has('application', 'topic', topic).outE().inV().path().by(__.valueMap()).toList()
+        return self.graph_trav.V().hasLabel('application').where(__.outE("about").otherV().has("topic", topic)).outE().inV().path().by(__.valueMap()).toList()
 
     def get_datasets_by_app(self, name):
         '''
@@ -193,10 +192,18 @@ class GraphDB:
                 .property('name', app['name']) \
                 .property('site', app['site']) \
                 .property('screenshot', app['screenshot']) \
-                .property('publication', app['publication'])  \
+                .property('publication', app['publication']) \
                 .property('description', app['description'])).next()
         for i in range(len(app['topic'])):
-            self.add_app_property(app['name'], 'topic', app['topic'][i])
+            self.connect_topic(app['name'], app['topic'][i])
+
+    def add_topic(self, topic):
+        '''
+        adds topic to database if it doesn't already exist
+        '''
+        return self.graph_trav.V().has('topic', 'topic', topic) \
+                .fold().coalesce(unfold(), addV('topic') \
+                .property('topic', topic)).next()
 
     def add_dataset(self, dataset):
         '''
@@ -207,16 +214,26 @@ class GraphDB:
                 .property('doi', dataset['doi']) \
                 .property('title', dataset['title'])).next()
 
-    def add_relationship(self, name, doi, discoverer="", verified=False, verifier=""):
+    def add_relationship(self, name, doi, annotation= "", discoverer="", verified=False, verifier=""):
         '''
         adds relationship to database if it doesn't already exist
         '''
         return self.graph_trav.V().has('application', 'name', name).as_('v') \
                 .V().has('dataset', 'doi', doi) \
                 .coalesce(inE('uses').where(outV().as_('v')), addE('uses') \
+                    .property('annotation', annotation) \
                     .property('discoverer', discoverer) \
                     .property('verified', verified) \
                     .property('verifier', verifier) \
+                .from_('v')).next()
+
+    def connect_topic(self, name, topic):
+        '''
+        adds relationship to database if it doesn't already exist
+        '''
+        return self.graph_trav.V().has('application', 'name', name).as_('v') \
+                .V().has('topic', 'topic', topic) \
+                .coalesce(inE('about').where(outV().as_('v')), addE('about') \
                 .from_('v')).next()
 
     def add_app_property(self, name, prop, value):
@@ -246,7 +263,7 @@ class GraphDB:
             .property(Cardinality.single, 'publication', app['publication']) \
             .property(Cardinality.single, 'description', app['description']).next()
         for i in range(len(app['topic'])):
-            self.add_app_property(app['name'], 'topic', app['topic'][i])
+            self.add_topic_relationship(app['name'], 'topic', app['topic'][i])
 
     def update_app_property(self, name, prop, value):
         '''
