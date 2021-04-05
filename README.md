@@ -118,16 +118,20 @@ __(Q:  does bucket need to be pre-created? Need to find out...)__
 
 ## To run the application in local developer mode
 
+Load the graph database as described above, but rather than loading the data into an AWS Neptune cluster, load it into a local Gremlin DB. Instructions for Gremlin installation can be found at https://tinkerpop.apache.org/gremlin.html or you can run a Gremlin server in a container using Docker (https://hub.docker.com/r/tinkerpop/gremlin-server/). 
+
+When running the DB locally, configure your DB url environment variable like this: "NEPTUNEDBRO": "ws://localhost:8182/gremlin". If using Docker, be sure to expose port 8182 of the gremlin server to your local machine using the -p command (e.g.: docker run -p 8080:3000 my-image).
+
 `$ python3 app.py`
 
 Browse to http://localhost:5000
 
-<br /><br />
+<br/>
 Any questions or suggestions for improvement?
 - Create an issue, and use the templates for feature request or bug reports for improvements
 - Questions - email chris.lynnes@nasa.gov 
 
-<br /><br />
+<br/>
 If looking to contribute, please look at [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Security Scans
