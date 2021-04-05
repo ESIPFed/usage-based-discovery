@@ -126,12 +126,12 @@ When running the DB locally, configure your DB url environment variable like thi
 
 Browse to http://localhost:5000
 
-<br/>
+<br>
 Any questions or suggestions for improvement?
 - Create an issue, and use the templates for feature request or bug reports for improvements
 - Questions - email chris.lynnes@nasa.gov 
 
-<br/>
+<br>
 If looking to contribute, please look at [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Security Scans
