@@ -1,9 +1,8 @@
 from util.graph_db import GraphDB
 from util.s3_functions import s3Functions
 from flask import Flask, url_for, render_template, request, session, redirect
-#from model import RegForm
+from flask_fontawesome import FontAwesome
 import requests
-#import orcid
 import json
 import urllib
 from util.autofill import autofill
@@ -19,6 +18,8 @@ import os
 import subprocess
 
 app = Flask(__name__)
+fa = FontAwesome(app)
+
 app.secret_key = os.urandom(32)
 stage = os.environ.get('STAGE')
 client_secret = os.environ.get('CLIENT_SECRET')
@@ -26,7 +27,7 @@ client_id = os.environ.get('CLIENT_ID')
 s3_bucket = os.environ.get('S3_BUCKET')
 
 '''
-#general app layout for reference
+# app layout
 APP = {
     'topic': 'Test',
     'name': 'test_name',
@@ -35,20 +36,28 @@ APP = {
     'publication': 'None',
     'description': 'example description 123'
 }
+
+# session layout
+Session = {
+    'orcid': (String)'9999-9999-9999-9999' (property will not exist if not logged in)
+    'role': (String)'supervisor','general' (property will not exist if not logged in)
+    'changes': (List)Changes_made, a stack of changes make by a user (like a history) to be used to undo changes 
+}
+
 '''
 # Initial screen
 @app.route('/')
 def home():
     g = GraphDB()
     topic_list = sorted(g.get_topics())
+    # attatch presigned url to each topic to get a topic icon to display
     s3 = s3Functions()
     screenshot_list = []
     for topic in topic_list:
         screenshot_list.append(s3.create_presigned_url(s3_bucket, topic+'.png'))
     topics_screenshot_zip = zip(topic_list, screenshot_list)
-    in_session=False
-    if 'orcid' in session:
-        in_session=True
+    # in_session determines if the user is logged in, and if so they get their own privileges
+    in_session = 'orcid' in session
     return render_template('init.html', stage=stage, topics_screenshot_zip=topics_screenshot_zip, in_session=in_session)
 
 # About page
@@ -108,6 +117,12 @@ def main(topic, app):
 
 @app.route('/login')
 def login():
+    '''
+    we get a code from the url that orcid has redirected us back to our site with. 
+    that code can be used to access the users orcid data, mainly name and orc-id.
+    we do a curl in a subprocess call with the code, to ask orcid for the users orcid data
+    we get back the users orcid id, we check if the users orc-id is in our private s3-buckets orcid.json file and assign a role, and orc-id to that session
+    '''
     code = request.args.get('code')
     inputstr = 'client_id=' + client_id + '&client_secret=' + client_secret + '&grant_type=authorization_code&code=' + code 
     output = subprocess.check_output(['curl', '-i', '-L', '-H', 'Accept: application/json', '--data', inputstr,  'https://orcid.org/oauth/token'],universal_newlines=True)
@@ -120,13 +135,10 @@ def login():
     data = s3.get_file('test-bucket-parth', 'orcid.json')
     data = json.loads(data)
     if output_json['orcid'] in data['supervisor']:
-        print("hi i'm supervisor, welcome to earth")
         session['role'] = 'supervisor'
     else:
         session['role'] = 'general'
-    print(session['role'])
     session['orcid']= output_json['orcid']
-    print(session['orcid'])
     return redirect(stage)
 
 @app.route('/logout')
@@ -137,16 +149,32 @@ def logout():
 
 @app.route('/auth')
 def auth():
+    '''
+    send the user to orcid with our app's client_id
+    after the user logs in, they will be redirected to the '/login' route with code
+    '''
     redirect_uri = request.url_root + "/login"
     return redirect("https://orcid.org/oauth/authorize?client_id=" + client_id + "&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
 
 @app.route('/add-relationship', methods=["GET","POST"])
 def add_relationship():
-    #only allowing people with ORCiD to be able to add-relationships, and for it to be posted to the database they must also be trusted users
+    '''
+    only allowing people logged in to be able to add-relationships
+    for it to be posted to the database they must also be trusted users
+    
+    This is a very complex seeming route, so let me break it down. 
+    This route is called in 3 scenarios:
+    1. When you want to add a application and the datasets that belong with it
+    2. When you want to edit an existing application
+    3. when you call autofill from the form, it will also use this route to know what to do with the autofilled components
+   
+    Both edit application and autofill use the post request method to this route to post the data into the form
+    
+    '''
     if 'orcid' not in session:
         redirect_uri = request.url_root + "/login"
         return redirect("https://orcid.org/oauth/authorize?client_id=" + client_id + "&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
-    orcid = 'orcid' in session #T/F
+    orcid = 'orcid' in session
     role = session['role'] 
 
     g = GraphDB()
@@ -163,6 +191,7 @@ def add_relationship():
         f['Topic[]'] = request.form.getlist('Topic[]') # used to get the multiple values of 'Topic[]'
         print(f)
         status = "failure"
+
         #we use try block because autofill errors out when the url is not found
         try:
             #check if the form is submitted with the autofill tag
@@ -180,21 +209,18 @@ def add_relationship():
                 for index, item in enumerate(datasets_obj):
                     title = item[0]
                     doi = item[1]
-                    print("title: " + title, "doi: " + doi)
                     f["Dataset_Name_"+ str(index+10)]=title
                     f["DOI_" + str(index+10)]= doi
-                    print("new: ",f)
                 return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, role=role)
         except:
             status = "invalid URL"
             return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
+
         #Filling in the form when users try to edit an app
         if 'type' in f and f['type'] == 'edit_application':
             status = "edit_application"
             datasets_obj = g.get_datasets_by_app(f['name'])
             app = g.mapify(g.get_app(f['name']))[0]
-            print("Datasets: ",datasets_obj)
-            print("App: ", app)
             f['Application_Name'] = f['name']
             f['description'] = app['description']
             f['Topic[]'] = app['topic']
@@ -208,24 +234,16 @@ def add_relationship():
                 f['DOI_'+str(index+10)] = doi
             return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
 
-
         #check if submission is valid, if valid then we upload the content
         if validate_form(f):
             f['screenshot'] = 'NA'
             
-            #delete previous application if there was one 
+            # get previous app information if there was one, ( 'prev_app_name will be a property of the form when you edit an application) 
             if 'prev_app_name' in f:
-                datasets = g.get_datasets_by_app(f['prev_app_name'])
-                
                 #store screenshot info before app deletion
                 temp_app = g.mapify(g.get_app(f['prev_app_name']))
                 f['screenshot'] = temp_app[0]['screenshot']
-                #delete app so we can replace it with the newer version
-                g.delete_app(f['prev_app_name'])
-                for dataset in datasets:# unlink and delete datasets with 0 relationships
-                    g.delete_relationship(temp_app[0]['name'], dataset[2]['doi'][0])
-            
-            status = "success"
+
             APP = {
                     'topic': f['Topic[]'],
                     'name': f['Application_Name'],
@@ -234,7 +252,7 @@ def add_relationship():
                     'publication': f['Publication_Link'],
                     'description': f['description'] 
             }
-            g.add_app(APP)
+            g.update_app if 'prev_app_name' in f else g.add_app(APP)
             #iterate through the forms dataset list
             list_of_datasets = []
             list_of_DOIs = []
@@ -246,14 +264,22 @@ def add_relationship():
                     if key[:4] =="DOI_":
                         list_of_DOIs.append(value)
             # upload lists of datasets/dois to db
-            i = 0
             for Dataset_name, DOI in zip(list_of_datasets, list_of_DOIs):
                 DATASET = {'title': Dataset_name, 'doi': DOI}
-                g.add_dataset(DATASET)
-                g.add_relationship(f['Application_Name'],DOI)
-                print(i, " : ", "Dataset name: ", Dataset_name, " DOI: ", DOI)
-                i+=1
+                if g.has_dataset(DOI):
+                    g.update_dataset(DOI, DATASET)
+                    g.add_relationship(f['Application_Name'],DOI)
+                else:
+                    g.add_dataset(DATASET)
+                    g.add_relationship(f['Application_Name'],DOI)
+            #if the DB has a DOI that the form doesn't then remove that relationship
+            datasets = g.get_datasets_by_app(f['Application_Name'])
+            temp_app = g.mapify(g.get_app(f['Application_Name']))
+            for dataset in datasets:
+                if dataset[2]['doi'][0] not in list_of_DOIs:
+                    g.delete_relationship(temp_app[0]['name'], dataset[2]['doi'][0])
             g.delete_orphan_datasets()
+            status = "success"
     return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
 
 def validate_form(f):
@@ -270,10 +296,11 @@ def delete_dataset_relation(encoded_app_name, encoded_doi):
     if 'role' in session and session['role']=='supervisor':
         g = GraphDB() 
         #log this change in session to be able to undo later
-        dataset = g.mapify(g.get_dataset(doi))[0]
+        #dataset = g.mapify(g.get_dataset(doi))[0]
+        dataset_path = g.get_dataset_by_app(app_name,doi)[0]
         change = {
                     'type': 'delete_dataset_relation',
-                    'dataset': dataset,
+                    'dataset_and_edge': [g.mapify([dataset_path[2]])[0], dataset_path[1]],
                     'app_name': app_name,
                 }
         if 'changes' in session:
@@ -296,21 +323,18 @@ def delete_application(encoded_app_name):
         g = GraphDB() 
         #session 'changes' keeps a history of all changes made by that user
         #before we delete application we need to store all the info so we can undo
-        app = g.get_app(app_name)
-        print("pre mapify     : ", app)
-        g.mapify(app)
-        print("post        ", app)
-        #app = g.mapify(g.get_app(app_name))
+        app = g.mapify(g.get_app(app_name))
         dataset_paths = g.get_datasets_by_app(app_name)
-        datasets = []
+        datasets_and_edges = []
         for path in dataset_paths:
-            datasets.append({'title': path[2]['title'][0], 'doi': path[2]['doi'][0]})
+            edge = path[1]
+            path = g.mapify([path[2]])
+            datasets_and_edges.append([path[0],edge])
         change = {
             'type': 'delete_application',
             'app': app[0],
-            'datasets': datasets,
+            'datasets_and_edges': datasets_and_edges,
         }
-        print("Change is:    ", change)
         if 'changes' in session:
             temp_changes= session['changes']
             temp_changes.append(change)
@@ -335,18 +359,29 @@ def undo():
         print("change to undo:   ", change)
         session['changes'] = temp
         if change['type'] =="delete_dataset_relation":
-            g.add_dataset(change['dataset'])
-            g.add_relationship(change['app_name'], change['dataset']['doi'])
+            dataset = change['dataset_and_edge'][0]
+            edge = change['dataset_and_edge'][1]
+            g.add_dataset(dataset)
+            g.add_relationship(change['app_name'], dataset['doi'], edge['discoverer'], edge['verified'], edge['verifier'])
         elif change['type'] == "delete_application":
             #adding the deleted app back
             g.add_app(change['app'])
-            for d in change['datasets']:
+            for dataset, edge in change['datasets_and_edges']:
                 #adding each dataset back and linking it to the app
-                g.add_dataset(d)
-                g.add_relationship(change['app']['name'], d['doi'])
+                g.add_dataset(dataset)
+                g.add_relationship(change['app']['name'], dataset['doi'], edge['discoverer'], edge['verified'], edge['verifier'])
         else:
             print("type not found")
         return redirect(request.referrer)
+    return redirect(request.referrer)
+
+@app.route('/verify/<encoded_app_name>/<encoded_doi>')
+def verify(encoded_app_name, encoded_doi):
+    doi = urllib.parse.unquote(urllib.parse.unquote(encoded_doi)) 
+    app_name = urllib.parse.unquote(urllib.parse.unquote(encoded_app_name))
+    g = GraphDB()
+    if 'role' in session and session['role'] == 'supervisor':
+        g.verify_relationship(app_name, doi, session['orcid'])
     return redirect(request.referrer)
 
 def unhandled_exceptions(e, event, context):

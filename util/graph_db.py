@@ -147,6 +147,17 @@ class GraphDB:
         '''
         return self.graph_trav.V().has('application', 'name', name).outE().inV().path().by(__.valueMap()).toList()
 
+    def get_dataset_by_app(self, name, doi):
+        '''
+        queries database for a list of datasets that are connected to the given application
+        Sample return:
+        [ path[
+            { 'site': [''], 'publication': [''], 'name': [], 'publication': [], ... },
+            { verified: True, orcid: '0000-0000-0000-0000' },
+            { 'title': [''], 'doi': [''] }]]
+        '''
+        return self.graph_trav.V().has('application', 'name', name).outE("uses").where(otherV().has("doi", doi)).inV().path().by(__.valueMap()).toList()
+
     def get_vertex_count(self):
         '''
         returns number of vertexes in the database
@@ -197,28 +208,31 @@ class GraphDB:
                 .property('doi', dataset['doi']) \
                 .property('title', dataset['title'])).next()
 
-    def add_relationship(self, name, doi, orcid="", verified=False):
+    def add_relationship(self, name, doi, orcid="", verified=False, verifier=""):
         '''
         adds relationship to database if it doesn't already exist
         '''
         return self.graph_trav.V().has('application', 'name', name).as_('v') \
                 .V().has('dataset', 'doi', doi) \
                 .coalesce(inE('uses').where(outV().as_('v')), addE('uses') \
-                    .property('orcid', orcid) \
+                    .property('discoverer', orcid) \
                     .property('verified', verified) \
+                    .property('verifier', verifier) \
                 .from_('v')).next()
 
     def update_app(self, name, app):
         '''
         updates application vertex in the database with new information
         '''
-        return self.graph_trav.V().has('application', 'name', name) \
-            .property(Cardinality.single, 'topic', app['topic']) \
+        self.graph_trav.V().has('application', 'name', name) \
+            .sideEffect(__.properties('topic').drop()) \
             .property(Cardinality.single, 'name', app['name']) \
             .property(Cardinality.single, 'site', app['site']) \
             .property(Cardinality.single, 'screenshot', app['screenshot']) \
             .property(Cardinality.single, 'publication', app['publication']) \
             .property(Cardinality.single, 'description', app['description']).next()
+        for i in range(len(app['topic'])):
+            self.add_app_property(app['name'], 'topic', app['topic'][i])
 
     def update_app_property(self, name, prop, value):
         '''
@@ -234,6 +248,14 @@ class GraphDB:
         '''
         return self.graph_trav.V().has('application', 'name', name) \
                 .property(Cardinality.set_, prop, value).next()
+
+    def verify_relationship(self, name, doi, verifier):
+        '''
+        adds relationship to database if it doesn't already exist
+        '''
+        return self.graph_trav.V().has('name', name).outE("uses").where(otherV().has("doi", doi)) \
+            .property('verified', True) \
+            .property('verifier', verifier).next()
 
     def update_dataset(self, doi, dataset):
         '''
