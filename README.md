@@ -129,3 +129,14 @@ Any questions or suggestions for improvement?
 
 <br /><br />
 If looking to contribute, please look at [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Security Scans
+
+Use Python Safety (https://github.com/pyupio/safety) to check your installed dependencies for known security vulnerabilities
+
+safety check -r requirements.txt
+
+Use Python Bandit (https://github.com/PyCQA/bandit) to find common security issues in your Python code
+
+bandit -r ~/your_repos/project
+
