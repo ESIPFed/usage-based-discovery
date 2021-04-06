@@ -144,7 +144,7 @@ class GraphDB:
             { 'title': [''], 'doi': [''] }],
           path[ {APP}, {EDGE}, {DATASET} ], ... ]
         '''
-        return self.graph_trav.V().has('application', 'name', name).outE().inV().path().by(__.valueMap()).toList()
+        return self.graph_trav.V().has('application', 'name', name).outE('uses').inV().path().by(__.valueMap()).toList()
 
     def get_dataset_by_app(self, name, doi):
         '''
