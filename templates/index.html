@@ -221,12 +221,46 @@
             >
 	    {% if trusted_user and app%}
 	    <!-- only shows if you are a trusted user and the app is selected -->
+
+
+	    {% if d[1]['verified'] == false %}
+	    <button
+	      onclick="if (confirm ( 'Are you sure you want to verify the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/verify/{{app[0]['encoded_name']}}/{{d[2]['encoded_doi']}}';}" 
+	      type="button"
+	      class="btn btn-success btn-sm"
+	      data-toggle="tooltip" 
+	      data-placement="top" 
+	      title="Verify Dataset Relationship"
+	      >Verify</button
+            >
+	    {% endif %}
+
 	    <button 
 	      onclick="if (confirm ( 'Are you sure you want to unlink the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/delete_dataset_relation/{{app[0]['encoded_name']}}/{{d[2]['encoded_doi']}}';}" 
 	      type="button"
 	      class="btn btn-danger btn-sm"
-	      >Unlink Dataset Relation</button
-      	    >
+	      data-toggle="tooltip" 
+	      data-placement="top" 
+	      title="Unlink Dataset Relationship"
+	      ><span class="fas fa-unlink"></span></button
+      	    > 
+
+	    {% endif %}
+	    {% if d[1]['verified'] %}
+	    <button
+	      onclick="console.log('clicked_1');"
+	      type="button"
+	      class="btn btn-success btn-sm"
+	      data-toggle="popover" 
+	      data-placement="top" 
+	      data-content="<a href='https://orcid.org/{{d[1]['verifier']}}'>
+<img alt='ORCID logo' src='https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png' width='16' height='16' />
+0000-0001-2345-6789
+</a>"
+	      data-html="true"
+	      title="ORCiD"
+	      ><span class="fas fa-check"></span></button
+            >
 	    {% endif %}
             <br /><br />
           </div>
@@ -237,7 +271,31 @@
   </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script>
+	    $(function () {
+		$('[data-toggle="tooltip"]').tooltip()
+	    })
+	    $(function () {
+	        $('[data-toggle="popover"]').popover()
+	    })
 	    function edit_application(app_name){
+		var payload = {"name" : app_name, "type":"edit_application"};
+		var form = document.createElement('form');
+		form.style.visibility = 'hidden'; // no user interaction is necessary
+		form.method = 'POST'; // forms by default use GET query strings
+		form.action = '{{stage}}/add-relationship';
+		for (var key in payload) {
+		  console.log(key);
+		  var input = document.createElement('input');
+		  input.name = key;
+		  input.value = payload[key];
+		  form.appendChild(input); // add key/value pair to form
+		}
+		document.body.appendChild(form); // forms cannot be submitted outside of body
+		console.log(form)
+		form.submit(); // send the payload and navigate
+	    }
+
+	    function verify_relationship(app_name){
 		var payload = {"name" : app_name, "type":"edit_application"};
 		var form = document.createElement('form');
 		form.style.visibility = 'hidden'; // no user interaction is necessary
@@ -279,6 +337,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- CSS only -->
+  {{ fontawesome_html() }}
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
     rel="stylesheet"
@@ -398,6 +457,8 @@
     }
 
     .screenshot {
+      border-color:#ddd;
+      border-width:2px;
       border-style: solid;
       max-width: 850px;
       max-height: 600px;

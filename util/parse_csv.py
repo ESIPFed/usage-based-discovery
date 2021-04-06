@@ -53,8 +53,8 @@ def main():
         # keeps track of which apps have already been seen
         apps = set()
         s3F= s3Functions()
+        CHROME_DRIVER = s3F.get_chrome_driver()
         for line in READER:
-
             # automated generation of dataset name from the doi
             # GET DATASET NAME, application dataset matching algorithm takes care of this
             # doi = line['doi']
@@ -69,15 +69,13 @@ def main():
             #removes spaces before and after each data point
             for i in line:
                 line[i]= line[i].strip()
-            #following line is obsolete after url-encoding 
-            #line['name'] = line['name'].replace('/', '~slash').replace('|','~pipe')
             
             # automated generation of application screenshot from website link
             # this conditional handles duplicate application values
             if line['name'] not in apps:
                 print(f"Getting snapshot for {line['site']}", file=sys.stderr)
                 try:
-                    line['screenshot'] = s3F.upload_image_from_url(s3_bucket, line['site'])
+                    line['screenshot'] = s3F.upload_image_from_url('test-bucket-parth',line['site'], CHROME_DRIVER)
                     print("\n\n")
                 except:
                     print("ERROR getting {}".format(line['site']))
@@ -86,6 +84,7 @@ def main():
             apps.add(line['name'])
 
             WRITER.writerow(line)
+        CHROME_DRIVER.quit()
 
 if __name__ == '__main__':
     main()
