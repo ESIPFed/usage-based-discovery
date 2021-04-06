@@ -256,8 +256,7 @@ def add_relationship():
             #logic to add topics that are custom if authorized
             if session['role'] == 'supervisor':
                 for topic in APP['topic']:
-                    if topic not in topics:
-                        g.add_topic(topic)
+                    g.add_topic(topic)
             g.update_app(f['prev_app_name'],APP) if 'prev_app_name' in f else g.add_app(APP)
             #iterate through the forms dataset list
             list_of_datasets = []
@@ -274,10 +273,9 @@ def add_relationship():
                 DATASET = {'title': Dataset_name, 'doi': DOI}
                 if g.has_dataset(DOI):
                     g.update_dataset(DOI, DATASET)
-                    g.add_relationship(f['Application_Name'],DOI)
                 else:
                     g.add_dataset(DATASET)
-                    g.add_relationship(f['Application_Name'],DOI)
+                g.add_relationship(f['Application_Name'],DOI)
             #if the DB has a DOI that the form doesn't then remove that relationship
             datasets = g.get_datasets_by_app(f['Application_Name'])
             temp_app = g.mapify(g.get_app(f['Application_Name']))
