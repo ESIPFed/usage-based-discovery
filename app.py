@@ -6,6 +6,7 @@ import requests
 import json
 import urllib
 from util.autofill import autofill
+from util.env_loader import load_env
 
 from gremlin_python import statics
 from gremlin_python.structure.graph import Graph
@@ -21,6 +22,7 @@ app = Flask(__name__)
 fa = FontAwesome(app)
 
 app.secret_key = os.urandom(32)
+load_env()
 stage = os.environ.get('STAGE')
 client_secret = os.environ.get('CLIENT_SECRET')
 client_id = os.environ.get('CLIENT_ID')
@@ -132,7 +134,7 @@ def login():
     output_json = json.loads(output)
     
     s3 = s3Functions()
-    data = s3.get_file('test-bucket-parth', 'orcid.json')
+    data = s3.get_file(s3_bucket, 'orcid.json')
     data = json.loads(data)
     if output_json['orcid'] in data['supervisor']:
         session['role'] = 'supervisor'

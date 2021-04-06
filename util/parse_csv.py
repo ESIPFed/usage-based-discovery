@@ -8,6 +8,7 @@ the graph database.
 
 import sys
 import io
+import os
 import csv
 import platform
 import re
@@ -30,6 +31,7 @@ def parse_options():
     return parser.parse_args()
 
 def main():
+    s3_bucket = os.environ.get('S3_BUCKET')
     # Main program
     OPTIONS = parse_options()
     print(OPTIONS)
