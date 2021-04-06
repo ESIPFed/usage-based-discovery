@@ -31,7 +31,8 @@ def db_input_csv(input_file):
         for line in reader:
             line['topic'] = re.sub("\]|\[|\'", '', line['topic'])
             line['topic'] = line['topic'].split(',')
-            print(line['topic'])
+            for t in line['topic']:
+                print(graph.add_topic(t))
             graph.add_app(line)
             graph.add_dataset(line)
             if 'discoverer' in line.keys():
