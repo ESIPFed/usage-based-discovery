@@ -132,7 +132,7 @@ class GraphDB:
             { 'title': [''], 'doi': [''] }],
           path[ {APP}, {EDGE}, {DATASET} ] , ...]
         '''
-        return self.graph_trav.V().hasLabel('application').where(__.outE("about").otherV().has("topic", topic)).outE().inV().path().by(__.valueMap()).toList()
+        return self.graph_trav.V().hasLabel('application').where(__.outE("about").otherV().has("topic", topic)).outE('uses').inV().path().by(__.valueMap()).toList()
 
     def get_datasets_by_app(self, name):
         '''
@@ -256,14 +256,14 @@ class GraphDB:
         updates application vertex in the database with new information
         '''
         self.graph_trav.V().has('application', 'name', name) \
-            .sideEffect(__.properties('topic').drop()) \
+            .sideEffect(__.outE("about").where(otherV().hasLabel("topic")).drop()) \
             .property(Cardinality.single, 'name', app['name']) \
             .property(Cardinality.single, 'site', app['site']) \
             .property(Cardinality.single, 'screenshot', app['screenshot']) \
             .property(Cardinality.single, 'publication', app['publication']) \
             .property(Cardinality.single, 'description', app['description']).next()
         for i in range(len(app['topic'])):
-            self.add_topic_relationship(app['name'], 'topic', app['topic'][i])
+            self.connect_topic(app['name'], app['topic'][i])
 
     def update_app_property(self, name, prop, value):
         '''
