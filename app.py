@@ -70,7 +70,6 @@ def explore():
     g = GraphDB()
     data = g.get_data()
     return render_template('graph.html', stage=stage, data=data)
-
 # Main screen
 @app.route('/<topic>/<app>')
 def main(topic, app):
@@ -106,6 +105,7 @@ def main(topic, app):
     trusted_user = 'role' in session and session['role']=='supervisor' 
     
     for d in datasets:
+        print("dataset Path:       ", d)
         d[2]['encoded_doi']=urllib.parse.quote(urllib.parse.quote(d[2]['doi'][0], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
 
     undo = None
@@ -221,9 +221,10 @@ def add_relationship():
             status = "edit_application"
             datasets_obj = g.get_datasets_by_app(f['name'])
             app = g.mapify(g.get_app(f['name']))[0]
+            print("got app:    ", app)
             f['Application_Name'] = f['name']
             f['description'] = app['description']
-            f['Topic[]'] = app['topic']
+            f['Topic[]'] = g.get_app_topics(f['name'])
             f['site'] = app['site']
             f['Publication_Link'] = app['publication']
             #iterating through datasets so they also show up in form
@@ -252,7 +253,12 @@ def add_relationship():
                     'publication': f['Publication_Link'],
                     'description': f['description'] 
             }
-            g.update_app if 'prev_app_name' in f else g.add_app(APP)
+            #logic to add topics that are custom if authorized
+            if session['role'] == 'supervisor':
+                for topic in APP['topic']:
+                    if topic not in topics:
+                        g.add_topic(topic)
+            g.update_app(f['prev_app_name'],APP) if 'prev_app_name' in f else g.add_app(APP)
             #iterate through the forms dataset list
             list_of_datasets = []
             list_of_DOIs = []
@@ -310,7 +316,7 @@ def delete_dataset_relation(encoded_app_name, encoded_doi):
         else:
             session['changes'] = [change]
         print("this is dataset change" , session['changes'])
-        # after logging, delete relationship function 
+        # after logging, delete the relationship 
         g.delete_relationship(app_name, doi)
         g.delete_orphan_datasets()
     return redirect(request.referrer)
@@ -324,6 +330,7 @@ def delete_application(encoded_app_name):
         #session 'changes' keeps a history of all changes made by that user
         #before we delete application we need to store all the info so we can undo
         app = g.mapify(g.get_app(app_name))
+        app[0]['topic'] = g.get_app_topics(app_name)
         dataset_paths = g.get_datasets_by_app(app_name)
         datasets_and_edges = []
         for path in dataset_paths:
