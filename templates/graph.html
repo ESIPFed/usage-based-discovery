@@ -168,19 +168,19 @@
 
         
         function color(){
-            var colordata = ['#004488', '#DDAA33']
+            var colordata = ['#004488', '#DDAA33', '#BB5566']
             const scale = d3.scaleOrdinal().range(colordata);
             return d => scale(d.label);
         }
 
         function linkcolor(){
-            var colordata = ['#BB5566']
+            var colordata = ['#004488', '#DDAA33']
             const scale = d3.scaleOrdinal().range(colordata);
             return d => scale(d.label);
         }
 
         function defcolor(){
-            var colordata = ['#BB5566']
+            var colordata = ['#004488', '#DDAA33']
             const scale = d3.scaleOrdinal().range(colordata);
             return d => scale(d);
         }
