@@ -20,8 +20,9 @@ class TestInit():
         filename = re.sub(r'^https?://', '', url)
         filename = re.sub(r'\W', '-', filename) + '.png'
 
+        CHROME_DRIVER = self.s.get_chrome_driver()
         #checks if object is in bucket when uploading
-        self.s.upload_image_from_url(self.bucket_name, url)
+        self.s.upload_image_from_url(self.bucket_name, url, CHROME_DRIVER)
         try:
             self.s3.head_object(Bucket= self.bucket_name, Key = filename)
         except ClientError as e:
@@ -40,13 +41,14 @@ class TestInit():
             assert True
  
         #checks if object is in bucket
-        self.s.upload_image_from_url(self.bucket_name, url)
+        self.s.upload_image_from_url(self.bucket_name, url, CHROME_DRIVER)
         try:
             self.s3.head_object(Bucket= self.bucket_name, Key = filename)
         except ClientError as e: 
             print("failed when checking if image was uploaded 2nd time {}".format(e))
             assert False
         assert True
+        CHROME_DRIVER.quit()
 
     def test_create_presigned_url(self):
         filename = "www-nasa-gov-.png"
@@ -54,7 +56,7 @@ class TestInit():
         assert requests.get(url).status_code == 200
         time.sleep(120)
         assert requests.get(url).status_code == 403
-
+    """
     def test_get_image(self):
         '''
         checks if www-nasa-gov-.png image is queried sucessfully and then removes it from s3
@@ -75,7 +77,7 @@ class TestInit():
             assert False
         except ClientError:
             assert True
-
+    """
     def test_upload_image(self):
         '''
         uploads an image file from your directories and then removes it

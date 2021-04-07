@@ -3,8 +3,9 @@
 GraphDB: facilitates all interactions to the Neptune Graph Database
 '''
 from __future__  import print_function  # Python 2/3 compatibility
-import os
+import os   
 import sys
+from util.env_loader import load_env
 from gremlin_python.structure.graph import Graph
 from gremlin_python.process.graph_traversal import unfold, inE, addV, addE, outV, otherV, bothE, __
 from gremlin_python.process.traversal import Cardinality, T, Direction, P
@@ -24,6 +25,7 @@ class GraphDB:
         '''
         connects to the neptune database upon class creation
         '''
+        load_env()
         graph = Graph()
         neptune_endpoint = os.environ.get('NEPTUNEDBRO')
         if neptune_endpoint is None:
@@ -101,9 +103,6 @@ class GraphDB:
         '''
         return self.graph_trav.V().has('application', 'name', name).valueMap().toList()
 
-    def get_app_topics(self, name):
-        return self.graph_trav.V().has('application', 'name', name).out("about").values("topic").toList()
-
     def get_dataset(self, doi):
         '''
         queries database for a specific database
@@ -115,6 +114,9 @@ class GraphDB:
         queries database for a list of all applications related to the given topic
         '''
         return self.graph_trav.V().hasLabel('application').where(__.outE("about").otherV().has("topic", topic)).valueMap().toList()
+    
+    def get_app_topics(self, name):
+        return self.graph_trav.V().has('application', 'name', name).out("about").values("topic").toList()
 
     def get_valid_apps_by_topic(self, topic):
         '''

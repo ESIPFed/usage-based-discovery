@@ -16,7 +16,7 @@ class s3Functions():
     def __del__(self):
         pass
 
-    def upload_image_from_url(self, bucket_name, url):
+    def upload_image_from_url(self, bucket_name, url, CHROME_DRIVER):
         """
         Fetch a snapshot of the application home page using Selenium
 
@@ -30,11 +30,11 @@ class s3Functions():
         CHROME_DRIVER = self.get_chrome_driver()
         file_name = re.sub(r'^https?://', '', url)
         file_name = re.sub(r'\W', '-', file_name) + '.png'
-        print('chromedriver is getting ', url)
+        print('now doing chromedriver.get(',url,')')
         CHROME_DRIVER.get(url)
-        print("chrome driver got the url")
-        sleep(5)
-        with io.BytesIO(self.CHROME_DRIVER.get_screenshot_as_png()) as f:
+        print("now chrome driver has got the url")
+        sleep(4)
+        with io.BytesIO(CHROME_DRIVER.get_screenshot_as_png()) as f:
             print("now attempting to upload fileobj(file{},bucket{},file_name{})".format(f,bucket_name, file_name))
             self.s3.upload_fileobj(f, bucket_name, file_name)
         CHROME_DRIVER.quit()
@@ -56,6 +56,8 @@ class s3Functions():
     def upload_image(self, bucket_name, unique_filename, f):
         s3 = boto3.resource('s3')
         s3.meta.client.upload_file(f, bucket_name, unique_filename)
+    '''
+    commented because PIL dependency issues, and not used anywhere in our code
 
     def get_image(self, bucket_name, file_name):
         s3 = boto3.resource('s3')
@@ -63,7 +65,7 @@ class s3Functions():
         image = bucket.Object(file_name)
         img_data = image.get().get('Body').read()
         return Image.open(io.BytesIO(img_data))
-
+    ''' 
     def get_file(self, bucket_name, file_name):
         s3 = boto3.resource('s3')
         bucket = s3.Bucket(bucket_name)

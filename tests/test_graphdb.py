@@ -1,6 +1,6 @@
 import sys
-sys.path.append("../util")
-from graph_db import GraphDB, valid_endpoint
+sys.path.append("../")
+from util.graph_db import GraphDB, valid_endpoint
 
 NAME = 'Testing 123'
 DOI = '1234567890'
