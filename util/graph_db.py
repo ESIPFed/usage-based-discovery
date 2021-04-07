@@ -25,7 +25,7 @@ class GraphDB:
         '''
         connects to the neptune database upon class creation
         '''
-        load_env()
+        #load_env()
         graph = Graph()
         neptune_endpoint = os.environ.get('NEPTUNEDBRO')
         if neptune_endpoint is None:
