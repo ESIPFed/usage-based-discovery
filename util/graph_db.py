@@ -101,6 +101,9 @@ class GraphDB:
         '''
         return self.graph_trav.V().has('application', 'name', name).valueMap().toList()
 
+    def get_app_topics(self, name):
+        return self.graph_trav.V().has('application', 'name', name).out("about").values("topic").toList()
+
     def get_dataset(self, doi):
         '''
         queries database for a specific database
@@ -214,7 +217,7 @@ class GraphDB:
                 .property('doi', dataset['doi']) \
                 .property('title', dataset['title'])).next()
 
-    def add_relationship(self, name, doi, annotation= "", discoverer="", verified=False, verifier=""):
+    def add_relationship(self, name, doi, discoverer="", verified=False, verifier="", annotation=""):
         '''
         adds relationship to database if it doesn't already exist
         '''
@@ -281,8 +284,8 @@ class GraphDB:
                 .property(Cardinality.single, 'title', dataset['title']) \
                 .property(Cardinality.single, 'doi', dataset['doi']).next()
 
-    def rename_app_topic(self, oldtopic, newtopic):
-        return self.graph_trav.V().hasLabel('application') \
+    def rename_topic(self, oldtopic, newtopic):
+        return self.graph_trav.V().has('topic', 'topic', oldtopic) \
             .sideEffect(__.properties('topic').hasValue(oldtopic).drop()) \
             .property(Cardinality.set_,'topic', newtopic).iterate()
 
