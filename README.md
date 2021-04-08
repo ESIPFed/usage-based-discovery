@@ -66,7 +66,7 @@ Load the graph into the database
 
 The Web Interface for Usage-based Discovery is written in Python Flask, and deployed using Zappa.
 
-1. Load your AWS credentials into the environment
+1. Load your AWS credentials into the environment (you'll need https://aws.amazon.com/cli/ for this)
 
 `$ aws configure`
 
