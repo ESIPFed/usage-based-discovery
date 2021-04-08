@@ -194,7 +194,7 @@
         function info(d) {
             var str = ""
             if(d.label == "application"){
-                str += d.topic + " " + d.label + "<br><br>";
+                str += d.label + "<br><br>";
                 str += d.name + "<br><br>";
                 str += d.site + "<br><br>";
                 str += d.description;
@@ -204,13 +204,8 @@
                 str += d.title + "<br><br>";
                 str += d.doi;
             }
-            if(d.label == "person"){
-                str += d.label + "<br><br>";
-                str += d.name + "<br><br>";
-            }
-            if(d.label == "software"){
-                str += d.label + "<br><br>";
-                str += d.name;
+            if(d.label == "topic"){
+                str += d.topic + " " + d.label;
             }
             return str;
         }
