@@ -25,7 +25,7 @@ class GraphDB:
         '''
         connects to the neptune database upon class creation
         '''
-        #load_env()
+        load_env()
         graph = Graph()
         neptune_endpoint = os.environ.get('NEPTUNEDBRO')
         if neptune_endpoint is None:
@@ -95,7 +95,7 @@ class GraphDB:
         '''
         queries database for a set of all topics
         '''
-        return self.graph_trav.V().hasLabel('topic').values('topic').toSet()
+        return self.graph_trav.V().hasLabel('topic').values('topic').toList()
 
     def get_app(self, name):
         '''

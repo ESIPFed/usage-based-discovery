@@ -27,7 +27,6 @@ class s3Functions():
         Returns output filename, basically the meat of the URL,
         using '-' in place of non-alphnumeric chars, plus .png
         """
-        CHROME_DRIVER = self.get_chrome_driver()
         file_name = re.sub(r'^https?://', '', url)
         file_name = re.sub(r'\W', '-', file_name) + '.png'
         print('now doing chromedriver.get(',url,')')
@@ -45,7 +44,8 @@ class s3Functions():
         https://chromedriver.storage.googleapis.com/:
         linux64 or mac64
         """
-        path = "../driver/chromedriver"
+        os_suffix = {'Linux':'linux64', 'Darwin':'mac64'}
+        path = "../drivers/chromedriver87." + os_suffix.get(platform.system())
         # initiate selenium webdriver
         option = webdriver.ChromeOptions()
         option.add_argument('headless')

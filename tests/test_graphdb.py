@@ -68,11 +68,11 @@ class TestInit():
         assert not self.db.has_dataset("should not exist")
 
     def test_get_topics(self):
-        assert self.db.get_topics() == set()
+        assert self.db.get_topics() == []
 
     def test_add_topic(self):
         self.db.add_topic(TOPIC)
-        assert self.db.get_topics() == {TOPIC}
+        assert self.db.get_topics() == [TOPIC]
         #shouldn't add a duplicate
         startnum = self.db.get_vertex_count()
         self.db.add_topic(TOPIC)
@@ -81,9 +81,9 @@ class TestInit():
 
     def test_rename_topic(self):
         self.db.add_topic('Fires')
-        assert self.db.get_topics() == {TOPIC, 'Fires'}
+        assert sorted(self.db.get_topics()) == sorted([TOPIC, 'Fires'])
         self.db.rename_topic('Fires', 'Water')
-        assert self.db.get_topics() == {TOPIC, 'Water'}
+        assert sorted(self.db.get_topics()) == sorted([TOPIC, 'Water'])
 
     def test_add_app(self):
         self.db.add_app(APP)

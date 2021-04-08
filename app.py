@@ -51,6 +51,7 @@ Session = {
 @app.route('/')
 def home():
     g = GraphDB()
+    print(g.get_topics())
     topic_list = sorted(g.get_topics())
     # attatch presigned url to each topic to get a topic icon to display
     s3 = s3Functions()
@@ -80,13 +81,7 @@ def main(topic, app):
     g = GraphDB()
     topics = g.get_topics()
     # query only for application relating to specified topic
-<<<<<<< HEAD
     relapps = g.mapify(g.get_apps_by_topic(topic))
-    print(relapps)
-=======
-    relapps = g.get_apps_by_topic(topic)
-    g.mapify(relapps)
->>>>>>> upstream/main
     # double encoding relapps to avoid special characters issues
     for relapp in relapps:
         relapp['encoded_name'] = urllib.parse.quote(urllib.parse.quote(relapp['name'], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
