@@ -2,9 +2,11 @@ import io
 import platform
 import re
 from time import sleep
-#from PIL import Image
+from PIL import Image
 from selenium import webdriver
 import boto3
+import os
+import subprocess
 
 class s3Functions():
 
@@ -34,8 +36,6 @@ class s3Functions():
         with io.BytesIO(CHROME_DRIVER.get_screenshot_as_png()) as f:
             print("now attempting to upload fileobj(file{},bucket{},file_name{})".format(f,bucket_name, file_name))
             self.s3.upload_fileobj(f, bucket_name, file_name)
-        
-        #CHROME_DRIVER.quit()
         return file_name
 
     def get_chrome_driver(self):
@@ -44,7 +44,7 @@ class s3Functions():
         linux64 or mac64
         """
         os_suffix = {'Linux':'linux64', 'Darwin':'mac64'}
-        path = "../drivers/chromedriver87." + os_suffix.get(platform.system())
+        path = "../drivers/chromedriver89." + os_suffix.get(platform.system())
         # initiate selenium webdriver
         option = webdriver.ChromeOptions()
         option.add_argument('headless')

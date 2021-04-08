@@ -95,7 +95,7 @@ class GraphDB:
         '''
         queries database for a set of all topics
         '''
-        return self.graph_trav.V().hasLabel('topic').values('topic').toSet()
+        return self.graph_trav.V().hasLabel('topic').values('topic').toList()
 
     def get_app(self, name):
         '''
