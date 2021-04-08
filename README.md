@@ -130,11 +130,11 @@ Browse to http://localhost:5000
 
 Use Python Safety (https://github.com/pyupio/safety) to check your installed dependencies for known security vulnerabilities
 
-safety check -r requirements.txt
+`$ safety check -r requirements.txt`
 
 Use Python Bandit (https://github.com/PyCQA/bandit) to find common security issues in your Python code
 
-bandit -r ~/your_repos/project
+`$ bandit -r ~/your_repos/project`
 
 ## Contributing
 
