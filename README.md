@@ -1,4 +1,4 @@
-![Usage-Based Data Discovery Web App](https://github.com/vinnyinverso/ubd-tool-remotedb/blob/main/static/ubd-app.png?raw=true)
+![Usage-Based Data Discovery Web App](https://github.com/ESIPFed/ubd-tool-remotedb/blob/main/static/ubd-app.png?raw=true)
 
 
 ## Setting up the Neptune graph database 
