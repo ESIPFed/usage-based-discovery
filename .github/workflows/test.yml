@@ -83,6 +83,7 @@ jobs:
         cd tests
         export NEPTUNEDBRO=ws://localhost:8182/gremlin
         export STAGE=
+        export S3_BUCKET=test-parth-bucket
         pytest -v -s test_graphdb.py
         pytest -v -s test_app.py
         pytest -v -s test_env_loader.py
