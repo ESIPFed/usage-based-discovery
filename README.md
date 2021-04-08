@@ -1,6 +1,6 @@
 # Usage-Based Data Discovery Tool - A simple web application
 
-![Usage Based Discovery Web App](https://drive.google.com/file/d/1fDn5PIww7ABQuZb-Dpwi8PUC049qapRU/view?usp=sharing)
+![Usage-Based Data Discovery Web App](https://github.com/vinnyinverso/ubd-tool-remotedb/blob/main/static/ubd-image.png?raw=true)
 
 ## Setting up the Neptune graph database 
 
