@@ -141,6 +141,10 @@ Use Python Bandit (https://github.com/PyCQA/bandit) to find common security issu
 
 `$ bandit -r ~/your_repos/project`
 
+Snyk can also be used to check for vulnerabilities in your dependencies using the following GitHub action:
+
+https://github.com/ESIPFed/ubd-tool-remotedb/actions/workflows/security.yml
+
 ## Contributing
 
 Any questions or suggestions for improvement?
