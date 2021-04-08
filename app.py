@@ -56,11 +56,16 @@ def home():
     s3 = s3Functions()
     screenshot_list = []
     for topic in topic_list:
-        screenshot_list.append(s3.create_presigned_url(s3_bucket, topic+'.png'))
+        screenshot_list.append(s3.create_presigned_url(s3_bucket, 'topic/'+topic+'.jpg'))
     topics_screenshot_zip = zip(topic_list, screenshot_list)
     # in_session determines if the user is logged in, and if so they get their own privileges
     in_session = 'orcid' in session
     return render_template('init.html', stage=stage, topics_screenshot_zip=topics_screenshot_zip, in_session=in_session)
+
+# Topic attribution
+@app.route('/topic-attribution')
+def topic_attribution():
+    return render_template('topic-attribution.html', stage=stage)
 
 # About page
 @app.route('/about')

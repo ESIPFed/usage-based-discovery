@@ -11,7 +11,7 @@ except Exception as e:
 NAME = 'Testing123'
 TOPIC = 'Test'
 APP = {
-        'topic': TOPIC,
+        'topic': [TOPIC],
         'name': NAME,
         'site': 'https://example.com',
         'screenshot': 'Testing 123.jpg',

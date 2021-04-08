@@ -33,12 +33,15 @@ def db_input_csv(input_file):
         for line in reader:
             line['topic'] = re.sub("\]|\[|\'", '', line['topic'])
             line['topic'] = line['topic'].split(',')
-            for t in line['topic']:
-                print(graph.add_topic(t))
+            for index, t in enumerate(line['topic']):
+                line['topic'][index] = t.strip()
+                print(graph.add_topic(line['topic'][index]))
             graph.add_app(line)
             graph.add_dataset(line)
             if 'discoverer' in line.keys():
-                graph.add_relationship(line['name'], line['doi'], discoverer=line['discoverer'], verified=line['verified'], verifier=line['verifier'])
+                print('new line:\n', line)
+                print('verifier:\n', line['verified'])
+                graph.add_relationship(line['name'], line['doi'], discoverer=line['discoverer'], verified='True'==line['verified'], verifier=line['verifier'], annotation=line['annotation'])
             else:
                 graph.add_relationship(line['name'], line['doi'])
     # counts vertices, used for troubleshooting purposes
