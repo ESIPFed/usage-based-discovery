@@ -128,7 +128,7 @@ Browse to http://localhost:5000
 
 ## Security
 
-Install git-secrets on your machine to prevent you from accidentally committing sensitive info (like access keys, secrets) to your GitHub repo:
+Install git-secrets on your machine to prevent yourself from accidentally committing sensitive info (like access keys, secrets) to your GitHub repo:
 
 https://github.com/awslabs/git-secrets
 
