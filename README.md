@@ -1,4 +1,5 @@
-# Usage-Based Data Discovery Tool - A simple web application
+![Usage-Based Data Discovery Web App](https://github.com/ESIPFed/ubd-tool-remotedb/blob/main/static/ubd-app.png?raw=true)
+
 
 ## Setting up the Neptune graph database 
 
@@ -65,7 +66,7 @@ Load the graph into the database
 
 The Web Interface for Usage-based Discovery is written in Python Flask, and deployed using Zappa.
 
-1. Load your AWS credentials into the environment
+1. Load your AWS credentials into the environment (you'll need https://aws.amazon.com/cli/ for this)
 
 `$ aws configure`
 
