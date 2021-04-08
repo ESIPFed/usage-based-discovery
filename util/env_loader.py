@@ -23,5 +23,6 @@ def load_env():
     # then load local env variables
     os.environ['NEPTUNEDBRO'] = "ws://localhost:8182/gremlin"
     os.environ['STAGE'] = ""
+    os.environ['S3_BUCKET'] = "test-parth-bucket"
     if env_vars_loaded(os.environ.keys()):
         print('Loaded local env variables')
