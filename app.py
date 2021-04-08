@@ -22,7 +22,7 @@ app = Flask(__name__)
 fa = FontAwesome(app)
 
 app.secret_key = os.urandom(32)
-load_env()
+#load_env()
 stage = os.environ.get('STAGE')
 client_secret = os.environ.get('CLIENT_SECRET')
 client_id = os.environ.get('CLIENT_ID')
@@ -84,7 +84,7 @@ def main(topic, app):
     # encode all apps, and doi's, original app name and doi is in a seperate variable 
     app = urllib.parse.unquote(urllib.parse.unquote(app))    
     g = GraphDB()
-    topics = g.get_topics()
+    topics = sorted(g.get_topics())
     # query only for application relating to specified topic
     relapps = g.mapify(g.get_apps_by_topic(topic))
     # double encoding relapps to avoid special characters issues
