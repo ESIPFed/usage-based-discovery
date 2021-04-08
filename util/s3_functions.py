@@ -44,7 +44,7 @@ class s3Functions():
         linux64 or mac64
         """
         os_suffix = {'Linux':'linux64', 'Darwin':'mac64'}
-        path = "../drivers/chromedriver87." + os_suffix.get(platform.system())
+        path = "../drivers/chromedriver89." + os_suffix.get(platform.system())
         # initiate selenium webdriver
         option = webdriver.ChromeOptions()
         option.add_argument('headless')
