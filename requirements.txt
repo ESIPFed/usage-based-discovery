@@ -33,7 +33,7 @@ lambda-packages==0.20.0
 MarkupSafe==1.1.1
 nltk==3.6
 packaging==20.9
-Pillow==8.1.2
+Pillow==8.2.0
 pip-tools==5.3.1
 placebo==0.9.0
 pluggy==0.13.1
