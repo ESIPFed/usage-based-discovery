@@ -2,16 +2,17 @@
   <div class="container">
     <div class="topbar">
       <h1 style="text-align: left;">
-        EOSDIS Usage Based Discovery
+        Usage Based Discovery
         <span style="float: right;">
-	  <a href="{{stage}}/explore" style="font-size: x-large;">Explore</a>&emsp;	
-          <a href="{{stage}}/about" style="font-size: x-large;"
-            >About</a
-          >&emsp; 
-	  {% if in_session %}
-          <a href="{{stage}}/add-relationship" style="font-size: x-large;">Add Relationship</a>&emsp;
-          <a href="{{stage}}/logout" style="font-size: x-large;">Logout</a>&emsp;
-          {% else %}
+          <a href="{{stage}}/explore" style="font-size: x-large;">Explore</a
+          >&emsp;
+          <a href="{{stage}}/about" style="font-size: x-large;">About</a>&emsp;
+          {% if in_session %}
+          <a href="{{stage}}/add-relationship" style="font-size: x-large;"
+            >Add Relationship</a
+          >&emsp;
+          <a href="{{stage}}/logout" style="font-size: x-large;">Logout</a
+          >&emsp; {% else %}
           <a href="{{stage}}/auth" style="font-size: x-large;">Login</a>&emsp;
           {% endif %}
         </span>
@@ -22,32 +23,26 @@
       <div class="menu-container">
         <div class="button-container">
           {% for topic, screenshot in topics_screenshot_zip %}
-          <form method="get" action="{{stage}}/{{topic}}/all">
-		  <!--
-	    <div class="card">
-	      <figure class="card__thumbnail">
-	        <img src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjE0NTg5fQ">
-	        <span class="card__title">Using IMG tag inside a container</span>
-	      </figure>
-      	    </div>            
-		-->
-	    <button>{{topic}}
-	      <img
-	        src="{{screenshot}}"
-	        class="screenshot"
-	      />
-	    </button>
-	  </form>
+          <a class="topic-btn" href="{{stage}}/{{topic}}/all">
+            <div class="card">
+              <figure class="card__thumbnail">
+                <img src="{{screenshot}}" />
+                <span class="card__title">{{topic}}</span>
+              </figure>
+            </div>
+          </a>
           {% endfor %}
         </div>
-	<p>Source of all icons - <a href="https://thenounproject.com">thenounproject.com</a></p>
+        <p>
+	  <a href="{{stage}}/topic-attribution">Source of All Images</a>
+        </p>
       </div>
     </div>
   </div>
 </body>
 
 <head>
-  <title>Home</title>
+  <title>Usage Based Discovery</title>
   <link
     href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap"
     rel="stylesheet"
@@ -69,7 +64,7 @@
     }
 
     .topbar {
-      position:fixed;
+      position: fixed;
       background-color: black;
       height: 20%;
       max-height: 75px;
@@ -78,12 +73,12 @@
     }
 
     a {
-      color:#cccccc;
+      color: #cccccc;
       transition: 0.3s;
     }
 
     a:hover {
-      color:#fff;
+      color: #fff;
     }
 
     h1 {
@@ -102,7 +97,7 @@
 
     .menu-container {
       display: flex;
-      flex-direction:column;
+      flex-direction: column;
       justify-content: space-around;
       overflow-x: hidden;
       overflow-y: auto;
@@ -119,84 +114,72 @@
       border-radius: 5px;
     }
 
-    .button-container > form {
-      width: 190px;
-      height: 145px;
-      float: left;
+    .topic-btn {
       margin: 15px;
     }
 
-    button {
-      width: 100%;
-      height: 100%;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      border-radius: .3rem;
-      font-family: "Maven Pro", sans-serif;
-      font-size: 1.8rem;
-      background-color: #ffcad4;
-      border-color: #ccc;
+    .card {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      width: 190px; /* Box dimensions */
+      height: 145px;
 
+      border-radius: 4px; /* Styling */
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+        0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+      transition: box-shadow 0.56s ease-in-out; /* Animation */
+      /* background-color: rgba(0,0,0,.2); /* for debugging */
+    }
+    /* Shows an outer shadow */
+    .card:hover {
+      /* Just for styling */
+      cursor: pointer;
+      box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14),
+        0 9px 46px 8px rgba(0, 0, 0, 0.12), 0 11px 15px -7px rgba(0, 0, 0, 0.2);
     }
 
-    .screenshot {
-      height:110px;
-    }
-
-
-    
-    .card{
-  position: relative;
-  overflow: hidden;
-  display: flex;
-
-  width: 190px; /* Box dimensions */
-  height: 145px;
-
-  border-radius: 4px; /* Styling */
-  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
-  transition: box-shadow 0.56s ease-in-out; /* Animation */
-  /* background-color: rgba(0,0,0,.2); /* for debugging */
-}
-/* Shows an outer shadow */
-.card:hover{ /* Just for styling */
-  cursor: pointer;
-  box-shadow: 0 24px 38px 3px rgba(0,0,0,0.14), 0 9px 46px 8px rgba(0,0,0,0.12), 0 11px 15px -7px rgba(0,0,0,0.2);
-}
-
-/* Cards titles styling
+    /* Cards titles styling
 ------------------------------------------ */
-.card__title{ /* Just for styling */
-    align-self: flex-end; padding: 0.5rem;
-    color: rgba(255,255,255,.90); font-size: 2rem;
-    line-height: 1;font-weight: 600; }
+    .card__title {
+      /* Just for styling */
+      align-self: flex-end;
+      padding: 0.5rem;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.6rem;
+      line-height: 1;
+      font-weight: 400;
+    }
 
-/* Styles for:
+    /* Styles for:
 ** - Using IMG tag inside a container
 ------------------------------------------ */
-/* The image container */
-.card__thumbnail{
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  justify-content: center; /* horizontal center */
-  align-items: center; /* vertical center */
+    /* The image container */
+    .card__thumbnail {
+      margin: 0;
+      background-color: gray;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center; /* horizontal center */
+      align-items: center; /* vertical center */
 
-  width: 100%; /* Thumbnail dimensions. */
-  height: 100%; /*** Change the height to make the image smaller ***/
-  /* background-color: rgba(0,0,0,.2);  /* for debugging */
-
-}
-/* Sets the image dimensions */
-.card__thumbnail > img{ /* Tip: use 1:1 ratio images */
-  height: 100%; /* or width when img.width > img.height */
-}
-/* Styles the title inside the img container */
-.card__thumbnail > .card__title{ /* Just for styling */
-  position: absolute; left: 0; bottom: 0; }
-
-
+      width: 100%; /* Thumbnail dimensions. */
+      height: 100%; /*** Change the height to make the image smaller ***/
+      /* background-color: rgba(0,0,0,.2);  /* for debugging */
+    }
+    /* Sets the image dimensions */
+    .card__thumbnail > img {
+      /* Tip: use 1:1 ratio images */
+      height: 100%; /* or width when img.width > img.height */
+    }
+    /* Styles the title inside the img container */
+    .card__thumbnail > .card__title {
+      /* Just for styling */
+      position: absolute;
+      left: 0;
+      bottom: 0;
+    }
 
     .font {
       font-family: "Maven Pro", sans-serif;

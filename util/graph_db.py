@@ -5,7 +5,7 @@ GraphDB: facilitates all interactions to the Neptune Graph Database
 from __future__  import print_function  # Python 2/3 compatibility
 import os   
 import sys
-from util.env_loader import load_env
+#from util.env_loader import load_env
 from gremlin_python.structure.graph import Graph
 from gremlin_python.process.graph_traversal import unfold, inE, addV, addE, outV, otherV, bothE, __
 from gremlin_python.process.traversal import Cardinality, T, Direction, P
@@ -25,7 +25,7 @@ class GraphDB:
         '''
         connects to the neptune database upon class creation
         '''
-        load_env()
+        #load_env()
         graph = Graph()
         neptune_endpoint = os.environ.get('NEPTUNEDBRO')
         if neptune_endpoint is None:
@@ -286,8 +286,8 @@ class GraphDB:
                 .property(Cardinality.single, 'title', dataset['title']) \
                 .property(Cardinality.single, 'doi', dataset['doi']).next()
 
-    def rename_app_topic(self, oldtopic, newtopic):
-        return self.graph_trav.V().hasLabel('application') \
+    def rename_topic(self, oldtopic, newtopic):
+        return self.graph_trav.V().has('topic', 'topic', oldtopic) \
             .sideEffect(__.properties('topic').hasValue(oldtopic).drop()) \
             .property(Cardinality.set_,'topic', newtopic).iterate()
 
