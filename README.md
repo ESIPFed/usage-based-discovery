@@ -126,15 +126,19 @@ When running the DB locally, configure your DB url environment variable like thi
 
 Browse to http://localhost:5000
 
-## Security Scans
+## Security
 
-Use Python Safety (https://github.com/pyupio/safety) to check your installed dependencies for known security vulnerabilities
+Install git-secrets on your machine to prevent yourself from accidentally committing sensitive info (like access keys, secrets) to your GitHub repo:
 
-safety check -r requirements.txt
+https://github.com/awslabs/git-secrets
 
-Use Python Bandit (https://github.com/PyCQA/bandit) to find common security issues in your Python code
+Use Python Safety (https://github.com/pyupio/safety) to check your installed dependencies for known security vulnerabilities:
 
-bandit -r ~/your_repos/project
+`$ safety check -r requirements.txt`
+
+Use Python Bandit (https://github.com/PyCQA/bandit) to find common security issues in your Python code:
+
+`$ bandit -r ~/your_repos/project`
 
 ## Contributing
 

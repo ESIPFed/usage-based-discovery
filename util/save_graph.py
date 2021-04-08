@@ -1,19 +1,22 @@
 #!/usr/bin/env python
 """
-load_graph.py
-Load a set of application-dataset relationships in CSV form into a Neptune graph database
+Opposite of load_graph.py
+Neptune DB to CSV format including all the edges and properties
 """
 import csv
 from graph_db import GraphDB
 
 def db_output_csv():
-    header = ['topic', 'name', 'site', 'screenshot', 'description', 'publication', 'doi', 'title', 'discoverer', 'verifier', 'verified']
+    header = ['topic', 'name', 'site', 'screenshot', 'description', 'publication', 'doi', 'title', 'discoverer', 'verifier', 'verified', 'annotation']
     graph = GraphDB()
     data = graph.get_data()
     with open("graph_snapshot.csv", 'w') as file:
         writer = csv.writer(file)
         writer.writerow(header)
         for link in data['links']:
+            if link['label'] == 'about': #skipping topic links
+                continue
+            print('link:\n', link)
             app_index = link['source']
             dataset_index = link['target']
             app = {}
@@ -23,8 +26,10 @@ def db_output_csv():
                     app = node
                 if node['id'] == dataset_index:
                     dataset = node
+            print('app:\n', app)
+            print('datatset:\n', dataset)
             row = []
-            row.append(app['topic'])
+            row.append(graph.get_app_topics(app['name'][0]))
             row.append(app['name'][0])
             row.append(app['site'][0])
             row.append(app['screenshot'][0])
@@ -35,6 +40,7 @@ def db_output_csv():
             row.append(link['discoverer'])
             row.append(link['verifier'])
             row.append(link['verified'])
+            row.append(link['annotation'])
             writer.writerow(row)
     file.close()
 

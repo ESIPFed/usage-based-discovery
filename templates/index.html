@@ -5,7 +5,7 @@
         <div class="title">
           <h1 class="eosdis">
             <a href="{{stage}}/" style="color: white; text-decoration: none;">
-              EOSDIS Usage Based Discovery
+              Usage Based Discovery
             </a>
           </h1>
           <div class="d-flex justify-content-around">
@@ -248,14 +248,13 @@
 	    {% endif %}
 	    {% if d[1]['verified'] %}
 	    <button
-	      onclick="console.log('clicked_1');"
 	      type="button"
 	      class="btn btn-success btn-sm"
 	      data-toggle="popover" 
 	      data-placement="top" 
 	      data-content="<a href='https://orcid.org/{{d[1]['verifier']}}'>
 <img alt='ORCID logo' src='https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png' width='16' height='16' />
-0000-0001-2345-6789
+{{d[1]['verifier']}}
 </a>"
 	      data-html="true"
 	      title="ORCiD"
