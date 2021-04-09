@@ -118,7 +118,7 @@ class TestInit():
 
     def test_get_dataset_by_app(self):
         path = self.db.get_dataset_by_app(NAME, DOI)[0]
-        assert path[0] == {'site': ['https://example.com'], 'publication': ['None'], 'name': ['Testing 123'], 'description': ['example description 123'], 'screenshot': ['Testing 123.jpg']}
+        assert path[0] == {'site': ['https://example.com'], 'publication': ['None'], 'name': ['Testing 123'], 'description': ['example description 123'], 'screenshot': ['Testing 123.jpg'], 'discoverer': [''], 'verified': [False], 'verifier': ['']}
         assert path[1] == {'annotation': '', 'verifier': '', 'verified': False, 'discoverer': ''}
         assert path[2] == {'title': ['dataset'], 'doi': ['1234567890']}
 
@@ -126,9 +126,13 @@ class TestInit():
     def test_verify_relationship(self):
         self.db.verify_relationship(NAME, DOI, '0000-0000-0000-0000')
         path = self.db.get_dataset_by_app(NAME, DOI)[0]
-        assert path[0] == {'site': ['https://example.com'], 'publication': ['None'], 'name': ['Testing 123'], 'description': ['example description 123'], 'screenshot': ['Testing 123.jpg']}
+        assert path[0] == {'site': ['https://example.com'], 'publication': ['None'], 'name': ['Testing 123'], 'description': ['example description 123'], 'screenshot': ['Testing 123.jpg'], 'discoverer': [''], 'verified': [False], 'verifier': ['']}
         assert path[1] == {'annotation': '', 'verifier': '0000-0000-0000-0000', 'verified': True, 'discoverer': ''}
         assert path[2] == {'title': ['dataset'], 'doi': ['1234567890']}
+
+    def test_verify_app(self):
+        self.db.verify_app(NAME, '0000-0000-0000-0000')
+        assert self.db.get_app(NAME)[0] == {'site': ['https://example.com'], 'publication': ['None'], 'name': ['Testing 123'], 'description': ['example description 123'], 'screenshot': ['Testing 123.jpg'], 'discoverer': [''], 'verified': [True], 'verifier': ['0000-0000-0000-0000']}
 
     def test_update_app(self):
         self.db.add_topic(CHANGE_TOPIC)
