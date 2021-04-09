@@ -42,6 +42,7 @@
             onclick="document.location.reload(true)"
           >
             <button style="width: 100%;" class="selected-app">
+	      <span class="fas fa-flag"></span>
               <br />
               <h4 class="font">
                 <strong>{{a['name']}}</strong>
@@ -59,6 +60,7 @@
             onclick="document.location.reload(true)"
           >
             <button style="width: 100%;" class="font">
+	      <span class="fas fa-flag"></span>
               <br />
               <h4 class="font">{{a['name']}}</h4>
               <!--<em class="font">Datasets: 1</em>-->
@@ -260,6 +262,23 @@
 	      title="ORCiD"
 	      ><span class="fas fa-check"></span></button
             >
+	    <!--
+	    <a 
+	      tabindex="0" 
+	      class="btn btn-success btn-sm" 
+	      role="button" 
+	      data-toggle="popover" 
+	      data-placement= "top"
+	      
+	      data-trigger="focus" 
+	      data-html="true"
+	      title="ORCiD" 
+	      data-content="<a href='https://orcid.org/{{d[1]['verifier']}}'>
+		<img alt='ORCID logo' src='https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png' width='16' height='16' />
+		{{d[1]['verifier']}}
+		</a>">Dismissible popover</a
+	    >
+	    -->
 	    {% endif %}
             <br /><br />
           </div>
@@ -270,10 +289,14 @@
   </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script>
+	    //enable tool-tip and popover functionality
 	    $(function () {
 		$('[data-toggle="tooltip"]').tooltip()
 	    })
 	    $(function () {
+	    //$('.popover-dismiss').popover({
+  	    //    trigger: 'focus'
+	    //})
 	        $('[data-toggle="popover"]').popover()
 	    })
 	    function edit_application(app_name){
@@ -332,7 +355,7 @@
 </body>
 
 <head>
-  <title>Home</title>
+  <title>Usage Based Discovery</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- CSS only -->
@@ -432,6 +455,13 @@
       margin-top: -1em;
     }
 
+    .fa-flag {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      color: indianred;
+    }
+
     /* Spacer Column */
     .spacer {
       display: inline-table;
@@ -521,6 +551,7 @@
     }
 
     .font {
+      position:relative;
       font-family: "Maven Pro", sans-serif;
       text-align: center;
     }
