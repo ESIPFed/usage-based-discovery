@@ -11,7 +11,7 @@ def env_vars_loaded(env_var_names):
         and "SECRET_KEY" in env_var_names
 
 def load_env():
-    # if not already loaded via Zappa, load env variables
+    # if not already loaded via Zappa, load zappa env variables
     zappa_settings_path = Path(__file__).parent / "../zappa_settings.json"
     zappa_file_exists = os.path.isfile(zappa_settings_path)
     if not env_vars_loaded(os.environ.keys()) and zappa_file_exists:
@@ -20,5 +20,9 @@ def load_env():
             env_vars = v['environment_variables']
             for k, v in env_vars.items():
                 os.environ[k] = v
+    # then load local env variables
+    os.environ['NEPTUNEDBRO'] = "ws://localhost:8182/gremlin"
+    os.environ['STAGE'] = ""
+    os.environ['S3_BUCKET'] = "test-parth-bucket"
     if env_vars_loaded(os.environ.keys()):
         print('Loaded local env variables')

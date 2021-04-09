@@ -1,4 +1,5 @@
-# Usage-Based Data Discovery Tool - A simple web application
+![Usage-Based Data Discovery Web App](https://github.com/ESIPFed/ubd-tool-remotedb/blob/main/static/ubd-app.png?raw=true)
+
 
 ## Setting up the Neptune graph database 
 
@@ -65,7 +66,7 @@ Load the graph into the database
 
 The Web Interface for Usage-based Discovery is written in Python Flask, and deployed using Zappa.
 
-1. Load your AWS credentials into the environment
+1. Load your AWS credentials into the environment (you'll need https://aws.amazon.com/cli/ for this)
 
 `$ aws configure`
 
@@ -126,15 +127,21 @@ When running the DB locally, configure your DB url environment variable like thi
 
 Browse to http://localhost:5000
 
-## Security Scans
+## Security
 
-Use Python Safety (https://github.com/pyupio/safety) to check your installed dependencies for known security vulnerabilities
+Install git-secrets on your machine to prevent yourself from accidentally committing sensitive info (like access keys, secrets) to your GitHub repo:
 
-safety check -r requirements.txt
+https://github.com/awslabs/git-secrets
 
-Use Python Bandit (https://github.com/PyCQA/bandit) to find common security issues in your Python code
+Use Python Safety (https://github.com/pyupio/safety) to check your installed dependencies for known security vulnerabilities:
 
-bandit -r ~/your_repos/project
+`$ safety check -r requirements.txt`
+
+Use Python Bandit (https://github.com/PyCQA/bandit) to find common security issues in your Python code:
+
+`$ bandit -r ~/your_repos/project`
+
+**Snyk** is used as a blocking step to check dependencies for vulnerabilities when deploying to any environment.
 
 ## Contributing
 

@@ -22,7 +22,7 @@ app = Flask(__name__)
 fa = FontAwesome(app)
 
 app.secret_key = os.urandom(32)
-load_env()
+#load_env()
 stage = os.environ.get('STAGE')
 client_secret = os.environ.get('CLIENT_SECRET')
 client_id = os.environ.get('CLIENT_ID')
@@ -51,6 +51,7 @@ Session = {
 @app.route('/')
 def home():
     g = GraphDB()
+    print(g.get_topics())
     topic_list = sorted(g.get_topics())
     # attatch presigned url to each topic to get a topic icon to display
     s3 = s3Functions()
@@ -83,10 +84,9 @@ def main(topic, app):
     # encode all apps, and doi's, original app name and doi is in a seperate variable 
     app = urllib.parse.unquote(urllib.parse.unquote(app))    
     g = GraphDB()
-    topics = g.get_topics()
+    topics = sorted(g.get_topics())
     # query only for application relating to specified topic
-    relapps = g.get_apps_by_topic(topic)
-    g.mapify(relapps)
+    relapps = g.mapify(g.get_apps_by_topic(topic))
     # double encoding relapps to avoid special characters issues
     for relapp in relapps:
         relapp['encoded_name'] = urllib.parse.quote(urllib.parse.quote(relapp['name'], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls

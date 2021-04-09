@@ -28,7 +28,6 @@ def db_output_csv():
                     dataset = node
             print('app:\n', app)
             print('datatset:\n', dataset)
-
             row = []
             row.append(graph.get_app_topics(app['name'][0]))
             row.append(app['name'][0])
