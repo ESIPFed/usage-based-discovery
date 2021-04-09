@@ -71,10 +71,12 @@ class GraphDB:
         returns dict containing nodes and links
         '''
         vertices = self.graph_trav.V().valueMap(True).toList()
+        print(vertices)
         for v in vertices:
             v['id'] = v.pop(T.id)
             v['label'] = v.pop(T.label)
         edges = self.graph_trav.E().elementMap().toList()
+        print(edges)
         for e in edges:
             e['id'] = e.pop(T.id)
             e['label'] = e.pop(T.label)
@@ -122,7 +124,7 @@ class GraphDB:
         '''
         queries database for a list of all applications related to the given topic
         '''
-        return self.graph_trav.V().hasLabel('application').where(__.outE("about").otherV().has("topic", topic).and_().outE().count().is_(P.gt(0))).valueMap().toList()
+        return self.graph_trav.V().has('application', 'verified', True).where(__.outE("about").otherV().has("topic", topic).and_().outE().count().is_(P.gt(0))).valueMap().toList()
 
     def get_apps_without_screenshot(self):
         return self.graph_trav.V().has('application', 'screenshot', 'NA').valueMap().toList()
