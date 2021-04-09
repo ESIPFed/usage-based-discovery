@@ -8,20 +8,18 @@ on:
             required: true
             default: 'dev'
 jobs:
-  snyk:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@main
-    - name: Run Snyk to check for vulnerabilities
-      uses: snyk/actions/python-3.8@master
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
   deploy:
     name: Zappa Deploy
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@main
+    
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions/python-3.8@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    
     - name: Get Python3
       uses: actions/setup-python@v1
       with:
