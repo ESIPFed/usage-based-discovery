@@ -70,14 +70,12 @@ class GraphDB:
         reformats the data for d3 network visualization
         returns dict containing nodes and links
         '''
-        vertices = self.graph_trav.V().or_(__.has('application', 'verified', True), __.hasLabel('topic')).valueMap(True).toList()
-        print(vertices)
+        vertices = self.graph_trav.V().or_(__.has('application', 'verified', True), __.hasLabel('dataset').inE().has('uses', 'verified', True), __.hasLabel('topic')).valueMap(True).toList()
         for v in vertices:
             v['id'] = v.pop(T.id)
             v['label'] = v.pop(T.label)
-        #edges = self.graph_trav.E().elementMap().toList()
-        #print(edges)
-        edges = []
+        edges = self.graph_trav.E().or_(__.has('uses', 'verified', True).outV().has('application', 'verified', True), __.hasLabel('about').outV().has('application', 'verified', True)).elementMap().toList()
+        print(edges)
         for e in edges:
             e['id'] = e.pop(T.id)
             e['label'] = e.pop(T.label)
