@@ -36,7 +36,7 @@ def db_input_csv(input_file):
             for index, t in enumerate(line['topic']):
                 line['topic'][index] = t.strip()
                 print(graph.add_topic(line['topic'][index]))
-            graph.add_app(line)
+            graph.add_app(line, verifier='0000-0000-0000-0000')
             graph.add_dataset(line)
             if 'discoverer' in line.keys():
                 print('new line:\n', line)
