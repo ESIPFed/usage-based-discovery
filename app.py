@@ -105,14 +105,18 @@ def main(topic, app):
         # query for all datasets relating to specified application
         datasets = g.get_datasets_by_app(app)
     s3 = s3Functions()
-    filename = topic+'.png' if filename == 'NA' else filename
+    filename = 'topic/'+topic+'.jpg' if filename == 'NA' else filename
     screenshot = s3.create_presigned_url(s3_bucket, filename)
     
     in_session = 'orcid' in session
     trusted_user = 'role' in session and session['role']=='supervisor' 
-    
+    # filter apps and datasets based on if they are trusted
+    if not trusted_user:
+        print("before:\n", relapps)
+        relapps = list(filter(lambda relapp: relapp['verified']==True, relapps))
+        print("after:\n", relapps)
+    print(appsel)
     for d in datasets:
-        print("dataset Path:       ", d)
         d[2]['encoded_doi']=urllib.parse.quote(urllib.parse.quote(d[2]['doi'][0], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
 
     undo = None
@@ -246,7 +250,7 @@ def add_relationship():
         if validate_form(f):
             f['screenshot'] = 'NA'
             
-            # get previous app information if there was one, ( 'prev_app_name will be a property of the form when you edit an application) 
+            # get previous app information if there was one, ( 'prev_app_name' will be a property of the form when you edit an application) 
             if 'prev_app_name' in f:
                 #store screenshot info before app deletion
                 temp_app = g.mapify(g.get_app(f['prev_app_name']))
@@ -264,7 +268,14 @@ def add_relationship():
             if session['role'] == 'supervisor':
                 for topic in APP['topic']:
                     g.add_topic(topic)
-            g.update_app(f['prev_app_name'],APP) if 'prev_app_name' in f else g.add_app(APP)
+                if 'prev_app_name' in f:
+                    print("this is previous app:\n", g.get_app(f['prev_app_name']))
+                g.update_app(f['prev_app_name'], APP) if 'prev_app_name' in f else g.add_app(APP, discoverer=session['orcid'], verified=True, verifier=session['orcid'])
+                print("this is NEW app:\n", g.get_app(APP['name']))
+            elif 'prev_app_name' not in f:
+                g.add_app(APP, discoverer=session['orcid'])
+            else: 
+                return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
             #iterate through the forms dataset list
             list_of_datasets = []
             list_of_DOIs = []
@@ -295,7 +306,7 @@ def add_relationship():
 
 def validate_form(f):
     #potentially do some checks here before submission into the db
-    if 'role' in session and session['role']=='supervisor':
+    if 'role' in session:
         return True
     return False
 
@@ -377,7 +388,7 @@ def undo():
             g.add_relationship(change['app_name'], dataset['doi'], edge['discoverer'], edge['verified'], edge['verifier'])
         elif change['type'] == "delete_application":
             #adding the deleted app back
-            g.add_app(change['app'])
+            g.add_app(change['app'], change['app']['discoverer'], change['app']['verified'], change['app']['verifier'])
             for dataset, edge in change['datasets_and_edges']:
                 #adding each dataset back and linking it to the app
                 g.add_dataset(dataset)
@@ -387,8 +398,16 @@ def undo():
         return redirect(request.referrer)
     return redirect(request.referrer)
 
-@app.route('/verify/<encoded_app_name>/<encoded_doi>')
-def verify(encoded_app_name, encoded_doi):
+@app.route('/verify-application/<encoded_app_name>')
+def verify_application(encoded_app_name):
+    app_name = urllib.parse.unquote(urllib.parse.unquote(encoded_app_name))
+    g = GraphDB()
+    if 'role' in session and session['role'] == 'supervisor':
+        g.verify_app(app_name, session['orcid'])
+    return redirect(request.referrer)
+
+@app.route('/verify-dataset/<encoded_app_name>/<encoded_doi>')
+def verify_dataset(encoded_app_name, encoded_doi):
     doi = urllib.parse.unquote(urllib.parse.unquote(encoded_doi)) 
     app_name = urllib.parse.unquote(urllib.parse.unquote(encoded_app_name))
     g = GraphDB()
