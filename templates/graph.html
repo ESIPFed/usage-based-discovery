@@ -97,8 +97,9 @@
             .data(links)
             .attr("fill", "#40404080")
             .attr("stroke-width", .1)
+            .attr("font-size", 2.5)
             .attr("text-anchor", "middle")
-            .text(d => d.label);
+            .text(d => info(d));
 
         const node = container.append("g")
             .selectAll("g")
@@ -168,20 +169,23 @@
 
         
         function color(){
-            var colordata = ['#004488', '#DDAA33', '#BB5566']
-            const scale = d3.scaleOrdinal().range(colordata);
+            var colordomain = ['topic', 'application', 'dataset']
+            var colordata = ['#DDAA33', '#004488', '#BB5566']
+            const scale = d3.scaleOrdinal().domain(colordomain).range(colordata);
             return d => scale(d.label);
         }
 
         function linkcolor(){
+            var colordomain = ['uses', 'about']
             var colordata = ['#004488', '#DDAA33']
-            const scale = d3.scaleOrdinal().range(colordata);
+            const scale = d3.scaleOrdinal().domain(colordomain).range(colordata);
             return d => scale(d.label);
         }
 
         function defcolor(){
+            var colordomain = ['uses', 'about']
             var colordata = ['#004488', '#DDAA33']
-            const scale = d3.scaleOrdinal().range(colordata);
+            const scale = d3.scaleOrdinal().domain(colordomain).range(colordata);
             return d => scale(d);
         }
 
@@ -194,6 +198,12 @@
         function info(d) {
             var str = ""
             if(d.label == "application"){
+                if(d.verified){
+                    str += "Verified "
+                }
+                else{
+                    str += "Unverified "
+                }
                 str += d.label + "<br><br>";
                 str += d.name + "<br><br>";
                 str += d.site + "<br><br>";
@@ -206,6 +216,18 @@
             }
             if(d.label == "topic"){
                 str += d.topic + " " + d.label;
+            }
+            if(d.label == "about"){
+                str += d.label;
+            }
+            if(d.label == "uses"){
+                if(d.verified){
+                    str += "Verified "
+                }
+                else{
+                    str += "Unverified "
+                }
+                str += d.label;
             }
             return str;
         }
