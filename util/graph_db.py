@@ -259,8 +259,8 @@ class GraphDB:
         adds relationship to database if it doesn't already exist
         '''
         return self.graph_trav.V().has('application', 'name', name) \
-            .property('verified', True) \
-            .property('verifier', verifier).next()
+            .property(Cardinality.single, 'verified', True) \
+            .property(Cardinality.single, 'verifier', verifier).next()
 
     def verify_relationship(self, name, doi, verifier):
         '''

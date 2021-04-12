@@ -41,7 +41,10 @@
             action="{{a['encoded_name']}}"
             onclick="document.location.reload(true)"
           >
-            <button style="width: 100%;" class="selected-app">
+            <button style="width: 100%;" class="selected-app font">
+	      {% if not a['verified'] %}
+	      <span class="fas fa-flag"></span>
+	      {% endif %}
               <br />
               <h4 class="font">
                 <strong>{{a['name']}}</strong>
@@ -59,6 +62,9 @@
             onclick="document.location.reload(true)"
           >
             <button style="width: 100%;" class="font">
+	      {% if not a['verified'] %}
+	      <span class="fas fa-flag"></span>
+	      {% endif %}
               <br />
               <h4 class="font">{{a['name']}}</h4>
               <!--<em class="font">Datasets: 1</em>-->
@@ -160,6 +166,15 @@
           >
           {% endif %}
 	  {% if trusted_user %}
+	    
+	    {% if app[0]['verified'] == False %}
+	    <button 
+	      onclick="if (confirm ( 'Are you sure you want to verify the application:\n{{app[0]["name"]}}')) {window.location.href = '{{stage}}/verify-application/{{app[0]['encoded_name']}}';}" 
+	      type="button"
+	      class="btn btn-success btn-md"
+	      >Verify Application</button
+      	    >
+	    {% endif %}
 	    <button 
 	      onclick="if (confirm ( 'Are you sure you want to delete the application {{app[0]["name"]}}')) {window.location.href = '{{stage}}/delete_application/{{app[0]['encoded_name']}}';}" 
 	      type="button"
@@ -225,7 +240,7 @@
 
 	    {% if d[1]['verified'] == false %}
 	    <button
-	      onclick="if (confirm ( 'Are you sure you want to verify the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/verify/{{app[0]['encoded_name']}}/{{d[2]['encoded_doi']}}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to verify the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/verify-dataset/{{app[0]['encoded_name']}}/{{d[2]['encoded_doi']}}';}" 
 	      type="button"
 	      class="btn btn-success btn-sm"
 	      data-toggle="tooltip" 
@@ -260,6 +275,23 @@
 	      title="ORCiD"
 	      ><span class="fas fa-check"></span></button
             >
+	    <!--
+	    <a 
+	      tabindex="0" 
+	      class="btn btn-success btn-sm" 
+	      role="button" 
+	      data-toggle="popover" 
+	      data-placement= "top"
+	      
+	      data-trigger="focus" 
+	      data-html="true"
+	      title="ORCiD" 
+	      data-content="<a href='https://orcid.org/{{d[1]['verifier']}}'>
+		<img alt='ORCID logo' src='https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png' width='16' height='16' />
+		{{d[1]['verifier']}}
+		</a>">Dismissible popover</a
+	    >
+	    -->
 	    {% endif %}
             <br /><br />
           </div>
@@ -270,10 +302,14 @@
   </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script>
+	    //enable tool-tip and popover functionality
 	    $(function () {
 		$('[data-toggle="tooltip"]').tooltip()
 	    })
 	    $(function () {
+	    //$('.popover-dismiss').popover({
+  	    //    trigger: 'focus'
+	    //})
 	        $('[data-toggle="popover"]').popover()
 	    })
 	    function edit_application(app_name){
@@ -429,7 +465,14 @@
     }
 
     form {
-      margin-top: -1em;
+      margin: 0;
+    }
+
+    .fa-flag {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      color: indianred;
     }
 
     /* Spacer Column */
@@ -521,6 +564,7 @@
     }
 
     .font {
+      position:relative;
       font-family: "Maven Pro", sans-serif;
       text-align: center;
     }

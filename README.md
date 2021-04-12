@@ -15,12 +15,12 @@ With Region in mind and Key Pair in hand, choose one of the Launch Stack buttons
 __To Do:  Add where to find important values...__
 
 At the end of this, you will have a Neptune DB Cluster and at least one DB Instance. 
-You will also have an EC2 host through which to access the Neptune Database (it has no externally reachable endpoint).
+You will also have an EC2 host through which to access the Neptune Database (it has no externally reachable endpoint). 
 
 ## Setting up to run the application components
 The following instructions are verified for the EC2 host created by the Neptune stack.
 
-SSH to the EC2 host
+SSH to the EC2 host (AWS Systems Manager Session Manager can be used in addition or as an alternative)
 
 Run this locally: 
 - Update/Upgrade your ec2 instance (differs based on OS)
@@ -140,6 +140,8 @@ Use Python Safety (https://github.com/pyupio/safety) to check your installed dep
 Use Python Bandit (https://github.com/PyCQA/bandit) to find common security issues in your Python code:
 
 `$ bandit -r ~/your_repos/project`
+
+**Snyk** is used as a blocking step to check dependencies for vulnerabilities when deploying to any environment.
 
 ## Contributing
 
