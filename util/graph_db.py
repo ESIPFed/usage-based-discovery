@@ -179,7 +179,7 @@ class GraphDB:
     def get_common_datasets(self):
         return self.graph_trav.V().hasLabel('dataset').where(bothE().count().is_(P.gte(4))).elementMap().toList()
 
-    def add_app(self, app):
+    def add_app(self, app, discoverer='', verified=False, verifier=''):
         '''
         adds application to database if it doesn't already exist
         sample input:
@@ -198,7 +198,10 @@ class GraphDB:
                 .property('site', app['site']) \
                 .property('screenshot', app['screenshot']) \
                 .property('publication', app['publication']) \
-                .property('description', app['description'])).next()
+                .property('description', app['description']) \
+                .property('discoverer', discoverer) \
+                .property('verified', verified) \
+                .property('verifier', verifier)).next()
         for i in range(len(app['topic'])):
             self.connect_topic(app['name'], app['topic'][i])
 
@@ -247,6 +250,14 @@ class GraphDB:
         '''
         return self.graph_trav.V().has('application', 'name', name) \
                 .property(Cardinality.set_, prop, value).next()
+
+    def verify_app(self, name, verifier):
+        '''
+        adds relationship to database if it doesn't already exist
+        '''
+        return self.graph_trav.V().has('application', 'name', name) \
+            .property(Cardinality.single, 'verified', True) \
+            .property(Cardinality.single, 'verifier', verifier).next()
 
     def verify_relationship(self, name, doi, verifier):
         '''
