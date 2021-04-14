@@ -91,19 +91,16 @@ def main(topic, app):
     for relapp in relapps:
         relapp['encoded_name'] = urllib.parse.quote(urllib.parse.quote(relapp['name'], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
 
-    # query for the first application in relapps list
+    # if there is no app specified, then it will set it to the first app in relapps
     if(app == 'all'):
-        appsel = None
-        # query for datasets related to the topic
-        datasets = g.get_datasets_by_topic(topic)
-        filename = relapps[0]['screenshot']
-    # query for single application (vertex) with name specified by parameter
-    else:
-        appsel = g.mapify(g.get_app(app))
-        appsel[0]['encoded_name'] = urllib.parse.quote(urllib.parse.quote(appsel[0]['name'], safe=''), safe='')
-        filename = appsel[0]['screenshot']
-        # query for all datasets relating to specified application
-        datasets = g.get_datasets_by_app(app)
+        print('this is where to look', topic, relapps[0]['name'])
+        return redirect(url_for('main', topic=topic, app=relapps[0]['name']))
+    appsel = g.mapify(g.get_app(app))
+    appsel[0]['encoded_name'] = urllib.parse.quote(urllib.parse.quote(appsel[0]['name'], safe=''), safe='')
+    filename = appsel[0]['screenshot']
+    # query for all datasets relating to specified application
+    datasets = g.get_datasets_by_app(app)
+
     s3 = s3Functions()
     filename = 'topic/'+topic+'.jpg' if filename == 'NA' else filename
     screenshot = s3.create_presigned_url(s3_bucket, filename)
@@ -112,10 +109,9 @@ def main(topic, app):
     trusted_user = 'role' in session and session['role']=='supervisor' 
     # filter apps and datasets based on if they are trusted
     if not trusted_user:
-        print("before:\n", relapps)
         relapps = list(filter(lambda relapp: relapp['verified']==True, relapps))
-        print("after:\n", relapps)
     print(appsel)
+    print("datasets: \n", datasets)
     for d in datasets:
         d[2]['encoded_doi']=urllib.parse.quote(urllib.parse.quote(d[2]['doi'][0], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
 
@@ -199,7 +195,7 @@ def add_relationship():
         for key, value in request.form.items():
             print(key,value)
             f[key] = value
-        f['Topic[]'] = request.form.getlist('Topic[]') # used to get the multiple values of 'Topic[]'
+        f['Topic[]'] = request.form.getlist('Topic[]') # used to get the multiple values of 'Topic[]'; empty if non-existant
         print(f)
         status = "failure"
 
@@ -415,6 +411,52 @@ def verify_dataset(encoded_app_name, encoded_doi):
         g.verify_relationship(app_name, doi, session['orcid'])
     return redirect(request.referrer)
 
+
+@app.route('/add_annotation/<encoded_app_name>/<encoded_doi>', methods=["GET", "POST"])
+def add_annotation(encoded_app_name, encoded_doi):
+    if request.method == 'POST':
+        doi = urllib.parse.unquote(urllib.parse.unquote(encoded_doi)) 
+        app_name = urllib.parse.unquote(urllib.parse.unquote(encoded_app_name))
+        f = request.form
+        print(f)
+        g = GraphDB()
+        g.add_annotation(app_name, doi, f['annotation'])
+    return redirect(request.referrer)
+
+@app.route('/resolve_annotation/<encoded_app_name>/<encoded_doi>')
+def resolve_annotation(encoded_app_name, encoded_doi):
+    doi = urllib.parse.unquote(urllib.parse.unquote(encoded_doi)) 
+    app_name = urllib.parse.unquote(urllib.parse.unquote(encoded_app_name))
+    g = GraphDB()
+    g.add_annotation(app_name, doi, '')
+    return redirect(request.referrer)
+'''
+@app.errorhandler(404)
+def not_found():
+    """Page not found."""
+    return make_response(
+        render_template("404.html"),
+        404
+     )
+
+
+@app.errorhandler(400)
+def bad_request():
+    """Bad request."""
+    return make_response(
+        render_template("400.html"),
+        400
+    )
+
+
+@app.errorhandler(500)
+def server_error():
+    """Internal server error."""
+    return make_response(
+        render_template("500.html"),
+        500
+    )
+'''
 def unhandled_exceptions(e, event, context):
     send_to_raygun(e, event)  # gather data you need and send
     return True # Prevent invocation retry

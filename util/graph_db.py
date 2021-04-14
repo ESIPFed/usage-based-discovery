@@ -267,6 +267,13 @@ class GraphDB:
             .property('verified', True) \
             .property('verifier', verifier).next()
 
+    def add_annotation(self, name, doi, annotation):
+        '''
+        adds relationship to database if it doesn't already exist
+        '''
+        return self.graph_trav.V().has('name', name).outE("uses").where(otherV().has("doi", doi)) \
+            .property('annotation', annotation).next()
+
     def update_app(self, name, app):
         '''
         updates application vertex in the database with new information
