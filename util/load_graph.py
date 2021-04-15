@@ -48,9 +48,9 @@ def db_input_csv(input_file):
             if 'discoverer' in line.keys():
                 print('new line:\n', line)
                 print('verifier:\n', line['verified'])
-                graph.add_relationship(line['name'], line['doi'], discoverer=line['discoverer'], verified='True'==line['verified'], verifier=line['verifier'], annotation=line['annotation'])
+                graph.add_relationship(line['site'], line['doi'], discoverer=line['discoverer'], verified='True'==line['verified'], verifier=line['verifier'], annotation=line['annotation'])
             else:
-                graph.add_relationship(line['name'], line['doi'])
+                graph.add_relationship(line['site'], line['doi'])
     # counts vertices, used for troubleshooting purposes
     print(graph.get_vertex_count())
     print(graph.get_edge_count())
