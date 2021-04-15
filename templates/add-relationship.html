@@ -300,8 +300,8 @@
 	}
 	if ('{{status}}' == 'edit_application'){ //then append the prev app name 	
 	  $('<input />').attr('type', 'hidden')
-		.attr('name','prev_app_name')
-		.attr('value','{{f['Application_Name']}}')
+		.attr('name','prev_app_site')
+		.attr('value','{{f['site']}}')
 		.appendTo('#form1');
 	  console.log($('#form1'));
 	}

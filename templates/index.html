@@ -38,10 +38,10 @@
           {% for a in apps %} 
           <form
             class="app"
-            action="{{a['encoded_name']}}"
+            action="{{a['encoded_site']}}"
             onclick="document.location.reload(true)"
           >
-	  {% if app != None and a['name'] == app[0]['name'] %}
+	  {% if app != None and a['name'] == app['name'] %}
             <button style="width: 100%;" class="selected-app font">
 	      {% if not a['verified'] %}
 	      <span class="fas fa-flag"></span>
@@ -83,9 +83,9 @@
 	{% endif %}
 
         <div class="heading">
-          <h1 class="font">{{app[0]['name']}}</h1>
+          <h1 class="font">{{app['name']}}</h1>
           <a
-            href="{{app[0]['site']}}"
+            href="{{app['site']}}"
             target="_blank"
             style="align-self: center;"
             class="btn btn-secondary btn-md"
@@ -94,9 +94,9 @@
             >Website</a
           >
           <!--publication link, if none then DON'T INCLUDE-->
-          {% if app[0]['publication'] != 'None' %}
+          {% if app['publication'] != 'None' %}
           <a
-            href="{{app[0]['publication']}}"
+            href="{{app['publication']}}"
             target="_blank"
             style="align-self: center;"
             class="btn btn-secondary btn-md"
@@ -107,35 +107,36 @@
           {% endif %}
 	  {% if trusted_user %}
 	    
-	    {% if app[0]['verified'] == False %}
+	    {% if app['verified'] == False %}
 	    <button 
-	      onclick="if (confirm ( 'Are you sure you want to verify the application:\n{{app[0]["name"]}}')) {window.location.href = '{{stage}}/verify-application/{{app[0]['encoded_name']}}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to verify the application')) {window.location.href = '{{stage}}/verify-application/{{app['encoded_site']}}';}" 
 	      type="button"
 	      class="btn btn-success btn-md"
 	      >Verify Application</button
       	    >
 	    {% endif %}
+	    <button
+	      onclick="edit_application('{{app['site']}}')"  
+	      type="button"
+	      class="btn btn-warning btn-md"
+	      >Edit</button
+            >
 	    <button 
-	      onclick="if (confirm ( 'Are you sure you want to delete the application {{app[0]["name"]}}')) {window.location.href = '{{stage}}/delete_application/{{app[0]['encoded_name']}}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to delete the application?')) {window.location.href = '{{stage}}/delete_application/{{app['encoded_site']}}';}" 
 	      type="button"
 	      class="btn btn-danger btn-md"
 	      >Delete Application</button
       	    >
-	    <button
-	      onclick="edit_application('{{app[0]['name']}}')"  
-	      type="button"
-	      class="btn btn-warning btn-md"
-	      >Edit</button>
 	  {% endif %} 
           <br />
           <!--application website description-->
           <p class="font" style="align-self: center;">
-            {{app[0]['description'][:320]}}...
+            {{app['description'][:320]}}...
           </p>
         </div>
         <div>
           <a
-            href="{{app[0]['site']}}"
+            href="{{app['site']}}"
             target="_blank"
             class="font"
             style="align-self: center;"
@@ -181,8 +182,10 @@
 	        </button>
 	        <div class="dropdown-menu dropdown-menu-right" id="more_options">
 		  <button class="dropdown-item" type="button" onclick="add_annotation_form(this, '{{d[2]['encoded_doi']}}');" id="annotation_btn">Add annotation</button>
-	          <button class="dropdown-item" type="button" id="second_item">(not working)Change dataset name</button>
+	          <!--
+		  <button class="dropdown-item" type="button" id="second_item">(not working)Change dataset name</button>
 	          <button class="dropdown-item" type="button">(not working)Change dataset DOI</button>
+		  -->
 	        </div>
 	      </div>
 	    </div>
@@ -200,7 +203,7 @@
 	    {% if trusted_user and app%}
 	    {% if d[1]['verified'] == false %}
 	    <button
-	      onclick="if (confirm ( 'Are you sure you want to verify the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/verify-dataset/{{app[0]['encoded_name']}}/{{d[2]['encoded_doi']}}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to verify the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/verify-dataset/{{app['encoded_site']}}/{{d[2]['encoded_doi']}}';}" 
 	      type="button"
 	      class="btn btn-success btn-sm"
 	      data-toggle="tooltip" 
@@ -210,7 +213,7 @@
             >
 	    {% endif %}
 	    <button 
-	      onclick="if (confirm ( 'Are you sure you want to unlink the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/delete_dataset_relation/{{app[0]['encoded_name']}}/{{d[2]['encoded_doi']}}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to unlink the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/delete_dataset_relation/{{app['encoded_site']}}/{{d[2]['encoded_doi']}}';}" 
 	      type="button"
 	      class="btn btn-danger btn-sm"
 	      data-toggle="tooltip" 
@@ -220,9 +223,6 @@
       	    > 
 	    {% endif %}
 	    {% if d[1]['verified'] %}
-
-
-
 
 	    <span class="tt" title="see ORCid">
 	    <a 
@@ -241,8 +241,6 @@
 	    >
 	    </span>
 
-
-	    
 	    {% endif %}
             <br /><br />
           </div>
@@ -269,8 +267,8 @@
 	        })
 	        $('[data-toggle="popover"]').popover()
 	    })
-	    function edit_application(app_name){
-		var payload = {"name" : app_name, "type":"edit_application"};
+	    function edit_application(app_site){
+		var payload = {"app_site" : app_site, "type":"edit_application"};
 		var form = document.createElement('form');
 		form.style.visibility = 'hidden'; // no user interaction is necessary
 		form.method = 'POST'; // forms by default use GET query strings
@@ -289,7 +287,7 @@
 
 	    function add_annotation_form(e, encoded_doi){
 		    console.log(e)
-		    var annotation_form = `<form class="form annotation_form" name="form1" action="{{stage}}/add_annotation/{{app[0]['encoded_name']}}/${encoded_doi}" method="post"><div class="form-group">
+		    var annotation_form = `<form class="form annotation_form" name="form1" action="{{stage}}/add_annotation/{{app['encoded_site']}}/${encoded_doi}" method="post"><div class="form-group">
          	  <label>Annotation: </label>
          	  <textarea
          	    class="form-control"
@@ -304,7 +302,7 @@
 	      $(e).remove();
 	    }
 	    function resolve_annotation(encoded_doi){
-		window.location.href = `{{stage}}/resolve_annotation/{{app[0]['encoded_name']}}/${encoded_doi}`;
+		window.location.href = `{{stage}}/resolve_annotation/{{app['encoded_site']}}/${encoded_doi}`;
 	    }
 	</script>
 
@@ -517,13 +515,17 @@
       text-align: right;
     }
 
+    #more_options {
+      width: 17rem;
+    }
+
     .fa-comment {
       float:left;
       margin:0.4rem;
     }
 
     .annotation_form {
-      padding: 0.2rem, 0.5rem;
+      padding: 0.2rem 0.5rem;
     }
 
     .dataset-btn {
