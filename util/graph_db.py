@@ -64,6 +64,26 @@ class GraphDB:
         return self.graph_trav.V().has('application', 'site', site).as_('v').V() \
                 .has('dataset', 'doi', doi).inE('uses').hasNext()
 
+    def get_all_data(self):
+        '''
+        queries database for all vertices and edges
+        reformats the data for d3 network visualization
+        returns dict containing nodes and links
+        '''
+        vertices = self.graph_trav.V().elementMap().toList()
+        for v in vertices:
+            v['id'] = v.pop(T.id)
+            v['label'] = v.pop(T.label)
+        edges = self.graph_trav.E().elementMap().toList()
+        for e in edges:
+            e['id'] = e.pop(T.id)
+            e['label'] = e.pop(T.label)
+            edge = e.pop(Direction.OUT)
+            e['source'] = edge[T.id]
+            edge = e.pop(Direction.IN)
+            e['target'] = edge[T.id]
+        return {'nodes': vertices, 'links': edges}
+
     def get_data(self):
         '''
         queries database for all vertices and edges
@@ -75,7 +95,6 @@ class GraphDB:
             v['id'] = v.pop(T.id)
             v['label'] = v.pop(T.label)
         edges = self.graph_trav.E().or_(__.has('uses', 'verified', True).outV().has('application', 'verified', True), __.hasLabel('about').outV().has('application', 'verified', True)).elementMap().toList()
-        print(edges)
         for e in edges:
             e['id'] = e.pop(T.id)
             e['label'] = e.pop(T.label)
