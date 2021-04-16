@@ -84,6 +84,26 @@ class GraphDB:
             e['target'] = edge[T.id]
         return {'nodes': vertices, 'links': edges}
 
+    def get_data(self):
+        '''
+        queries database for all vertices and edges
+        reformats the data for d3 network visualization
+        returns dict containing nodes and links
+        '''
+        vertices = self.graph_trav.V().or_(__.has('application', 'verified', True), __.hasLabel('dataset').inE().has('uses', 'verified', True), __.hasLabel('topic')).valueMap(True).toList()
+        for v in vertices:
+            v['id'] = v.pop(T.id)
+            v['label'] = v.pop(T.label)
+        edges = self.graph_trav.E().or_(__.has('uses', 'verified', True).outV().has('application', 'verified', True), __.hasLabel('about').outV().has('application', 'verified', True)).elementMap().toList()
+        for e in edges:
+            e['id'] = e.pop(T.id)
+            e['label'] = e.pop(T.label)
+            edge = e.pop(Direction.OUT)
+            e['source'] = edge[T.id]
+            edge = e.pop(Direction.IN)
+            e['target'] = edge[T.id]
+        return {'nodes': vertices, 'links': edges}
+
     def mapify(self, valuemap):
         for item in valuemap:
             for prop in item.keys():
