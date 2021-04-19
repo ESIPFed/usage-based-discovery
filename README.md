@@ -1,4 +1,4 @@
-![Usage-Based Data Discovery Web App](https://github.com/vinnyinverso/ubd-tool-remotedb/blob/main/static/ubd-app.png?raw=true)
+![Usage-Based Data Discovery Web App](https://github.com/ESIPFed/ubd-tool-remotedb/blob/main/static/ubd-app.png?raw=true)
 
 
 ## Setting up the Neptune graph database 
@@ -15,12 +15,12 @@ With Region in mind and Key Pair in hand, choose one of the Launch Stack buttons
 __To Do:  Add where to find important values...__
 
 At the end of this, you will have a Neptune DB Cluster and at least one DB Instance. 
-You will also have an EC2 host through which to access the Neptune Database (it has no externally reachable endpoint).
+You will also have an EC2 host through which to access the Neptune Database (it has no externally reachable endpoint). 
 
 ## Setting up to run the application components
 The following instructions are verified for the EC2 host created by the Neptune stack.
 
-SSH to the EC2 host
+SSH to the EC2 host (AWS Systems Manager Session Manager can be used in addition or as an alternative)
 
 Run this locally: 
 - Update/Upgrade your ec2 instance (differs based on OS)
@@ -66,7 +66,7 @@ Load the graph into the database
 
 The Web Interface for Usage-based Discovery is written in Python Flask, and deployed using Zappa.
 
-1. Load your AWS credentials into the environment
+1. Load your AWS credentials into the environment (you'll need https://aws.amazon.com/cli/ for this)
 
 `$ aws configure`
 
@@ -127,15 +127,21 @@ When running the DB locally, configure your DB url environment variable like thi
 
 Browse to http://localhost:5000
 
-## Security Scans
+## Security
 
-Use Python Safety (https://github.com/pyupio/safety) to check your installed dependencies for known security vulnerabilities
+Install git-secrets on your machine to prevent yourself from accidentally committing sensitive info (like access keys, secrets) to your GitHub repo:
+
+https://github.com/awslabs/git-secrets
+
+Use Python Safety (https://github.com/pyupio/safety) to check your installed dependencies for known security vulnerabilities:
 
 `$ safety check -r requirements.txt`
 
-Use Python Bandit (https://github.com/PyCQA/bandit) to find common security issues in your Python code
+Use Python Bandit (https://github.com/PyCQA/bandit) to find common security issues in your Python code:
 
 `$ bandit -r ~/your_repos/project`
+
+**Snyk** is used as a blocking step to check dependencies for vulnerabilities when deploying to any environment.
 
 ## Contributing
 

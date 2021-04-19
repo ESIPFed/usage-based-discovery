@@ -22,7 +22,7 @@ app = Flask(__name__)
 fa = FontAwesome(app)
 
 app.secret_key = os.urandom(32)
-load_env()
+#load_env()
 stage = os.environ.get('STAGE')
 client_secret = os.environ.get('CLIENT_SECRET')
 client_id = os.environ.get('CLIENT_ID')
@@ -51,16 +51,22 @@ Session = {
 @app.route('/')
 def home():
     g = GraphDB()
+    print(g.get_topics())
     topic_list = sorted(g.get_topics())
     # attatch presigned url to each topic to get a topic icon to display
     s3 = s3Functions()
     screenshot_list = []
     for topic in topic_list:
-        screenshot_list.append(s3.create_presigned_url(s3_bucket, topic+'.png'))
+        screenshot_list.append(s3.create_presigned_url(s3_bucket, 'topic/'+topic+'.jpg'))
     topics_screenshot_zip = zip(topic_list, screenshot_list)
     # in_session determines if the user is logged in, and if so they get their own privileges
     in_session = 'orcid' in session
     return render_template('init.html', stage=stage, topics_screenshot_zip=topics_screenshot_zip, in_session=in_session)
+
+# Topic attribution
+@app.route('/topic-attribution')
+def topic_attribution():
+    return render_template('topic-attribution.html', stage=stage)
 
 # About page
 @app.route('/about')
@@ -73,41 +79,42 @@ def explore():
     data = g.get_data()
     return render_template('graph.html', stage=stage, data=data)
 # Main screen
-@app.route('/<topic>/<app>')
-def main(topic, app):
+@app.route('/<topic>/<encoded_app_site>')
+def main(topic, encoded_app_site):
     # encode all apps, and doi's, original app name and doi is in a seperate variable 
-    app = urllib.parse.unquote(urllib.parse.unquote(app))    
+    app_site = urllib.parse.unquote(encoded_app_site)
+    print('app_site:\n:',app_site)
     g = GraphDB()
-    topics = g.get_topics()
+    topics = sorted(g.get_topics())
     # query only for application relating to specified topic
-    relapps = g.get_apps_by_topic(topic)
-    g.mapify(relapps)
+    relapps = g.mapify(g.get_apps_by_topic(topic))
     # double encoding relapps to avoid special characters issues
     for relapp in relapps:
-        relapp['encoded_name'] = urllib.parse.quote(urllib.parse.quote(relapp['name'], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
+        relapp['encoded_site'] = urllib.parse.quote(urllib.parse.quote(relapp['site'], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
 
-    # query for the first application in relapps list
-    if(app == 'all'):
-        appsel = None
-        # query for datasets related to the topic
-        datasets = g.get_datasets_by_topic(topic)
-        filename = relapps[0]['screenshot']
-    # query for single application (vertex) with name specified by parameter
-    else:
-        appsel = g.mapify(g.get_app(app))
-        appsel[0]['encoded_name'] = urllib.parse.quote(urllib.parse.quote(appsel[0]['name'], safe=''), safe='')
-        filename = appsel[0]['screenshot']
-        # query for all datasets relating to specified application
-        datasets = g.get_datasets_by_app(app)
+    # if there is no app specified, then it will set it to the first app in relapps
+    if(app_site == 'all'):
+        print('this is where to look', topic, relapps[0]['name'])
+        return redirect(url_for('main', topic=topic, encoded_app_site= urllib.parse.unquote(relapps[0]['encoded_site']), safe=''))
+    appsel = g.mapify(g.get_app(app_site))[0]
+    print(appsel)
+    appsel['encoded_site'] = urllib.parse.quote(urllib.parse.quote(appsel['site'], safe=''))
+    # query for all datasets relating to specified application
+    datasets = g.get_datasets_by_app(app_site)
+    
+    #getting temporary images for apps who don't have images
     s3 = s3Functions()
-    filename = topic+'.png' if filename == 'NA' else filename
+    filename = 'topic/'+topic+'.jpg' if appsel['screenshot'] == 'NA' else appsel['screenshot']
     screenshot = s3.create_presigned_url(s3_bucket, filename)
     
     in_session = 'orcid' in session
     trusted_user = 'role' in session and session['role']=='supervisor' 
-    
+    # filter apps and datasets based on if they are trusted
+    if not trusted_user:
+        relapps = list(filter(lambda relapp: relapp['verified']==True, relapps))
+    print(appsel)
+    print("datasets: \n", datasets)
     for d in datasets:
-        print("dataset Path:       ", d)
         d[2]['encoded_doi']=urllib.parse.quote(urllib.parse.quote(d[2]['doi'][0], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
 
     undo = None
@@ -190,7 +197,7 @@ def add_relationship():
         for key, value in request.form.items():
             print(key,value)
             f[key] = value
-        f['Topic[]'] = request.form.getlist('Topic[]') # used to get the multiple values of 'Topic[]'
+        f['Topic[]'] = request.form.getlist('Topic[]') # used to get the multiple values of 'Topic[]'; empty if non-existant
         print(f)
         status = "failure"
 
@@ -221,12 +228,12 @@ def add_relationship():
         #Filling in the form when users try to edit an app
         if 'type' in f and f['type'] == 'edit_application':
             status = "edit_application"
-            datasets_obj = g.get_datasets_by_app(f['name'])
-            app = g.mapify(g.get_app(f['name']))[0]
+            datasets_obj = g.get_datasets_by_app(f['app_site'])
+            app = g.mapify(g.get_app(f['app_site']))[0]
             print("got app:    ", app)
-            f['Application_Name'] = f['name']
+            f['Application_Name'] = app['name']
             f['description'] = app['description']
-            f['Topic[]'] = g.get_app_topics(f['name'])
+            f['Topic[]'] = g.get_app_topics(app['site'])
             f['site'] = app['site']
             f['Publication_Link'] = app['publication']
             #iterating through datasets so they also show up in form
@@ -241,12 +248,12 @@ def add_relationship():
         if validate_form(f):
             f['screenshot'] = 'NA'
             
-            # get previous app information if there was one, ( 'prev_app_name will be a property of the form when you edit an application) 
-            if 'prev_app_name' in f:
+            # get previous app information if there was one, ( 'prev_app_name' will be a property of the form when you edit an application) 
+            if 'prev_app_site' in f:
                 #store screenshot info before app deletion
-                temp_app = g.mapify(g.get_app(f['prev_app_name']))
+                temp_app = g.mapify(g.get_app(f['prev_app_site']))
                 f['screenshot'] = temp_app[0]['screenshot']
-
+            # there are alot of things in f (submitted form) that we don't want(like datasets), so we filter them into APP
             APP = {
                     'topic': f['Topic[]'],
                     'name': f['Application_Name'],
@@ -259,13 +266,21 @@ def add_relationship():
             if session['role'] == 'supervisor':
                 for topic in APP['topic']:
                     g.add_topic(topic)
-            g.update_app(f['prev_app_name'],APP) if 'prev_app_name' in f else g.add_app(APP)
+                if 'prev_app_site' in f:
+                    print("this is previous app:\n", g.get_app(f['prev_app_site']))
+                g.update_app(f['prev_app_site'], APP) if 'prev_app_site' in f else g.add_app(APP, discoverer=session['orcid'], verified=True, verifier=session['orcid']) 
+                print("this is NEW app:\n", g.get_app(APP['site']))
+            elif 'prev_app_site' not in f:
+                g.add_app(APP, discoverer=session['orcid']) # submitted as unverified
+            else: 
+                return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
             #iterate through the forms dataset list
             list_of_datasets = []
             list_of_DOIs = []
             for key,value in f.items(): 
                 #added datasets all have the last character as a digit
                 if key[-1].isdigit():
+                    # adding all the dataset and doi's of the form to two lists to be added in pairs
                     if key[:4] =="Data":
                         list_of_datasets.append(value)
                     if key[:4] =="DOI_":
@@ -277,37 +292,41 @@ def add_relationship():
                     g.update_dataset(DOI, DATASET)
                 else:
                     g.add_dataset(DATASET)
-                g.add_relationship(f['Application_Name'],DOI)
+                g.add_relationship(f['site'],DOI)
             #if the DB has a DOI that the form doesn't then remove that relationship
-            datasets = g.get_datasets_by_app(f['Application_Name'])
-            temp_app = g.mapify(g.get_app(f['Application_Name']))
+            datasets = g.get_datasets_by_app(APP['site'])
             for dataset in datasets:
                 if dataset[2]['doi'][0] not in list_of_DOIs:
-                    g.delete_relationship(temp_app[0]['name'], dataset[2]['doi'][0])
+                    print('Dataset DOI:\n\n', dataset[2]['doi'][0], 'site:\n', APP['site'])
+                    g.delete_relationship(APP['site'], dataset[2]['doi'][0])
             g.delete_orphan_datasets()
             status = "success"
     return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
 
 def validate_form(f):
     #potentially do some checks here before submission into the db
-    if 'role' in session and session['role']=='supervisor':
+    if 'role' in session:
         return True
     return False
 
-@app.route('/delete_dataset_relation/<encoded_app_name>/<encoded_doi>')
-def delete_dataset_relation(encoded_app_name, encoded_doi):
+@app.route('/delete_dataset_relation/<encoded_app_site>/<encoded_doi>')
+def delete_dataset_relation(encoded_app_site, encoded_doi):
     # double decode to avoid apache %2F translation, so %252F goes to %2F which goes to /
-    doi = urllib.parse.unquote(urllib.parse.unquote(encoded_doi)) 
-    app_name = urllib.parse.unquote(urllib.parse.unquote(encoded_app_name))
+    doi = urllib.parse.unquote(encoded_doi) 
+    app_site = urllib.parse.unquote(encoded_app_site)
     if 'role' in session and session['role']=='supervisor':
         g = GraphDB() 
         #log this change in session to be able to undo later
         #dataset = g.mapify(g.get_dataset(doi))[0]
-        dataset_path = g.get_dataset_by_app(app_name,doi)[0]
+
+        print('app_site:\n\n\n', app_site, 'doi:\n\n\n', doi)
+
+
+        dataset_path = g.get_dataset_by_app(app_site, doi)[0]
         change = {
                     'type': 'delete_dataset_relation',
                     'dataset_and_edge': [g.mapify([dataset_path[2]])[0], dataset_path[1]],
-                    'app_name': app_name,
+                    'app_site': app_site,
                 }
         if 'changes' in session:
             temp_changes = session['changes']
@@ -317,21 +336,21 @@ def delete_dataset_relation(encoded_app_name, encoded_doi):
             session['changes'] = [change]
         print("this is dataset change" , session['changes'])
         # after logging, delete the relationship 
-        g.delete_relationship(app_name, doi)
+        g.delete_relationship(app_site, doi)
         g.delete_orphan_datasets()
     return redirect(request.referrer)
 
-@app.route('/delete_application/<encoded_app_name>')
-def delete_application(encoded_app_name):
+@app.route('/delete_application/<encoded_app_site>')
+def delete_application(encoded_app_site):
     # double decode to avoid apache %2F translation, so %252F goes to %2F which goes to /
-    app_name = urllib.parse.unquote(urllib.parse.unquote(encoded_app_name))
+    app_site = urllib.parse.unquote(encoded_app_site)
     if 'role' in session and session['role']=='supervisor':
         g = GraphDB() 
         #session 'changes' keeps a history of all changes made by that user
         #before we delete application we need to store all the info so we can undo
-        app = g.mapify(g.get_app(app_name))
-        app[0]['topic'] = g.get_app_topics(app_name)
-        dataset_paths = g.get_datasets_by_app(app_name)
+        app = g.mapify(g.get_app(app_site))
+        app[0]['topic'] = g.get_app_topics(app_site)
+        dataset_paths = g.get_datasets_by_app(app_site)
         datasets_and_edges = []
         for path in dataset_paths:
             edge = path[1]
@@ -350,7 +369,7 @@ def delete_application(encoded_app_name):
             session['changes'] = [change]
         print("this is application change", session['changes'])
         #delete application
-        g.delete_app(app_name)
+        g.delete_app(app_site)
         g.delete_orphan_datasets()
     redirect_path = request.referrer.rsplit('/',1)[0] + '/all' # this is so we direct to /topic/all instead of topic/app (topic/app doesn't exit after it gets deleted)
     return redirect(redirect_path)
@@ -369,28 +388,82 @@ def undo():
             dataset = change['dataset_and_edge'][0]
             edge = change['dataset_and_edge'][1]
             g.add_dataset(dataset)
-            g.add_relationship(change['app_name'], dataset['doi'], edge['discoverer'], edge['verified'], edge['verifier'])
+            g.add_relationship(change['app_site'], dataset['doi'], edge['discoverer'], edge['verified'], edge['verifier'], edge['annotation'])
         elif change['type'] == "delete_application":
             #adding the deleted app back
-            g.add_app(change['app'])
+            g.add_app(change['app'], change['app']['discoverer'], change['app']['verified'], change['app']['verifier'])
             for dataset, edge in change['datasets_and_edges']:
                 #adding each dataset back and linking it to the app
                 g.add_dataset(dataset)
-                g.add_relationship(change['app']['name'], dataset['doi'], edge['discoverer'], edge['verified'], edge['verifier'])
+                g.add_relationship(change['app']['site'], dataset['doi'], edge['discoverer'], edge['verified'], edge['verifier'], edge['annotation'])
         else:
             print("type not found")
         return redirect(request.referrer)
     return redirect(request.referrer)
 
-@app.route('/verify/<encoded_app_name>/<encoded_doi>')
-def verify(encoded_app_name, encoded_doi):
-    doi = urllib.parse.unquote(urllib.parse.unquote(encoded_doi)) 
-    app_name = urllib.parse.unquote(urllib.parse.unquote(encoded_app_name))
+@app.route('/verify-application/<encoded_app_name>')
+def verify_application(encoded_app_name):
+    app_name = urllib.parse.unquote(encoded_app_name)
+    g = GraphDB()
+    if 'role' in session and session['role'] == 'supervisor':
+        g.verify_app(app_name, session['orcid'])
+    return redirect(request.referrer)
+
+@app.route('/verify-dataset/<encoded_app_name>/<encoded_doi>')
+def verify_dataset(encoded_app_name, encoded_doi):
+    doi = urllib.parse.unquote(encoded_doi) 
+    app_name = urllib.parse.unquote(encoded_app_name)
     g = GraphDB()
     if 'role' in session and session['role'] == 'supervisor':
         g.verify_relationship(app_name, doi, session['orcid'])
     return redirect(request.referrer)
 
+
+@app.route('/add_annotation/<encoded_app_site>/<encoded_doi>', methods=["GET", "POST"])
+def add_annotation(encoded_app_site, encoded_doi):
+    if request.method == 'POST':
+        doi = urllib.parse.unquote(encoded_doi)
+        app_site = urllib.parse.unquote(encoded_app_site)
+        f = request.form
+        print(f)
+        g = GraphDB()
+        g.add_annotation(app_site, doi, f['annotation'])
+    return redirect(request.referrer)
+
+@app.route('/resolve_annotation/<encoded_app_site>/<encoded_doi>')
+def resolve_annotation(encoded_app_site, encoded_doi):
+    doi = urllib.parse.unquote(encoded_doi)
+    app_site = urllib.parse.unquote(encoded_app_site)
+    g = GraphDB()
+    g.add_annotation(app_site, doi, '')
+    return redirect(request.referrer)
+'''
+@app.errorhandler(404)
+def not_found():
+    """Page not found."""
+    return make_response(
+        render_template("404.html"),
+        404
+     )
+
+
+@app.errorhandler(400)
+def bad_request():
+    """Bad request."""
+    return make_response(
+        render_template("400.html"),
+        400
+    )
+
+
+@app.errorhandler(500)
+def server_error():
+    """Internal server error."""
+    return make_response(
+        render_template("500.html"),
+        500
+    )
+'''
 def unhandled_exceptions(e, event, context):
     send_to_raygun(e, event)  # gather data you need and send
     return True # Prevent invocation retry

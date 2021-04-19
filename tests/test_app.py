@@ -11,7 +11,7 @@ except Exception as e:
 NAME = 'Testing123'
 TOPIC = 'Test'
 APP = {
-        'topic': TOPIC,
+        'topic': [TOPIC],
         'name': NAME,
         'site': 'https://example.com',
         'screenshot': 'Testing 123.jpg',
@@ -39,6 +39,7 @@ class TestFlask():
     def test_app_route(self):
         #add gremlin topic and app
         test_g = GraphDB()
+        test_g.add_topic(TOPIC)
         test_g.add_app(APP)
         url = '/{}/{}'.format(TOPIC,NAME)
         response=self.client.get(url)

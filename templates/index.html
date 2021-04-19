@@ -5,7 +5,7 @@
         <div class="title">
           <h1 class="eosdis">
             <a href="{{stage}}/" style="color: white; text-decoration: none;">
-              EOSDIS Usage Based Discovery
+              Usage Based Discovery
             </a>
           </h1>
           <div class="d-flex justify-content-around">
@@ -35,38 +35,39 @@
           </div>
         </div>
         <div class="appresults">
-          {% for a in apps %} {% if app != None and a['name'] == app[0]['name'] %}
+          {% for a in apps %} 
           <form
             class="app"
-            action="{{a['encoded_name']}}"
+            action="{{a['encoded_site']}}"
             onclick="document.location.reload(true)"
           >
-            <button style="width: 100%;" class="selected-app">
+	  {% if app != None and a['name'] == app['name'] %}
+            <button style="width: 100%;" class="selected-app font">
+	      {% if not a['verified'] %}
+	      <span class="fas fa-flag"></span>
+	      {% endif %}
               <br />
               <h4 class="font">
                 <strong>{{a['name']}}</strong>
               </h4>
               <!--<em class="font">Datasets: 1</em>-->
               <strong>{{a['description'][:50]}}...</strong>
-
               <br /><br />
             </button>
-          </form>
           {% else %}
-          <form
-            class="app"
-            action="{{a['encoded_name']}}"
-            onclick="document.location.reload(true)"
-          >
             <button style="width: 100%;" class="font">
+	      {% if not a['verified'] %}
+	      <span class="fas fa-flag"></span>
+	      {% endif %}
               <br />
               <h4 class="font">{{a['name']}}</h4>
               <!--<em class="font">Datasets: 1</em>-->
               {{a['description'][:50]}}...
               <br /><br />
             </button>
+	  {% endif %}
           </form>
-          {% endif %} {% endfor %}
+          {% endfor %}
         </div>
       </div>
 
@@ -80,65 +81,11 @@
       	  >Undo last change</button
         >
 	{% endif %}
-        {% if app == None %}
-        <div class="heading">
-          <h1 class="font">{{apps[0]['name']}}</h1>
-          <!-- <h4 class="font">{{apps[0]['description']}}</h4> -->
 
-          {% if apps[0]['site'] != 'None' %}
-          <a
-            href="{{apps[0]['site']}}"
-            target="_blank"
-            class="btn btn-secondary btn-md"
-            style="align-self: center;"
-            >Website</a
-          >
-
-          {% endif %}
-          <!--publication link-->
-          {% if apps[0]['publication'] != 'None' %} 
-          <a
-            href="{{apps[0]['publication']}}"
-            target="_blank"
-            class="btn btn-secondary btn-md"
-            style="align-self: center;"
-            >Publication</a
-          >
-          {% endif %}
-          <br />
-          <!--application website description-->
-          {% if apps[0]['site'] != 'None' %}
-          <p class="font" style="align-self: center;">
-            {{apps[0]['description'][:320]}}...
-          </p>
-          {% endif %}
-          <!--
-                {% if apps[0]['query'] != 'None' %}
-                    &emsp;&emsp;
-                    <a href="{{apps[0]['query']}}" target="_blank" class="font" style="align-self: center;">Query Link</a>
-                {% endif %}
-            -->
-        </div>
-        <div>
-          <a
-            href="{{apps[0]['site']}}"
-            target="_blank"
-            class="font"
-            style="align-self: center;"
-          >
-            <img
-              src="{{screenshot}}"
-              class="screenshot"
-            />
-          </a>
-        </div>
-        {% else %}
         <div class="heading">
-          <h1 class="font">{{app[0]['name']}}</h1>
-          <!-- <h4 class="font">{{app[0]['description']}}</h4> -->
-          {% if app[0]['site'] != 'None' %}
+          <h1 class="font">{{app['name']}}</h1>
           <a
-            href="{{app[0]['site']}}"
+            href="{{app['site']}}"
             target="_blank"
             style="align-self: center;"
             class="btn btn-secondary btn-md"
@@ -146,11 +93,10 @@
             aria-pressed="true"
             >Website</a
           >
-          {% endif %}
           <!--publication link, if none then DON'T INCLUDE-->
-          {% if app[0]['publication'] != 'None' %}
+          {% if app['publication'] != 'None' %}
           <a
-            href="{{app[0]['publication']}}"
+            href="{{app['publication']}}"
             target="_blank"
             style="align-self: center;"
             class="btn btn-secondary btn-md"
@@ -160,36 +106,37 @@
           >
           {% endif %}
 	  {% if trusted_user %}
+	    
+	    {% if app['verified'] == False %}
 	    <button 
-	      onclick="if (confirm ( 'Are you sure you want to delete the application {{app[0]["name"]}}')) {window.location.href = '{{stage}}/delete_application/{{app[0]['encoded_name']}}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to verify the application')) {window.location.href = '{{stage}}/verify-application/{{app['encoded_site']}}';}" 
+	      type="button"
+	      class="btn btn-success btn-md"
+	      >Verify Application</button
+      	    >
+	    {% endif %}
+	    <button
+	      onclick="edit_application('{{app['site']}}')"  
+	      type="button"
+	      class="btn btn-warning btn-md"
+	      >Edit</button
+            >
+	    <button 
+	      onclick="if (confirm ( 'Are you sure you want to delete the application?')) {window.location.href = '{{stage}}/delete_application/{{app['encoded_site']}}';}" 
 	      type="button"
 	      class="btn btn-danger btn-md"
 	      >Delete Application</button
       	    >
-	    <button
-	      onclick="edit_application('{{app[0]['name']}}')"  
-	      type="button"
-	      class="btn btn-warning btn-md"
-	      >Edit</button>
-	    <!--we need to make a post with a filled out form-->
 	  {% endif %} 
           <br />
           <!--application website description-->
-          {% if app[0]['site'] != 'None' %}
           <p class="font" style="align-self: center;">
-            {{app[0]['description'][:320]}}...
+            {{app['description'][:320]}}...
           </p>
-          {% endif %}
-          <!--
-              {% if app[0]['query'] != 'None' %}
-                  &emsp;&emsp;
-                  <a href="{{app[0]['query']}}" target="_blank" class="font" style="align-self: center;">Query Link</a>
-              {% endif %}
-          -->
         </div>
         <div>
           <a
-            href="{{app[0]['site']}}"
+            href="{{app['site']}}"
             target="_blank"
             class="font"
             style="align-self: center;"
@@ -200,8 +147,8 @@
             />
           </a>
         </div>
-        {% endif %}
       </div>
+
       <div class="col-md-3 right-col">
         <div class="dataset-head">
           <h2 class="eosdis">Datasets</h2>
@@ -209,6 +156,39 @@
         <div class="dataset-results">
           {% for d in datasets %}
           <div class="dataset-div">
+	    <div class= "more-options">
+	      {% if d[1]['annotation'] != '' %}
+	    <a
+	      tabindex="0" 
+	      class="btn btn-success btn-sm transparent annotation" 
+	      role="button" 
+	      data-toggle="popover" 
+	      data-placement= "bottom"
+	      data-trigger="focus" 
+	      data-html="true"
+	      title="Annotations" 
+	      data-content="<p>{{d[1]['annotation']}}</p><button class='btn btn-primary btn-sm' data-content='{{d[2]['encoded_doi']}}' onclick='resolve_annotation(this.dataset.content);'>Resolve</button>">
+
+	      <span class="tt" title="see annotations">	      
+	        <span class="fas fa-comment"></span>
+	      </span></a
+	    >
+	      {% endif %}
+	      <div class="btn-group">
+	        <button type="button" class="btn btn-secondary transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+		  <span class="fas fa-ellipsis-v"></span> 
+
+	        </button>
+	        <div class="dropdown-menu dropdown-menu-right" id="more_options">
+		  <button class="dropdown-item" type="button" onclick="add_annotation_form(this, '{{d[2]['encoded_doi']}}');" id="annotation_btn">Add annotation</button>
+	          <!--
+		  <button class="dropdown-item" type="button" id="second_item">(not working)Change dataset name</button>
+	          <button class="dropdown-item" type="button">(not working)Change dataset DOI</button>
+		  -->
+	        </div>
+	      </div>
+	    </div>
             <br />
             <h4 class="font">{{d[2]['title'][0]}}</h4>
             <a
@@ -219,13 +199,11 @@
               aria-pressed="true"
               >See Dataset &rarr;</a
             >
-	    {% if trusted_user and app%}
 	    <!-- only shows if you are a trusted user and the app is selected -->
-
-
+	    {% if trusted_user and app%}
 	    {% if d[1]['verified'] == false %}
 	    <button
-	      onclick="if (confirm ( 'Are you sure you want to verify the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/verify/{{app[0]['encoded_name']}}/{{d[2]['encoded_doi']}}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to verify the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/verify-dataset/{{app['encoded_site']}}/{{d[2]['encoded_doi']}}';}" 
 	      type="button"
 	      class="btn btn-success btn-sm"
 	      data-toggle="tooltip" 
@@ -234,9 +212,8 @@
 	      >Verify</button
             >
 	    {% endif %}
-
 	    <button 
-	      onclick="if (confirm ( 'Are you sure you want to unlink the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/delete_dataset_relation/{{app[0]['encoded_name']}}/{{d[2]['encoded_doi']}}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to unlink the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/delete_dataset_relation/{{app['encoded_site']}}/{{d[2]['encoded_doi']}}';}" 
 	      type="button"
 	      class="btn btn-danger btn-sm"
 	      data-toggle="tooltip" 
@@ -244,23 +221,26 @@
 	      title="Unlink Dataset Relationship"
 	      ><span class="fas fa-unlink"></span></button
       	    > 
-
 	    {% endif %}
 	    {% if d[1]['verified'] %}
-	    <button
-	      onclick="console.log('clicked_1');"
-	      type="button"
-	      class="btn btn-success btn-sm"
+
+	    <span class="tt" title="see ORCid">
+	    <a 
+	      tabindex="0" 
+	      class="btn btn-success btn-sm" 
+	      role="button" 
 	      data-toggle="popover" 
-	      data-placement="top" 
-	      data-content="<a href='https://orcid.org/{{d[1]['verifier']}}'>
-<img alt='ORCID logo' src='https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png' width='16' height='16' />
-0000-0001-2345-6789
-</a>"
+	      data-placement= "bottom"
+	      data-trigger="focus" 
 	      data-html="true"
-	      title="ORCiD"
-	      ><span class="fas fa-check"></span></button
-            >
+	      title="ORCiD" 
+	      data-content="<a href='https://orcid.org/{{d[1]['verifier']}}'>
+		<img alt='ORCID logo' src='https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png' width='16' height='16' />
+		{{d[1]['verifier']}}
+		</a>"><span class="fas fa-check"></span></a
+	    >
+	    </span>
+
 	    {% endif %}
             <br /><br />
           </div>
@@ -271,14 +251,24 @@
   </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script>
+	    //enable tool-tip and popover functionality
 	    $(function () {
 		$('[data-toggle="tooltip"]').tooltip()
+		$('.tt').tooltip({
+		    placement: "top"
+		})
 	    })
+	    $('.dropdown-menu-right').click(function(e) {
+	        e.stopPropagation();
+	    });
 	    $(function () {
+	        $('.popover-dismiss').popover({
+  	            trigger: 'focus'
+	        })
 	        $('[data-toggle="popover"]').popover()
 	    })
-	    function edit_application(app_name){
-		var payload = {"name" : app_name, "type":"edit_application"};
+	    function edit_application(app_site){
+		var payload = {"app_site" : app_site, "type":"edit_application"};
 		var form = document.createElement('form');
 		form.style.visibility = 'hidden'; // no user interaction is necessary
 		form.method = 'POST'; // forms by default use GET query strings
@@ -295,22 +285,24 @@
 		form.submit(); // send the payload and navigate
 	    }
 
-	    function verify_relationship(app_name){
-		var payload = {"name" : app_name, "type":"edit_application"};
-		var form = document.createElement('form');
-		form.style.visibility = 'hidden'; // no user interaction is necessary
-		form.method = 'POST'; // forms by default use GET query strings
-		form.action = '{{stage}}/add-relationship';
-		for (var key in payload) {
-		  console.log(key);
-		  var input = document.createElement('input');
-		  input.name = key;
-		  input.value = payload[key];
-		  form.appendChild(input); // add key/value pair to form
-		}
-		document.body.appendChild(form); // forms cannot be submitted outside of body
-		console.log(form)
-		form.submit(); // send the payload and navigate
+	    function add_annotation_form(e, encoded_doi){
+		    console.log(e)
+		    var annotation_form = `<form class="form annotation_form" name="form1" action="{{stage}}/add_annotation/{{app['encoded_site']}}/${encoded_doi}" method="post"><div class="form-group">
+         	  <label>Annotation: </label>
+         	  <textarea
+         	    class="form-control"
+	            id="exampleFormControlTextarea1"
+         	    name="annotation"
+        	    rows="3"
+        	    /></textarea>
+		  <button id="submit_btn" type="submit" class="btn btn-primary">Submit</button>
+        	</div>
+		</form>`
+   	      $(annotation_form).insertBefore(e);
+	      $(e).remove();
+	    }
+	    function resolve_annotation(encoded_doi){
+		window.location.href = `{{stage}}/resolve_annotation/{{app['encoded_site']}}/${encoded_doi}`;
 	    }
 	</script>
 
@@ -333,7 +325,7 @@
 </body>
 
 <head>
-  <title>Home</title>
+  <title>Usage Based Discovery</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- CSS only -->
@@ -430,7 +422,14 @@
     }
 
     form {
-      margin-top: -1em;
+      margin: 0;
+    }
+
+    .fa-flag {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      color: indianred;
     }
 
     /* Spacer Column */
@@ -512,6 +511,23 @@
       border-bottom: solid;
     }
 
+    .more-options {
+      text-align: right;
+    }
+
+    #more_options {
+      width: 17rem;
+    }
+
+    .fa-comment {
+      float:left;
+      margin:0.4rem;
+    }
+
+    .annotation_form {
+      padding: 0.2rem 0.5rem;
+    }
+
     .dataset-btn {
       font-family: "Maven Pro", sans-serif;
       margin-left: auto;
@@ -521,7 +537,19 @@
       width: 70%;
     }
 
+    .transparent {
+      background: transparent;
+      border: none;
+      color: darkgrey;
+      margin: 0;
+    }
+
+    .annotation {
+      float:left;
+    }
+
     .font {
+      position:relative;
       font-family: "Maven Pro", sans-serif;
       text-align: center;
     }

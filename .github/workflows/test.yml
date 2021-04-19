@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  unittests:
-    name: PyTest
+  s3unittests:
+    name: S3 PyTest
     runs-on: ubuntu-latest
 
     steps:
@@ -19,7 +19,7 @@ jobs:
     - name: Get Python3
       uses: actions/setup-python@v1
       with:
-        python-version: 3.6 
+        python-version: 3.7 
 
     - name: Checkout
       uses: actions/checkout@v2
@@ -30,6 +30,39 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-west-1
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools
+        pip install -r requirements.txt
+
+    - name: PyTest
+      run: |
+        cd tests
+        pytest -v -s test_s3.py
+
+  unittests:
+    name: Graph DB and APP PyTest
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@main
+    - name: Get Python3
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7 
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-1
+
 
     - name: Install Dependencies
       run: |
@@ -52,8 +85,6 @@ jobs:
         pytest -v -s test_graphdb.py
         pytest -v -s test_app.py
         pytest -v -s test_env_loader.py
-        pytest -v -s test_s3.py
-
 
     - name: Stop Gremlin Server
       run: |

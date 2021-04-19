@@ -179,7 +179,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
       <script>
 	var false_alert = "";
-	var form_values = JSON.parse('{{f|tojson}}')
+	var form_values = {{f|tojson}};
 	console.log(form_values);
 	
 	var id_val = 0;
@@ -300,8 +300,8 @@
 	}
 	if ('{{status}}' == 'edit_application'){ //then append the prev app name 	
 	  $('<input />').attr('type', 'hidden')
-		.attr('name','prev_app_name')
-		.attr('value','{{f['Application_Name']}}')
+		.attr('name','prev_app_site')
+		.attr('value','{{f['site']}}')
 		.appendTo('#form1');
 	  console.log($('#form1'));
 	}
