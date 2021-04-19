@@ -74,7 +74,7 @@ class GraphDB:
         for v in vertices:
             v['id'] = v.pop(T.id)
             v['label'] = v.pop(T.label)
-        edges = self.graph_trav.E().or_(__.has('uses', 'verified', True).outV().has('application', 'verified', True), __.hasLabel('about').outV().has('application', 'verified', True)).elementMap().toList()
+        edges = self.graph_trav.E().elementMap().toList()
         for e in edges:
             e['id'] = e.pop(T.id)
             e['label'] = e.pop(T.label)
