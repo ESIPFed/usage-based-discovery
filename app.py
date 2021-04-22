@@ -66,23 +66,18 @@ def home():
 # Topic attribution
 @app.route('/topic-attribution')
 def topic_attribution():
-    in_session = 'orcid' in session
-    return render_template('topic-attribution.html', stage=stage, in_session=in_session)
+    return render_template('topic-attribution.html', stage=stage)
 
 # About page
 @app.route('/about')
 def about():
-    in_session = 'orcid' in session
-    return render_template('about.html', stage=stage, in_session=in_session)
+    return render_template('about.html', stage=stage)
 
-# Graph exploration page
 @app.route('/explore')
 def explore():
-    in_session = 'orcid' in session
     g = GraphDB()
     data = g.get_data()
-    return render_template('graph.html', stage=stage, data=data, in_session=in_session)
-
+    return render_template('graph.html', stage=stage, data=data)
 # Main screen
 @app.route('/<topic>/<encoded_app_site>')
 def main(topic, encoded_app_site):
@@ -225,10 +220,10 @@ def add_relationship():
                     doi = item[1]
                     f["Dataset_Name_"+ str(index+10)]=title
                     f["DOI_" + str(index+10)]= doi
-                return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, in_session=orcid, role=role)
+                return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, role=role)
         except:
             status = "invalid URL"
-            return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, in_session=orcid, role=role)
+            return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
 
         #Filling in the form when users try to edit an app
         if 'type' in f and f['type'] == 'edit_application':
@@ -247,7 +242,7 @@ def add_relationship():
                 doi = item[2]['doi'][0]
                 f['Dataset_Name_'+str(index+10)] = title
                 f['DOI_'+str(index+10)] = doi
-            return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, in_session=orcid, role=role)
+            return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
 
         #check if submission is valid, if valid then we upload the content
         if validate_form(f):
@@ -278,7 +273,7 @@ def add_relationship():
             elif 'prev_app_site' not in f:
                 g.add_app(APP, discoverer=session['orcid']) # submitted as unverified
             else: 
-                return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, in_session=orcid, role=role)
+                return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
             #iterate through the forms dataset list
             list_of_datasets = []
             list_of_DOIs = []
@@ -306,7 +301,7 @@ def add_relationship():
                     g.delete_relationship(APP['site'], dataset[2]['doi'][0])
             g.delete_orphan_datasets()
             status = "success"
-    return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, in_session=orcid, role=role)
+    return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
 
 def validate_form(f):
     #potentially do some checks here before submission into the db

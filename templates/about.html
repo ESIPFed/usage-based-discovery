@@ -1,7 +1,12 @@
-{% extends "base-template.html" %}
-
-{% block body_content %}
+<body>
   <div class="container">
+    <div class="topbar">
+      <h1 style="text-align: left;">
+        <a href="{{stage}}/" style="color: white; text-decoration: none;"
+          >Usage Based Discovery</a
+        >
+      </h1>
+    </div>
 
     <div class="main">
       <h2>Who are We?</h2>
@@ -37,9 +42,9 @@
       </p>
     </div>
   </div>
-{% endblock %}
+</body>
 
-{% block head_content %}
+<head>
   <title>Usage Based Discovery | About</title>
   <link
     href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap"
@@ -97,5 +102,5 @@
       text-align: center;
     }
   </style>
-{% endblock %}
+</head>
 

@@ -1,10 +1,13 @@
-{% extends "base-template.html" %}
-
-{% block body_content %}
-  <div class="container-fluid body-container">
+<body>
+  <div class="container-fluid">
     <div class="row">
       <div class="col-md-3 left-col">
         <div class="title">
+          <h1 class="eosdis">
+            <a href="{{stage}}/" style="color: white; text-decoration: none;">
+              Usage Based Discovery
+            </a>
+          </h1>
           <div class="d-flex justify-content-around">
             <div class="dropdown show">
               <a
@@ -319,14 +322,20 @@
     integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
     crossorigin="anonymous"
   ></script>
-{% endblock %}
+</body>
 
-{% block head_content %}
+<head>
   <title>Usage Based Discovery</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- CSS only -->
   {{ fontawesome_html() }}
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+    crossorigin="anonymous"
+  />
 
   <link
     href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap"
@@ -344,7 +353,7 @@
       overflow-x: hidden;
     }
 
-    .container-fluid.body-container {
+    .container-fluid {
       padding: 0;
     }
 
@@ -545,5 +554,5 @@
       text-align: center;
     }
   </style>
-{% endblock %}
+</head>
 
