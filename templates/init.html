@@ -1,24 +1,7 @@
-<body>
-  <div class="container">
-    <div class="topbar">
-      <h1 style="text-align: left;">
-        Usage Based Discovery
-        <span style="float: right;">
-          <a href="{{stage}}/explore" style="font-size: x-large;">Explore</a
-          >&emsp;
-          <a href="{{stage}}/about" style="font-size: x-large;">About</a>&emsp;
-          {% if in_session %}
-          <a href="{{stage}}/add-relationship" style="font-size: x-large;"
-            >Add Content</a
-          >&emsp;
-          <a href="{{stage}}/logout" style="font-size: x-large;">Logout</a
-          >&emsp; {% else %}
-          <a href="{{stage}}/auth" style="font-size: x-large;">Login</a>&emsp;
-          {% endif %}
-        </span>
-      </h1>
-    </div>
+{% extends "base-template.html" %}
 
+{% block body_content %}
+  <div class="container">
     <div class="main">
       <div class="menu-container">
         <div class="button-container">
@@ -39,9 +22,9 @@
       </div>
     </div>
   </div>
-</body>
+{% endblock %}
 
-<head>
+{% block head_content %}
   <title>Usage Based Discovery | Home</title>
   <link
     href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap"
@@ -93,7 +76,7 @@
       vertical-align: middle;
       width: 100%;
       margin: 0;
-      padding-top: 125px;
+      /* padding-top: 125px; */
     }
 
     .menu-container {
@@ -189,5 +172,5 @@
       text-align: center;
     }
   </style>
-</head>
+{% endblock %}
 

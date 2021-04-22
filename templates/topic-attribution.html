@@ -1,13 +1,7 @@
-<body>
+{% extends "base-template.html" %}
+  {% block body_content %}
   <div class="container">
-    <div class="topbar">
-      <h1 style="text-align: left;">
-        <a href="{{stage}}/" style="color: white; text-decoration: none;"
-          >Usage Based Discovery</a
-        >
-      </h1>
-    </div>
-
+    
     <div class="main">
       <h2>Image attributions</h2>
       <p>Agricultrue: Sharon Rosseels - Unsplash</p>
@@ -28,9 +22,9 @@
       <p></p>
     </div>
   </div>
-</body>
+{% endblock %}
 
-<head>
+{% block head_content %}
   <title>Usage Based Discovery | Attributions</title>
   <link
     href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap"
@@ -88,4 +82,4 @@
       text-align: center;
     }
   </style>
-</head>
+{% endblock %}

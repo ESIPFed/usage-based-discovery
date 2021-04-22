@@ -1,5 +1,5 @@
-<html lang="en">
-  <head> 
+{% extends "base-template.html" %}
+  {% block head_content %}
     <meta charset="utf-8" />
     <title>
       add-relationship
@@ -7,20 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- CSS only -->
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
-      crossorigin="anonymous"
-    />
-    <link
       href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap"
       rel="stylesheet"
     />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
-  </head>
-  <body>
+  {% endblock %}
+  {% block body_content %}
     <div class="container-sm">
-	    <a href={{stage}} style="font-size: x-large;">Go Home</a>
+	    
       <!--
                 these set of if statements is to set the values in the form to none if the submission was valid
         -->
@@ -346,6 +340,6 @@
       .form {
       }
     </style>
-  </body>
-</html>
+{% endblock %}
+
 
