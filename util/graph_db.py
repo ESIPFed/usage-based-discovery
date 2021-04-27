@@ -8,7 +8,7 @@ import sys
 #from util.env_loader import load_env
 from gremlin_python.structure.graph import Graph
 from gremlin_python.process.graph_traversal import unfold, inE, addV, addE, outV, otherV, bothE, __
-from gremlin_python.process.traversal import Cardinality, T, Direction, P
+from gremlin_python.process.traversal import Cardinality, T, Direction, P, within
 from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
 
 def valid_endpoint(endpoint):
@@ -107,7 +107,7 @@ class GraphDB:
     def mapify(self, valuemap):
         for item in valuemap:
             for prop in item.keys():
-                if len(item[prop]) == 1 and prop != 'topic':
+                if len(item[prop]) == 1 and prop != 'type':
                     item[prop] = item[prop][0]
         return valuemap
 
@@ -224,6 +224,8 @@ class GraphDB:
                 .property('verifier', verifier)).next()
         for i in range(len(app['topic'])):
             self.connect_topic(app['site'], app['topic'][i])
+        for i in range(len(app['type'])):
+            self.add_app_property(app['site'], 'type', app['type'][i])
 
     def add_topic(self, topic):
         '''
@@ -300,6 +302,7 @@ class GraphDB:
         '''
         self.graph_trav.V().has('application', 'site', site) \
             .sideEffect(__.outE("about").where(otherV().hasLabel("topic")).drop()) \
+            .sideEffect(__.properties('type').drop()) \
             .property(Cardinality.single, 'name', app['name']) \
             .property(Cardinality.single, 'site', app['site']) \
             .property(Cardinality.single, 'screenshot', app['screenshot']) \
@@ -307,6 +310,8 @@ class GraphDB:
             .property(Cardinality.single, 'description', app['description']).next()
         for i in range(len(app['topic'])):
             self.connect_topic(app['site'], app['topic'][i])
+        for i in range(len(app['type'])):
+            self.add_app_property(app['site'], 'type', app['type'][i])
 
     def update_app_property(self, site, prop, value):
         '''
@@ -358,3 +363,21 @@ class GraphDB:
         deletes all dataset vertexes in the database that have no connections
         '''
         return self.graph_trav.V().hasLabel('dataset').where(bothE().count().is_(0)).drop().iterate()
+
+    def api(self, topics, types, verified=True):
+        info = self.graph_trav.V().toList()
+        if verified:
+            info = self.graph_trav.V(info).has('application', 'verified', True).toList()
+        if info and len(topics) != 0:
+            info = self.graph_trav.V(info).where(__.outE("about").otherV().has("topic", within(*topics))).toList()
+        if info and len(types) != 0:
+            info = self.graph_trav.V(info).has('type', within(*types)).toList()
+        if not info:
+            return info
+        return self.graph_trav.V(info).valueMap().toList()
+
+    def get_topics_by_types(self, types):
+        return self.graph_trav.V().has('type', within(*types)).outE('about').otherV().values('topic').toSet()
+
+    def get_types_by_topics(self, topics):
+        return self.graph_trav.V().has('topic', within(*topics)).inE('about').otherV().values('type').toSet()
