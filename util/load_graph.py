@@ -14,7 +14,7 @@ from graph_db import GraphDB
 def parse_options():
     """parse the command line options, returning input file and Neptune endpoint"""
     parser = argparse.ArgumentParser(description="Load CSV input into UBD Neptune database")
-    parser.add_argument('-i', '--ifile', default='algo-output.csv', metavar="input-pathname")
+    parser.add_argument('-i', '--ifile', default='graph_snapshot.csv', metavar="input-pathname")
     return parser.parse_args()
 
 def db_input_csv(input_file):
@@ -23,6 +23,7 @@ def db_input_csv(input_file):
     input_file:  input CSV file
     neptune_endpoint: secure web socket Neptune endpoint
     """
+    # TAKE A SNAPSHOT OF YOUR NEPTUNE DB BEFORE RUNNING
     graph = GraphDB()
     graph.clear_database()
     # load csv file
@@ -43,7 +44,7 @@ def db_input_csv(input_file):
             if 'app_discoverer' in line.keys():
                 graph.add_app(line, discoverer=line['app_discoverer'], verified=('True'==line['app_verified']), verifier=line['app_verifier'])
             else: 
-                graph.add_app(line, discoverer='0000-0002-3708-5496', verified=True, verifier='0000-0002-3708-5496')
+                graph.add_app(line, discoverer='0000-0002-3708-5496', verified=True, verifier='0000-0002-3708-5496') # put your orcid Id in for discoverer and verifier
                 #graph.add_app(line)
             graph.add_dataset(line)
             if 'discoverer' in line.keys():

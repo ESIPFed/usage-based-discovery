@@ -9,7 +9,7 @@
   <link rel="stylesheet" type="text/css" href="{{stage}}/static/init.css">
 </head>
 <body>
-  <div class="container">
+  <div>
     <div class="topbar">
       <h1 style="text-align: left;">
         Usage Based Discovery
@@ -30,10 +30,25 @@
     </div>
 
     <div class="main">
+      <!--
+	Multi-select dropdown to filter types, still needs to be implemented
+	resource: https://developer.snapappointments.com/bootstrap-select/examples/
+
+      <select class="selectpicker" multiple>
+	<option>All</option>
+	{% for t in Type %} {% if t in Type and string_type!= 'all' %}
+	<option onclick="console.log('hi');remove_type(this.textContent);" selected>{{t}}</option>
+	{% else %}
+	<option onclick="console.log('bye');add_type(this.textContent);">{{t}}</option>
+	{% endif %}
+	{% endfor %}
+      </select>
+
+      -->
       <div class="menu-container">
         <div class="button-container">
           {% for topic, screenshot in topics_screenshot_zip %}
-          <a class="topic-btn" href="{{stage}}/{{topic}}/all">
+	  <a class="topic-btn" href="{{stage}}/{{string_type}}/{{topic}}/all">
             <div class="card">
               <figure class="card__thumbnail">
                 <img src="{{screenshot}}" />
@@ -49,4 +64,192 @@
       </div>
     </div>
   </div>
+  <!--
+	  Possible dependencies needed for multi-select dropdown to work/ bootstrap/ jquery
+	  resource: https://developer.snapappointments.com/bootstrap-select/examples/
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+      integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+      integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+      crossorigin="anonymous"
+    ></script>
+  <script>
+	/*
+	function add_type(type_to_add){
+	  console.log("type to add"+ type_to_add);
+	}
+	function remove_type(type_to_remove){
+	  console.log("type to remove"+ type_to_remove);
+	}
+	console.log("the script works.");
+	*/
+  </script>
+  -->
 </body>
+<head>
+  <title>Usage Based Discovery | Home</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="icon" type="image/png" href="static/nasalogo.png" />
+  <style>
+    html,
+    body {
+      background-color: white;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      padding: 0em;
+    }
+
+    .container {
+      width: 100%;
+    }
+
+    .topbar {
+      z-index: 1;
+      position: fixed;
+      background-color: black;
+      height: 20%;
+      max-height: 75px;
+      width: 100%;
+      padding: 15px;
+    }
+
+    a {
+      color: #cccccc;
+      transition: 0.3s;
+    }
+
+    a:hover {
+      color: #fff;
+    }
+
+    h1 {
+      color: white;
+      font-family: "Maven Pro", sans-serif;
+      vertical-align: middle;
+    }
+
+    .main {
+      height: auto;
+      vertical-align: middle;
+      width: 100%;
+      margin: 0;
+      padding-top: 125px;
+    }
+
+    .menu-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      overflow-x: hidden;
+      overflow-y: auto;
+      align-items: center;
+    }
+
+    .button-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 80%;
+      background: white;
+      overflow-y: auto;
+      border-radius: 5px;
+    }
+
+    .topic-btn {
+      margin: 15px;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      width: 230px; /* Box dimensions */
+      height: 175px;
+
+      border-radius: 4px; /* Styling */
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+        0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+      transition: box-shadow 0.56s ease-in-out; /* Animation */
+      /* background-color: rgba(0,0,0,.2); /* for debugging */
+    }
+    /* Shows an outer shadow */
+    .card:hover {
+      /* Just for styling */
+      cursor: pointer;
+      box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14),
+        0 9px 46px 8px rgba(0, 0, 0, 0.12), 0 11px 15px -7px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Cards titles styling
+------------------------------------------ */
+    .card__title {
+      /* Just for styling */
+      width: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      align-self: flex-end;
+      padding: 0.5rem;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.7rem;
+      line-height: 1;
+      font-weight: 400;
+    }
+
+    /* Styles for:
+** - Using IMG tag inside a container
+------------------------------------------ */
+    /* The image container */
+    .card__thumbnail {
+      margin: 0;
+      background-color: gray;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center; /* horizontal center */
+      align-items: center; /* vertical center */
+
+      width: 100%; /* Thumbnail dimensions. */
+      height: 100%; /*** Change the height to make the image smaller ***/
+      /* background-color: rgba(0,0,0,.2);  /* for debugging */
+    }
+    /* Sets the image dimensions */
+    .card__thumbnail > img {
+      /* Tip: use 1:1 ratio images */
+      height: 100%; /* or width when img.width > img.height */
+    }
+    /* Styles the title inside the img container */
+    .card__thumbnail > .card__title {
+      /* Just for styling */
+      position: absolute;
+      left: 0;
+      bottom: 0;
+    }
+
+    .font {
+      font-family: "Maven Pro", sans-serif;
+      text-align: center;
+    }
+  </style>
+</head>

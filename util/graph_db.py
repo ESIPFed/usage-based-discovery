@@ -384,3 +384,21 @@ class GraphDB:
         deletes all dataset vertexes in the database that have no connections
         '''
         return self.graph_trav.V().hasLabel('dataset').where(bothE().count().is_(0)).drop().iterate()
+
+    def api(self, topics, types, verified=False):
+        info = self.graph_trav.V().toList()
+        if verified:
+            info = self.graph_trav.V(info).has('application', 'verified', True).toList()
+        if info and len(topics) != 0:
+            info = self.graph_trav.V(info).where(__.outE("about").otherV().has("topic", within(*topics))).toList()
+        if info and len(types) != 0:
+            info = self.graph_trav.V(info).has('type', within(*types)).toList()
+        if not info:
+            return info
+        return self.graph_trav.V(info).valueMap().toList()
+
+    def get_topics_by_types(self, types):
+        return self.graph_trav.V().has('type', within(*types)).outE('about').otherV().values('topic').toSet()
+
+    def get_types_by_topics(self, topics):
+        return self.graph_trav.V().has('topic', within(*topics)).inE('about').otherV().values('type').toSet()

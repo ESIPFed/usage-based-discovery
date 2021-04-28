@@ -15,6 +15,9 @@ from gremlin_python.process.strategies import *
 from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
 from gremlin_python.process.traversal import T
 
+import csv
+import base64
+from util.add_csv import db_input_csv
 import os
 import subprocess
 
@@ -28,14 +31,19 @@ client_secret = os.environ.get('CLIENT_SECRET')
 client_id = os.environ.get('CLIENT_ID')
 s3_bucket = os.environ.get('S3_BUCKET')
 
+types = [
+                'unclassified',
+                'Software',
+                'Research'
+            ]
 '''
 # app layout
 APP = {
-    'topic': 'Test',
     'name': 'test_name',
     'site': 'https://example.com',
-    'screenshot': 'Testing 123.jpg',
-    'publication': 'None',
+    'type': [<type_1>, <type_2>] #multi-property so it returns as a list in value_map graph function
+    'screenshot': 'Testing-123.png',
+    'publication': 'None' or '<url>',
     'description': 'example description 123'
 }
 
@@ -47,12 +55,18 @@ Session = {
 }
 
 '''
+
 # Initial screen
-@app.route('/')
-def home():
+@app.route('/<string_type>/') 
+@app.route('/', defaults={'string_type': 'all'})
+def home(string_type):
+    # string_type is in this format: "<type>,<type2>,<type3>"
+    Type = string_type.split(',')
     g = GraphDB()
-    print(g.get_topics())
-    topic_list = sorted(g.get_topics())
+    if string_type == 'all':
+        Type = types
+        string_type= 'all'
+    topic_list = sorted(g.get_topics_by_types(Type))
     # attatch presigned url to each topic to get a topic icon to display
     s3 = s3Functions()
     screenshot_list = []
@@ -61,7 +75,7 @@ def home():
     topics_screenshot_zip = zip(topic_list, screenshot_list)
     # in_session determines if the user is logged in, and if so they get their own privileges
     in_session = 'orcid' in session
-    return render_template('init.html', stage=stage, topics_screenshot_zip=topics_screenshot_zip, in_session=in_session)
+    return render_template('init.html', stage=stage, topics_screenshot_zip=topics_screenshot_zip, in_session=in_session, Type=Type, string_type=string_type)
 
 # Topic attribution
 @app.route('/topic-attribution')
@@ -78,24 +92,40 @@ def explore():
     g = GraphDB()
     data = g.get_data()
     return render_template('graph.html', stage=stage, data=data)
+
+"""
+To-Do: only refresh the app/datasets when you select another type/topic
+"""
+
 # Main screen
-@app.route('/<topic>/<encoded_app_site>')
-def main(topic, encoded_app_site):
+@app.route('/<string_type>/<string_topic>/<encoded_app_site>')
+def main(string_type, string_topic, encoded_app_site):
+    g = GraphDB()
+    
+    Type = string_type.split(',')
+    topic = string_topic.split(',')
+    
+    if 'all' in Type:
+        Type = types
+
+    topics = sorted(g.get_topics_by_types(Type))
+    Types = sorted(g.get_types_by_topics(topic))
+    
+    topic = topic[0] # take this out later once multi select is in
+
     # encode all apps, and doi's, original app name and doi is in a seperate variable 
     app_site = urllib.parse.unquote(encoded_app_site)
-    print('app_site:\n:',app_site)
-    g = GraphDB()
-    topics = sorted(g.get_topics())
-    # query only for application relating to specified topic
-    relapps = g.mapify(g.get_apps_by_topic(topic))
+    
+    # query only for application relating to specified topic and type
+    relapps = g.mapify(g.api( [topic] , Type))
     # double encoding relapps to avoid special characters issues
     for relapp in relapps:
         relapp['encoded_site'] = urllib.parse.quote(urllib.parse.quote(relapp['site'], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
 
     # if there is no app specified, then it will set it to the first app in relapps
     if(app_site == 'all'):
-        print('this is where to look', topic, relapps[0]['name'])
-        return redirect(url_for('main', topic=topic, encoded_app_site= urllib.parse.unquote(relapps[0]['encoded_site']), safe=''))
+        return redirect(url_for('main', string_type=string_type, string_topic=string_topic, encoded_app_site=urllib.parse.unquote(relapps[0]['encoded_site']), safe=''))
+
     appsel = g.mapify(g.get_app(app_site))[0]
     print(appsel)
     appsel['encoded_site'] = urllib.parse.quote(urllib.parse.quote(appsel['site'], safe=''))
@@ -120,8 +150,10 @@ def main(topic, encoded_app_site):
     undo = None
     if 'changes' in session and len(session['changes'])>0:
         undo = json.dumps(session['changes'][-1]['type'])
-    return render_template('index.html', stage=stage, topic=topic, \
-        topics=topics, apps=relapps, app=appsel, datasets=datasets, screenshot=screenshot, \
+    return render_template('index.html', stage=stage,\
+        topic=topic, Type=Type, topics=topics, Types=Types, all_types=types,\
+        string_topic=string_topic, string_type=string_type, apps=relapps,\
+        app=appsel, datasets=datasets, screenshot=screenshot, \
         in_session=in_session, trusted_user=trusted_user, undo=undo)
 
 @app.route('/login')
@@ -197,72 +229,35 @@ def add_relationship():
         for key, value in request.form.items():
             print(key,value)
             f[key] = value
-        f['Topic[]'] = request.form.getlist('Topic[]') # used to get the multiple values of 'Topic[]'; empty if non-existant
+        # Getting multiple values of 'Topic[]', 'Type[]'; empty if non-existant
+        f['Topic[]'] = request.form.getlist('Topic[]')
+        f['Type[]'] = request.form.getlist('Type[]')
         print(f)
-        status = "failure"
+        status = "failure" # preset 
 
         #we use try block because autofill errors out when the url is not found
         try:
             #check if the form is submitted with the autofill tag
             if 'autofill' in f and f['autofill']=='true':
+                auto_fill(f)
                 status= ""
-                fill = autofill(f['site'])
-                datasets_obj = fill['datasets']
-                #if description/App name is not filled in then autofill them
-                if f['description'] == '':
-                    f['description'] = fill['description']
-                if f['Application_Name'] == '':
-                    f['Application_Name'] = fill['name']
-                if len(f['Topic[]'])==0:
-                    f['Topic[]'] = [fill['topic'] if fill['topic']!='Miscellaneous' else '']
-                for index, item in enumerate(datasets_obj):
-                    title = item[0]
-                    doi = item[1]
-                    f["Dataset_Name_"+ str(index+10)]=title
-                    f["DOI_" + str(index+10)]= doi
-                return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, role=role)
+                return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics,types=types, role=role)
         except:
             status = "invalid URL"
-            return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
+            return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, types=types, orcid=orcid, role=role)
 
-        #Filling in the form when users try to edit an app
+        # Filling in the form when users try to edit an app
         if 'type' in f and f['type'] == 'edit_application':
             status = "edit_application"
-            datasets_obj = g.get_datasets_by_app(f['app_site'])
-            app = g.mapify(g.get_app(f['app_site']))[0]
-            print("got app:    ", app)
-            f['Application_Name'] = app['name']
-            f['description'] = app['description']
-            f['Topic[]'] = g.get_app_topics(app['site'])
-            f['site'] = app['site']
-            f['Publication_Link'] = app['publication']
-            #iterating through datasets so they also show up in form
-            for index, item in enumerate(datasets_obj):
-                title = item[2]['title'][0]
-                doi = item[2]['doi'][0]
-                f['Dataset_Name_'+str(index+10)] = title
-                f['DOI_'+str(index+10)] = doi
-            return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
+            edit_application(f, g)
+            return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, types=types, orcid=orcid, role=role)
 
-        #check if submission is valid, if valid then we upload the content
+        # Check if submission is valid, if valid then we upload the content
         if validate_form(f):
             f['screenshot'] = 'NA'
+            APP = formatted_APP_from_form(f, g)
             
-            # get previous app information if there was one, ( 'prev_app_name' will be a property of the form when you edit an application) 
-            if 'prev_app_site' in f:
-                #store screenshot info before app deletion
-                temp_app = g.mapify(g.get_app(f['prev_app_site']))
-                f['screenshot'] = temp_app[0]['screenshot']
-            # there are alot of things in f (submitted form) that we don't want(like datasets), so we filter them into APP
-            APP = {
-                    'topic': f['Topic[]'],
-                    'name': f['Application_Name'],
-                    'site': f['site'],
-                    'screenshot': f['screenshot'],
-                    'publication': f['Publication_Link'],
-                    'description': f['description'] 
-            }
-            #logic to add topics that are custom if authorized
+            # Logic to add topics that are custom if authorized
             if session['role'] == 'supervisor':
                 for topic in APP['topic']:
                     g.add_topic(topic)
@@ -271,43 +266,101 @@ def add_relationship():
                 g.update_app(f['prev_app_site'], APP) if 'prev_app_site' in f else g.add_app(APP, discoverer=session['orcid'], verified=True, verifier=session['orcid']) 
                 print("this is NEW app:\n", g.get_app(APP['site']))
             elif 'prev_app_site' not in f:
-                g.add_app(APP, discoverer=session['orcid']) # submitted as unverified
+                g.add_app(APP, discoverer=session['orcid']) # submitted as unverified (general user submitted)
             else: 
-                return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
+                return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, types=types, orcid=orcid, role=role)
+
             #iterate through the forms dataset list
-            list_of_datasets = []
-            list_of_DOIs = []
-            for key,value in f.items(): 
-                #added datasets all have the last character as a digit
-                if key[-1].isdigit():
-                    # adding all the dataset and doi's of the form to two lists to be added in pairs
-                    if key[:4] =="Data":
-                        list_of_datasets.append(value)
-                    if key[:4] =="DOI_":
-                        list_of_DOIs.append(value)
-            # upload lists of datasets/dois to db
-            for Dataset_name, DOI in zip(list_of_datasets, list_of_DOIs):
-                DATASET = {'title': Dataset_name, 'doi': DOI}
-                if g.has_dataset(DOI):
-                    g.update_dataset(DOI, DATASET)
-                else:
-                    g.add_dataset(DATASET)
-                g.add_relationship(f['site'],DOI)
-            #if the DB has a DOI that the form doesn't then remove that relationship
-            datasets = g.get_datasets_by_app(APP['site'])
-            for dataset in datasets:
-                if dataset[2]['doi'][0] not in list_of_DOIs:
-                    print('Dataset DOI:\n\n', dataset[2]['doi'][0], 'site:\n', APP['site'])
-                    g.delete_relationship(APP['site'], dataset[2]['doi'][0])
-            g.delete_orphan_datasets()
+            upload_datasets_from_form(f, g, APP)
             status = "success"
-    return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, orcid=orcid, role=role)
+
+    return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, types=types, orcid=orcid, role=role)
+
+def auto_fill(f):
+    fill = autofill(f['site'])
+    datasets_obj = fill['datasets']
+    #if description/App name is not filled in then autofill them
+    if f['description'] == '':
+        f['description'] = fill['description']
+    if f['Application_Name'] == '':
+        f['Application_Name'] = fill['name']
+    if len(f['Topic[]'])==0:
+        f['Topic[]'] = [fill['topic'] if fill['topic']!='Miscellaneous' else '']
+    for index, item in enumerate(datasets_obj):
+        title = item[0]
+        doi = item[1]
+        #adding 10 to the dataset/doi form property since there might be previous ds/doi in the earlier numbers
+        f["Dataset_Name_"+ str(index+10)]=title
+        f["DOI_" + str(index+10)]= doi
+
+# Modifying the the form so it is filled with the App's info 
+def edit_application(f, g):
+    datasets_obj = g.get_datasets_by_app(f['app_site'])
+    app = g.mapify(g.get_app(f['app_site']))[0]
+    print("got app:    ", app)
+    f['type[]'] = app['type']
+    f['Application_Name'] = app['name']
+    f['description'] = app['description']
+    f['Topic[]'] = g.get_app_topics(app['site'])
+    f['site'] = app['site']
+    f['Publication_Link'] = app['publication']
+    # Iterating through datasets so they also show up in form
+    for index, item in enumerate(datasets_obj):
+        title = item[2]['title'][0]
+        doi = item[2]['doi'][0]
+        f['Dataset_Name_'+str(index+10)] = title
+        f['DOI_'+str(index+10)] = doi
 
 def validate_form(f):
     #potentially do some checks here before submission into the db
     if 'role' in session:
         return True
     return False
+
+def formatted_APP_from_form(f, g):
+    # Get previous app information if there was one(mainly for the screenshot info), ( 'prev_app_name' will be a property of the form when you edit an application) 
+    if 'prev_app_site' in f:
+        # Store screenshot info before app deletion
+        temp_app = g.mapify(g.get_app(f['prev_app_site']))
+        f['screenshot'] = temp_app[0]['screenshot']
+    # There are alot of things in f (submitted form) that we don't want when adding just an app(like datasets), so we filter the data into APP
+    APP = {
+            'type': f['Type[]'],
+            'topic': f['Topic[]'],
+            'name': f['Application_Name'],
+            'site': f['site'],
+            'screenshot': f['screenshot'],
+            'publication': f['Publication_Link'],
+            'description': f['description'] 
+    }
+    return APP
+
+def upload_datasets_from_form(f, g, APP):
+    list_of_datasets = []
+    list_of_DOIs = []
+    for key,value in f.items(): 
+        #added datasets all have the last character as a digit
+        if key[-1].isdigit():
+            # adding all the dataset and doi's of the form to two lists to be added in pairs
+            if key[:4] =="Data":
+                list_of_datasets.append(value)
+            if key[:4] =="DOI_":
+                list_of_DOIs.append(value)
+    # upload lists of datasets/dois to db
+    for Dataset_name, DOI in zip(list_of_datasets, list_of_DOIs):
+        DATASET = {'title': Dataset_name, 'doi': DOI}
+        if g.has_dataset(DOI):
+            g.update_dataset(DOI, DATASET)
+        else:
+            g.add_dataset(DATASET)
+        g.add_relationship(f['site'],DOI)
+    #if the DB has a DOI that the form doesn't then remove that relationship
+    datasets = g.get_datasets_by_app(APP['site'])
+    for dataset in datasets:
+        if dataset[2]['doi'][0] not in list_of_DOIs:
+            print('Dataset DOI:\n\n', dataset[2]['doi'][0], 'site:\n', APP['site'])
+            g.delete_relationship(APP['site'], dataset[2]['doi'][0])
+    g.delete_orphan_datasets()
 
 @app.route('/delete_dataset_relation/<encoded_app_site>/<encoded_doi>')
 def delete_dataset_relation(encoded_app_site, encoded_doi):
@@ -371,7 +424,7 @@ def delete_application(encoded_app_site):
         #delete application
         g.delete_app(app_site)
         g.delete_orphan_datasets()
-    redirect_path = request.referrer.rsplit('/',1)[0] + '/all' # this is so we direct to /topic/all instead of topic/app (topic/app doesn't exit after it gets deleted)
+    redirect_path = request.referrer.rsplit('/',1)[0] + '/all' # this is so we direct to .../topic/all instead of .../topic/app (topic/app doesn't exit after it gets deleted)
     return redirect(redirect_path)
 
 @app.route('/undo')
@@ -401,12 +454,12 @@ def undo():
         return redirect(request.referrer)
     return redirect(request.referrer)
 
-@app.route('/verify-application/<encoded_app_name>')
-def verify_application(encoded_app_name):
-    app_name = urllib.parse.unquote(encoded_app_name)
+@app.route('/verify-application/<encoded_app_site>')
+def verify_application(encoded_app_site):
+    app_site = urllib.parse.unquote(encoded_app_site)
     g = GraphDB()
     if 'role' in session and session['role'] == 'supervisor':
-        g.verify_app(app_name, session['orcid'])
+        g.verify_app(app_site, session['orcid'])
     return redirect(request.referrer)
 
 @app.route('/verify-dataset/<encoded_app_name>/<encoded_doi>')
@@ -417,7 +470,6 @@ def verify_dataset(encoded_app_name, encoded_doi):
     if 'role' in session and session['role'] == 'supervisor':
         g.verify_relationship(app_name, doi, session['orcid'])
     return redirect(request.referrer)
-
 
 @app.route('/add_annotation/<encoded_app_site>/<encoded_doi>', methods=["GET", "POST"])
 def add_annotation(encoded_app_site, encoded_doi):
@@ -437,7 +489,23 @@ def resolve_annotation(encoded_app_site, encoded_doi):
     g = GraphDB()
     g.add_annotation(app_site, doi, '')
     return redirect(request.referrer)
+
+
+@app.route('/add-csv', methods=["GET", "POST"])
+def add_csv():
+    print(request.files)
+    if request.method=="POST" and session['role']=='supervisor':
+        uploaded_file = request.files['csv_file']
+        if uploaded_file.filename != '':
+            fstring = uploaded_file.read()
+            fstring = fstring.decode("utf-8")
+            did_it_work = db_input_csv(fstring, session['orcid'])
+            print(did_it_work)
+            return "CSV values successfully added"
+    return "Please check data headers and try again"
 '''
+Add this in when you create the 404,400,500.html. 
+
 @app.errorhandler(404)
 def not_found():
     """Page not found."""

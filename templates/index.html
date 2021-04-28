@@ -53,7 +53,7 @@
               Usage Based Discovery
             </a>
           </h1>
-          <div class="d-flex justify-content-around">
+          <div class="d-flex justify-content-around flex-wrap">
             <div class="dropdown show">
               <a
                 class="btn btn-lg btn-secondary dropdown-toggle"
@@ -64,17 +64,54 @@
                 aria-haspopup="true"
                 aria-expanded="false"
               >
-                {{topic}}
+                Type: {{string_type}}
               </a>
 
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                {% for t in topics %}
-                  {% if topic == t %}
-                    <a class="dropdown-item active" href="{{stage}}/{{t}}/all">{{t}}</a>
-                  {% else %}
-                    <a class="dropdown-item" href="{{stage}}/{{t}}/all">{{t}}</a>
-                  {% endif %}
-                {% endfor %}
+		{% if 'all' in string_type %}
+                <a class="dropdown-item active" href="{{stage}}/all/{{string_topic}}/all"
+                  >All</a
+         	>
+		{% else %}
+                <a class="dropdown-item" href="{{stage}}/all/{{string_topic}}/all"
+                  >All</a
+         	>
+		{% endif %}
+		{% for t in all_types %} {% if t in Types %}
+		{% if t in Type and string_type!= 'all' %}
+		<a class="dropdown-item active" href="{{stage}}/{{t}}/{{string_topic}}/all"
+                  >{{t}}</a
+                >
+                {% else %}
+		<a class="dropdown-item" href="{{stage}}/{{t}}/{{string_topic}}/all">{{t}}</a>
+		{% endif %}
+		{% else %}
+		<a class="dropdown-item disabled" href="{{stage}}/{{t}}/{{string_topic}}/all">{{t}}</a>
+                {% endif %} {% endfor %}
+              </div>
+            </div>
+
+            <div class="dropdown show">
+              <a
+                class="btn btn-lg btn-secondary dropdown-toggle"
+                href="#"
+                role="button"
+                id="dropdownMenuLink"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                Topic: {{topic}}
+              </a>
+
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                {% for t in topics %} {% if topic == t %}
+		<a class="dropdown-item active" href="{{stage}}/{{string_type}}/{{t}}/all"
+                  >{{t}}</a
+                >
+                {% else %}
+		<a class="dropdown-item" href="{{stage}}/{{string_type}}/{{t}}/all">{{t}}</a>
+                {% endif %} {% endfor %}
               </div>
             </div>
           </div>
@@ -294,4 +331,319 @@
       </div>
     </div>
   </div>
+<<<<<<< HEAD
 </body>
+=======
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script>
+	    //enable tool-tip and popover functionality
+	    $(function () {
+		$('[data-toggle="tooltip"]').tooltip()
+		$('.tt').tooltip({
+		    placement: "top"
+		})
+	    })
+	    $('.dropdown-menu-right').click(function(e) {
+	        e.stopPropagation();
+	    });
+	    $(function () {
+	        $('.popover-dismiss').popover({
+  	            trigger: 'focus'
+	        })
+	        $('[data-toggle="popover"]').popover()
+	    })
+	    function edit_application(app_site){
+		var payload = {"app_site" : app_site, "type":"edit_application"};
+		var form = document.createElement('form');
+		form.style.visibility = 'hidden'; // no user interaction is necessary
+		form.method = 'POST'; // forms by default use GET query strings
+		form.action = '{{stage}}/add-relationship';
+		for (var key in payload) {
+		  console.log(key);
+		  var input = document.createElement('input');
+		  input.name = key;
+		  input.value = payload[key];
+		  form.appendChild(input); // add key/value pair to form
+		}
+		document.body.appendChild(form); // forms cannot be submitted outside of body
+		console.log(form)
+		form.submit(); // send the payload and navigate
+	    }
+
+	    function add_annotation_form(e, encoded_doi){
+		    console.log(e)
+		    var annotation_form = `<form class="form annotation_form" name="form1" action="{{stage}}/add_annotation/{{app['encoded_site']}}/${encoded_doi}" method="post"><div class="form-group">
+         	  <label>Annotation: </label>
+         	  <textarea
+         	    class="form-control"
+	            id="exampleFormControlTextarea1"
+         	    name="annotation"
+        	    rows="3"
+        	    /></textarea>
+		  <button id="submit_btn" type="submit" class="btn btn-primary">Submit</button>
+        	</div>
+		</form>`
+   	      $(annotation_form).insertBefore(e);
+	      $(e).remove();
+	    }
+	    function resolve_annotation(encoded_doi){
+		window.location.href = `{{stage}}/resolve_annotation/{{app['encoded_site']}}/${encoded_doi}`;
+	    }
+
+	</script>
+
+  <!-- JavaScript Bundle with Popper -->
+  <script
+    src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"
+  ></script>
+</body>
+
+<head>
+  <title>Usage Based Discovery</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- CSS only -->
+  {{ fontawesome_html() }}
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+    crossorigin="anonymous"
+  />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    html,
+    body {
+      background-color: white;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      padding: 0em;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .container-fluid {
+      padding: 0;
+    }
+
+    .row {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .col-md-3 {
+      padding: 0;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .right-col {
+      border-left:groove;
+    }
+
+    .left-col{
+      border-right:groove;
+    }
+
+    .title {
+      background-color: black;
+      width: 100%;
+      height: auto;
+    }
+
+    .eosdis {
+      margin:0rem;
+      padding:.5rem;
+      color: white;
+      font-family: "Maven Pro", sans-serif;
+      text-align: center;
+    }
+
+    .appresults {
+      background-color: white;
+      width: 100%;
+      height: auto;
+      direction: rtl;
+      overflow-y: auto;
+    }
+
+    .btn {
+      margin:.3rem;
+    }
+	
+    .btn-lg {
+      margin-bottom:.5rem;
+    }
+    
+    .app {
+      width: 100%;
+      direction: ltr;
+    }
+
+    .selected-app {
+      background-color: gray;
+      font-family: "Maven Pro", sans-serif;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    form {
+      margin: 0;
+    }
+
+    .fa-flag {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      color: indianred;
+    }
+
+    /* Spacer Column */
+    .spacer {
+      display: inline-table;
+      width: 50px;
+    }
+
+    /* Right (Main) Side */
+
+    .main {
+      display: inline-flex;
+      overflow-x: auto;
+      background-color: white;
+      height: 100%;
+      width: 100%;
+      margin: 0;
+    }
+
+    .appmain {
+      height: 100%;
+      width: 100%;
+      align-content: center;
+    }
+
+    .screenshot {
+      border-color:#ddd;
+      border-width:2px;
+      border-style: solid;
+      max-width: 850px;
+      max-height: 600px;
+      width: 90%;
+      height: auto;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .heading {
+      margin-top: 7vh;
+      height: auto;
+      width: 100%;
+      text-align: center;
+      overflow-wrap: normal;
+      word-wrap: normal;
+    }
+
+    .datasets {
+      background-color: white;
+      height: 100%;
+      width: 30%;
+      max-width: 350px;
+      display: inline-table;
+      position: absolute;
+      right: 0;
+    }
+
+    .dataset-head {
+      background-color: black;
+      width: 100%;
+      height: auto;
+      padding:.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dataset-results {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      padding: 0.5rem;
+    }
+
+    .dataset-div {
+      width: 100%;
+      font-family: "Maven Pro", sans-serif;
+      text-align: center;
+      border-bottom: solid;
+    }
+
+    .more-options {
+      text-align: right;
+    }
+
+    #more_options {
+      width: 17rem;
+    }
+
+    .tooltip{
+      pointer-events: none;
+    }
+
+    .fa-comment {
+      float:left;
+      margin:0.4rem;
+    }
+
+    .annotation_form {
+      padding: 0.2rem 0.5rem;
+    }
+
+    .dataset-btn {
+      font-family: "Maven Pro", sans-serif;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+      height: 25px;
+      width: 70%;
+    }
+
+    .transparent {
+      background: transparent;
+      border: none;
+      color: darkgrey;
+      margin: 0;
+    }
+
+    .annotation {
+      float:left;
+    }
+
+    .font {
+      position:relative;
+      font-family: "Maven Pro", sans-serif;
+      text-align: center;
+    }
+  </style>
+</head>
+
+>>>>>>> upstream/main
