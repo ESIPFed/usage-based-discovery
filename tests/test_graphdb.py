@@ -207,6 +207,80 @@ class TestInit():
         assert not self.db.has_dataset(DOI)
         assert self.db.has_dataset(CHANGE_DOI)
 
+    def test_api(self):
+        APPA = {
+            'site': 'siteA',
+            'type': ['Unclassified'],
+            'topic': ['Fire', 'Water'],
+            'name': 'Testing 123',
+            'screenshot': 'Testing 123.jpg',
+            'publication': 'None',
+            'description': 'example description 123'
+        }
+        APPB = {
+            'site': 'siteB',
+            'type': ['Software'],
+            'topic': ['Water'],
+            'name': 'Testing 123',
+            'screenshot': 'Testing 123.jpg',
+            'publication': 'None',
+            'description': 'example description 123'
+        }
+        APPC = {
+            'site': 'siteC',
+            'type': ['Unclassified', 'Software'],
+            'topic': ['Fire'],
+            'name': 'Testing 123',
+            'screenshot': 'Testing 123.jpg',
+            'publication': 'None',
+            'description': 'example description 123'
+        }
+        print(self.db.clear_database())
+        self.db.add_topic('Fire')
+        self.db.add_topic('Water')
+        self.db.add_app(APPA)
+        self.db.add_app(APPB)
+        self.db.add_app(APPC)
+        siteA = self.db.get_app('siteA')[0]
+        siteB = self.db.get_app('siteB')[0]
+        siteC = self.db.get_app('siteC')[0]
+        
+        result = self.db.api(['Fire'],['Unclassified'],False)
+        assert len(result) == 2
+        assert siteA in result and siteB not in result and siteC in result
+        result = self.db.api(['Water'],['Unclassified'],False)
+        assert len(result) == 1
+        assert siteA in result and siteB not in result and siteC not in result
+        result = self.db.api([],[],False)
+        assert len(result) == 3
+        assert siteA in result and siteB in result and siteC in result
+        result = self.db.api([],[],True)
+        assert len(result) == 0
+        assert siteA not in result and siteB not in result and siteC not in result
+         
+        self.db.verify_app('siteA', '0000-0000-0000-0000')
+        siteA = self.db.get_app('siteA')[0]
+        result = self.db.api([],[],True)
+        assert len(result) == 1
+        assert siteA in result and siteB not in result and siteC not in result
+        self.db.verify_app('siteB', '0000-0000-0000-0000')
+        siteB = self.db.get_app('siteB')[0]
+        result = self.db.api([],[],True)
+        assert len(result) == 2
+        assert siteA in result and siteB in result and siteC not in result
+        self.db.verify_app('siteC', '0000-0000-0000-0000')
+        siteC = self.db.get_app('siteC')[0]
+        result = self.db.api([],[],True)
+        assert len(result) == 3
+        assert siteA in result and siteB in result and siteC in result
+        
+        result = self.db.api(['Fire'],['Unclassified'],True)
+        assert len(result) == 2
+        assert siteA in result and siteB not in result and siteC in result
+        result = self.db.api(['Water'],['Unclassified'],True)
+        assert len(result) == 1
+        assert siteA in result and siteB not in result and siteC not in result
+
     def test_clear_database_end(self):
         print(self.db.clear_database())
         assert self.db.get_vertex_count() == 0

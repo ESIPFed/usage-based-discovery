@@ -86,7 +86,7 @@ class GraphDB:
 
     def get_data(self):
         '''
-        queries database for all vertices and edges
+        queries database for only verified vertices and edges
         reformats the data for d3 network visualization
         returns dict containing nodes and links
         '''
@@ -112,7 +112,10 @@ class GraphDB:
         return valuemap
 
     def api(self, topics, types, verified=True):
-        info = self.graph_trav.V().toList()
+        '''
+        returns all application type nodes that have the provided topics and types
+        '''
+        info = self.graph_trav.V().hasLabel('application').toList()
         if verified:
             info = self.graph_trav.V(info).has('application', 'verified', True).toList()
         if info and len(topics) != 0:
