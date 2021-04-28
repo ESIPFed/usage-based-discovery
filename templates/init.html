@@ -1,5 +1,5 @@
 <body>
-  <div class="container">
+  <div>
     <div class="topbar">
       <h1 style="text-align: left;">
         Usage Based Discovery
@@ -20,10 +20,25 @@
     </div>
 
     <div class="main">
+      <!--
+	Multi-select dropdown to filter types, still needs to be implemented
+	resource: https://developer.snapappointments.com/bootstrap-select/examples/
+
+      <select class="selectpicker" multiple>
+	<option>All</option>
+	{% for t in Type %} {% if t in Type and string_type!= 'all' %}
+	<option onclick="console.log('hi');remove_type(this.textContent);" selected>{{t}}</option>
+	{% else %}
+	<option onclick="console.log('bye');add_type(this.textContent);">{{t}}</option>
+	{% endif %}
+	{% endfor %}
+      </select>
+
+      -->
       <div class="menu-container">
         <div class="button-container">
           {% for topic, screenshot in topics_screenshot_zip %}
-          <a class="topic-btn" href="{{stage}}/{{topic}}/all">
+	  <a class="topic-btn" href="{{stage}}/{{string_type}}/{{topic}}/all">
             <div class="card">
               <figure class="card__thumbnail">
                 <img src="{{screenshot}}" />
@@ -39,6 +54,46 @@
       </div>
     </div>
   </div>
+  <!--
+	  Possible dependencies needed for multi-select dropdown to work/ bootstrap/ jquery
+	  resource: https://developer.snapappointments.com/bootstrap-select/examples/
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+      integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+      integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+      crossorigin="anonymous"
+    ></script>
+  <script>
+	/*
+	function add_type(type_to_add){
+	  console.log("type to add"+ type_to_add);
+	}
+	function remove_type(type_to_remove){
+	  console.log("type to remove"+ type_to_remove);
+	}
+	console.log("the script works.");
+	*/
+  </script>
+  -->
 </body>
 
 <head>
@@ -48,7 +103,6 @@
     rel="stylesheet"
   />
   <link rel="icon" type="image/png" href="static/nasalogo.png" />
-
   <style>
     html,
     body {

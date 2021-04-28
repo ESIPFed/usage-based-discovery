@@ -45,7 +45,6 @@
 	      {% endif %}
             {% endfor %}
           </select>
-	  
 	  <div class="valid-feedback">
             Looks good!
           </div>
@@ -68,6 +67,23 @@
 	  </div>  
         </div>
 	{% endif %}
+
+	<div class="form-group">
+          <label>Type*</label>
+	  <select class="selectpicker" name="Type[]" id="Type" multiple required>
+            {% for t in types %}
+	      {% if t in f['type[]'] %}
+	      <option value="{{t}}" selected>{{t}}</option>
+	      {% else %}
+	      <option value="{{t}}">{{t}}</option>
+	      {% endif %}
+            {% endfor %}
+          </select>
+	  <div class="valid-feedback">
+            Looks good!
+          </div>
+	</div>
+
         <div class="form-group">
           <label>Application Website*</label>
 	  <div class='input-group mb-3'>
@@ -137,6 +153,20 @@
       </button>
       <button id="submit_btn" type="submit" class="btn btn-primary">Submit</button>
       </form>
+      {% if role == "supervisor" %}
+      <form class="needs-validation" action="{{stage}}/add-csv" method="post" enctype="multipart/form-data" novalidate>
+	<div class="custom-file">
+	  <p>Only CSV files, must have headers, topic, name, site, description, title (of dataset), doi (of dataset). type(optional but make sure it matches with existing types), publication(optional)
+	  </p>
+	  <p>Note: Take a DB snapshot before adding. if your csv is 30 lines or longer it may take a couple seconds to add.</p>
+	  <input type="file" name="csv_file" class="custom-file-input" id="customFile" accept=".csv">
+	  <label class="custom-file-label" for="customFile">Choose file</label>
+	</div>
+        <button id="submit_btn" type="submit" class="btn btn-primary">Submit</button>
+      </form>
+      {% endif %}
+
+
       {% if status == "success" %}
       <div class="alert alert-success" id="success" role="alert">
         Success! We've added your values to our database.
