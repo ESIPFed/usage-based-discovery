@@ -364,7 +364,7 @@ class GraphDB:
         '''
         return self.graph_trav.V().hasLabel('dataset').where(bothE().count().is_(0)).drop().iterate()
 
-    def api(self, topics, types, verified=True):
+    def api(self, topics, types, verified=False):
         info = self.graph_trav.V().toList()
         if verified:
             info = self.graph_trav.V(info).has('application', 'verified', True).toList()

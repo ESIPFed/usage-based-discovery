@@ -115,9 +115,8 @@ def main(string_type, string_topic, encoded_app_site):
 
     # encode all apps, and doi's, original app name and doi is in a seperate variable 
     app_site = urllib.parse.unquote(encoded_app_site)
-
-    # query only for application relating to specified topic
-    # REMOVE relapps = g.mapify(g.get_apps_by_topic(topic))
+    
+    # query only for application relating to specified topic and type
     relapps = g.mapify(g.api( [topic] , Type))
     # double encoding relapps to avoid special characters issues
     for relapp in relapps:
