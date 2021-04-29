@@ -1,20 +1,19 @@
-//enable tool-tip and popover functionality
-$(function () {
-    $('[data-toggle="tooltip"]').tooltip()
-    $('.tt').tooltip({
-        placement: "top"
+$(function(){
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+        $('.tt').tooltip({
+            placement: "top"
+        })
     })
-})
-
-$('.dropdown-menu-right').click(function(e) {
-    e.stopPropagation();
-});
-
-$(function () {
-    $('.popover-dismiss').popover({
-        trigger: 'focus'
+    $('.dropdown-menu-right').click(function(e) {
+        e.stopPropagation();
+    });
+    $(function () {
+        $('.popover-dismiss').popover({
+            trigger: 'focus'
+        })
+        $('[data-toggle="popover"]').popover()
     })
-    $('[data-toggle="popover"]').popover()
 })
 
 function edit_application(app_site){
@@ -37,19 +36,17 @@ function edit_application(app_site){
 
 function add_annotation_form(e, encoded_doi){
     console.log(e)
-    var annotation_form =
-        `<form class="form annotation_form" name="form1" action="` + stage + `/add_annotation/` + encoded_site + `/${encoded_doi}" method="post">
-        <div class="form-group">
-            <label>Annotation: </label>
-            <textarea
-                class="form-control"
-                id="exampleFormControlTextarea1"
-                name="annotation"
-                rows="3"
-            ></textarea>
-            <button id="submit_btn" type="submit" class="btn btn-primary">Submit</button>
-        </div>
-        </form>`
+    var annotation_form = `<form class="form annotation_form" name="form1" action="` + stage + `/add_annotation/` + encoded_site + `/${encoded_doi}" method="post"><div class="form-group">
+      <label>Annotation: </label>
+      <textarea
+        class="form-control"
+        id="exampleFormControlTextarea1"
+        name="annotation"
+        rows="3"
+        /></textarea>
+  <button id="submit_btn" type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>`
     $(annotation_form).insertBefore(e);
     $(e).remove();
 }
