@@ -135,7 +135,7 @@ function add_topic(){
 
 }
 
-(function () {
+$(function () {
   'use strict'
 
   // Fetch all the forms we want to apply custom Bootstrap validation styles to
@@ -153,4 +153,4 @@ function add_topic(){
     form.classList.add('was-validated')
       }, false)
     })
-})();
+});
