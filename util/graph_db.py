@@ -395,7 +395,7 @@ class GraphDB:
             info = self.graph_trav.V(info).has('type', within(*types)).toList()
         if not info:
             return info
-        return self.graph_trav.V(info).valueMap().toList()
+        return self.graph_trav.V(info).hasLabel('application').valueMap().toList()
 
     def get_topics_by_types(self, types):
         return self.graph_trav.V().has('type', within(*types)).outE('about').otherV().values('topic').toSet()
