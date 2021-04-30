@@ -86,7 +86,7 @@ class GraphDB:
 
     def get_data(self):
         '''
-        queries database for all vertices and edges
+        queries database for only verified vertices and edges
         reformats the data for d3 network visualization
         returns dict containing nodes and links
         '''
@@ -110,6 +110,27 @@ class GraphDB:
                 if len(item[prop]) == 1 and prop != 'type':
                     item[prop] = item[prop][0]
         return valuemap
+
+    def api(self, topics, types, verified=True):
+        '''
+        returns all application type nodes that have the provided topics and types
+        '''
+        info = self.graph_trav.V().hasLabel('application').toList()
+        if verified:
+            info = self.graph_trav.V(info).has('application', 'verified', True).toList()
+        if info and len(topics) != 0:
+            info = self.graph_trav.V(info).where(__.outE("about").otherV().has("topic", within(*topics))).toList()
+        if info and len(types) != 0:
+            info = self.graph_trav.V(info).has('type', within(*types)).toList()
+        if not info:
+            return info
+        return self.graph_trav.V(info).valueMap().toList()
+
+    def get_topics_by_types(self, types):
+        return self.graph_trav.V().has('type', within(*types)).outE('about').otherV().values('topic').toSet()
+
+    def get_types_by_topics(self, topics):
+        return self.graph_trav.V().has('topic', within(*topics)).inE('about').otherV().values('type').toSet()
 
     def get_topics(self):
         '''
@@ -374,7 +395,7 @@ class GraphDB:
             info = self.graph_trav.V(info).has('type', within(*types)).toList()
         if not info:
             return info
-        return self.graph_trav.V(info).valueMap().toList()
+        return self.graph_trav.V(info).hasLabel('application').valueMap().toList()
 
     def get_topics_by_types(self, types):
         return self.graph_trav.V().has('type', within(*types)).outE('about').otherV().values('topic').toSet()
