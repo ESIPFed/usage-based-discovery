@@ -20,7 +20,7 @@
   </head>
   <body>
     <div class="container-sm">
-	    <a href={{stage}} style="font-size: x-large;">Go Home</a>
+	    <a href="{{ url_for('home') }}" style="font-size: x-large;">Go Home</a>
       <!--
                 these set of if statements is to set the values in the form to none if the submission was valid
         -->
@@ -30,7 +30,7 @@
         class="form needs-validation justify-content-center col-6"
         id="form1"
         name="form1"
-        action="{{stage}}/add-relationship"
+        action="{{ url_for('add_relationship') }}"
         method="post"
 	novalidate
       >
@@ -154,7 +154,7 @@
       <button id="submit_btn" type="submit" class="btn btn-primary">Submit</button>
       </form>
       {% if role == "supervisor" %}
-      <form class="needs-validation" action="{{stage}}/add-csv" method="post" enctype="multipart/form-data" novalidate>
+      <form class="needs-validation" action="{{ url_for('add_csv') }}" method="post" enctype="multipart/form-data" novalidate>
 	<div class="custom-file">
 	  <p>Only CSV files, must have headers, topic, name, site, description, title (of dataset), doi (of dataset). type(optional but make sure it matches with existing types), publication(optional)
 	  </p>
