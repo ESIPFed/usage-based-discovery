@@ -5,17 +5,28 @@ GraphDB: facilitates all interactions to the Neptune Graph Database
 from __future__  import print_function  # Python 2/3 compatibility
 import os   
 import sys
-#from util.env_loader import load_env
 from gremlin_python.structure.graph import Graph
 from gremlin_python.process.graph_traversal import unfold, inE, addV, addE, outV, otherV, bothE, __
 from gremlin_python.process.traversal import Cardinality, T, Direction, P, within
 from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
+from gremlin_python.driver.tornado.transport import TornadoTransport
 
 def valid_endpoint(endpoint):
     '''
     checks whether or not the neptune_endpoint supplied is valid
     '''
     return (endpoint.startswith("wss://") or endpoint.startswith("ws://")) and endpoint.endswith(":8182/gremlin")
+
+# Temp fix for: https://issues.apache.org/jira/browse/TINKERPOP-2388
+class CustomTornadoTransport(TornadoTransport):
+    def close(self):
+        self._loop.run_sync(lambda: self._ws.close())
+        message = self._loop.run_sync(lambda: self._ws.read_message())
+        # This situation shouldn't really happen. Since the connection was closed,
+        # the next message should be None
+        if message is not None:
+            raise RuntimeError("Connection was not properly closed")
+        self._loop.close()
 
 class GraphDB:
     '''
@@ -25,22 +36,23 @@ class GraphDB:
         '''
         connects to the neptune database upon class creation
         '''
-        #load_env()
         graph = Graph()
         neptune_endpoint = os.environ.get('NEPTUNEDBRO')
         if neptune_endpoint is None:
             sys.exit("Neptune Endpoint was not supplied in NEPTUNEDBRO environment")
         if not valid_endpoint(neptune_endpoint):
             sys.exit("Invalid Neptune Endpoint")
-        self.remote_connection = DriverRemoteConnection(neptune_endpoint, 'g')
+        self.remote_connection = DriverRemoteConnection(neptune_endpoint, 'g', transport_factory=CustomTornadoTransport)
         self.graph_trav = graph.traversal().withRemote(self.remote_connection)
 
     def __del__(self):
         '''
         disconnects from the neptune database once there are no more references to the class
         '''
-        print("I am terminating the connection!")
-        self.remote_connection.close()
+        print("Closing neptune DB connection")
+        print(self.remote_connection)
+        if self.remote_connection is not None:
+            self.remote_connection.close()
 
     def has_app(self, site):
         '''
