@@ -29,9 +29,7 @@ Jinja2==2.11.3
 jmespath==0.10.0
 joblib==1.0.1
 kappa==0.6.0
-lambda-packages==0.20.0
 MarkupSafe==1.1.1
-nltk==3.6
 packaging==20.9
 pep517==0.10.0
 Pillow==8.2.0
@@ -66,3 +64,4 @@ Werkzeug==0.16.1
 wsgi-request-logger==0.4.6
 zappa==0.52.0
 zipp==3.4.1
+python-dotenv
