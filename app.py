@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from util.graph_db import GraphDB
 from util.s3_functions import s3Functions
 from flask import Flask, url_for, render_template, request, session, redirect
@@ -6,7 +9,6 @@ import requests
 import json
 import urllib
 from util.autofill import autofill
-from util.env_loader import load_env
 
 from gremlin_python import statics
 from gremlin_python.structure.graph import Graph
@@ -25,7 +27,6 @@ app = Flask(__name__)
 fa = FontAwesome(app)
 
 app.secret_key = os.urandom(32)
-#load_env()
 stage = os.environ.get('STAGE')
 client_secret = os.environ.get('CLIENT_SECRET')
 client_id = os.environ.get('CLIENT_ID')
