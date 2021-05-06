@@ -212,7 +212,7 @@
       var astatus = '{{status}}'
       var site = '{{f['site']}}'
     </script>
-    <script src="{{stage}}/static/add_content.js"></script>
+    <script src="{{ url_for('static', filename='add_content.js') }}"></script>
     <style>
       .form-group {
         margin-bottom: 0.5rem;

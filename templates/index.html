@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
   <title>Usage Based Discovery</title>
-  <link rel="shortcut icon" type="image/png" href="{{stage}}/static/nasalogo.png">
+  <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='nasalogo.png') }}">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- CSS only -->
@@ -16,7 +16,7 @@
     href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" type="text/css" href="{{stage}}/static/index.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}">
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 </head>
 
@@ -42,7 +42,7 @@
     var stage = '{{stage}}'
     var encoded_site = "{{app['encoded_site']}}"
   </script>
-  <script src="{{stage}}/static/index.js"></script>
+  <script src="{{ url_for('static', filename='index.js') }}"></script>
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-3 left-col">
