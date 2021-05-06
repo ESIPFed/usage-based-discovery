@@ -1,5 +1,4 @@
 # set to env=local-app when developing the flask app locally
 ENV=local-app
 NEPTUNEDBRO=ws://localhost:8182/gremlin
-STAGE=local
 FLASK_ENV=development
