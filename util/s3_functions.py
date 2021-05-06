@@ -7,11 +7,13 @@ from selenium import webdriver
 import boto3
 import os
 import subprocess
+import pathlib
 
 class s3Functions():
 
     def __init__(self):
-        self.s3= boto3.client('s3')
+        if os.environ.get('ENV') != 'local-app':
+            self.s3= boto3.client('s3')
 
     def __del__(self):
         pass
@@ -27,6 +29,8 @@ class s3Functions():
         Returns output filename, basically the meat of the URL,
         using '-' in place of non-alphnumeric chars, plus .png
         """
+        if os.environ.get('ENV') == 'local-app':
+            return
         file_name = re.sub(r'^https?://', '', url)
         file_name = re.sub(r'\W', '-', file_name) + '.png'
         print('now doing chromedriver.get(',url,')')
@@ -43,6 +47,8 @@ class s3Functions():
         https://chromedriver.storage.googleapis.com/:
         linux64 or mac64
         """
+        if os.environ.get('ENV') == 'local-app':
+            return
         os_suffix = {'Linux':'linux64', 'Darwin':'mac64'}
         path = "../drivers/chromedriver89." + os_suffix.get(platform.system())
         # initiate selenium webdriver
@@ -53,19 +59,19 @@ class s3Functions():
         return webdriver.Chrome(path, options=option)
 
     def upload_image(self, bucket_name, unique_filename, f):
+        if os.environ.get('ENV') == 'local-app':
+            return
         s3 = boto3.resource('s3')
         s3.meta.client.upload_file(f, bucket_name, unique_filename)
-    '''
-    commented because PIL dependency issues, and not used anywhere in our code
 
-    def get_image(self, bucket_name, file_name):
-        s3 = boto3.resource('s3')
-        bucket = s3.Bucket(bucket_name)
-        image = bucket.Object(file_name)
-        img_data = image.get().get('Body').read()
-        return Image.open(io.BytesIO(img_data))
-    ''' 
+    def get_local_app_file(self, file_name):
+        if file_name == 'facets.json':
+            with open(pathlib.Path.cwd() / 'facets.json', mode='r') as f:
+                return f.read()
+
     def get_file(self, bucket_name, file_name):
+        if os.environ.get('ENV') == 'local-app':
+            return self.get_local_app_file(file_name)
         s3 = boto3.resource('s3')
         bucket = s3.Bucket(bucket_name)
         f = bucket.Object(file_name)
@@ -79,12 +85,16 @@ class s3Functions():
 #        return image_list
 
     def list_s3_objects(self, bucket_name):
+        if os.environ.get('ENV') == 'local-app':
+            return
         s3 = boto3.resource('s3')
         bucket = s3.Bucket(bucket_name)
         s3_list = [s3_file.key for s3_file in bucket.objects.all()]
         return s3_list
 
     def delete_image(self, bucket_name, file_name):
+        if os.environ.get('ENV') == 'local-app':
+            return
         s3 = boto3.resource('s3')
         obj = s3.Object(bucket_name, file_name)
         obj.delete()
