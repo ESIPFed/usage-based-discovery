@@ -1,4 +1,12 @@
-# set to env=local-app when developing the flask app locally
+# set to local-app when developing the flask app locally
 ENV=local-app
+
+# communicate with a local gremlin server (neptune aws implements gremlin)
 NEPTUNEDBRO=ws://localhost:8182/gremlin
+
+# let flask know that this is the dev server
 FLASK_ENV=development
+
+# copy an id from orcid.json to simulate a logged in orcid user
+# leave blank to simulate unauthenticated user
+ORCID=9020-0003-9403-1032

@@ -165,22 +165,27 @@ def login():
     we do a curl in a subprocess call with the code, to ask orcid for the users orcid data
     we get back the users orcid id, we check if the users orc-id is in our private s3-buckets orcid.json file and assign a role, and orc-id to that session
     '''
-    code = request.args.get('code')
-    inputstr = 'client_id=' + client_id + '&client_secret=' + client_secret + '&grant_type=authorization_code&code=' + code 
-    output = subprocess.check_output(['curl', '-i', '-L', '-H', 'Accept: application/json', '--data', inputstr,  'https://orcid.org/oauth/token'],universal_newlines=True)
-    
-    ind = output.index('{')
-    output = output[ind:]
-    output_json = json.loads(output)
+    orcid = None
+    if os.environ.get('ENV') == 'local-app': #bypass oauth call
+        orcid = os.environ.get('ORCID')
+    else:
+        code = request.args.get('code')
+        inputstr = 'client_id=' + client_id + '&client_secret=' + client_secret + '&grant_type=authorization_code&code=' + code 
+        output = subprocess.check_output(['curl', '-i', '-L', '-H', 'Accept: application/json', '--data', inputstr,  'https://orcid.org/oauth/token'],universal_newlines=True)
+        
+        ind = output.index('{')
+        output = output[ind:]
+        output_json = json.loads(output)
+        orcid = output_json['orcid']
     
     s3 = s3Functions()
     data = s3.get_file(s3_bucket, 'orcid.json')
     data = json.loads(data)
-    if output_json['orcid'] in data['supervisor']:
+    if orcid in data['supervisor']:
         session['role'] = 'supervisor'
     else:
         session['role'] = 'general'
-    session['orcid']= output_json['orcid']
+    session['orcid']= orcid
     return redirect(stage)
 
 @app.route('/logout')
@@ -195,6 +200,10 @@ def auth():
     send the user to orcid with our app's client_id
     after the user logs in, they will be redirected to the '/login' route with code
     '''
+    if os.environ.get('ENV') == 'local-app':
+        # bypass the orcid api
+        return redirect(url_for('login'))
+
     redirect_uri = request.url_root + "/login"
     return redirect("https://orcid.org/oauth/authorize?client_id=" + client_id + "&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
 

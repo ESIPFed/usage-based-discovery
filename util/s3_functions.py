@@ -64,14 +64,13 @@ class s3Functions():
         s3 = boto3.resource('s3')
         s3.meta.client.upload_file(f, bucket_name, unique_filename)
 
-    def get_local_app_file(self, file_name):
-        if file_name == 'facets.json':
-            with open(pathlib.Path.cwd() / 'facets.json', mode='r') as f:
-                return f.read()
+    def get_file_local(self, file_name):
+        with open(pathlib.Path.cwd() / file_name, mode='r') as f:
+            return f.read()
 
     def get_file(self, bucket_name, file_name):
         if os.environ.get('ENV') == 'local-app':
-            return self.get_local_app_file(file_name)
+            return self.get_file_local(file_name)
         s3 = boto3.resource('s3')
         bucket = s3.Bucket(bucket_name)
         f = bucket.Object(file_name)

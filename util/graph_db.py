@@ -50,7 +50,6 @@ class GraphDB:
         disconnects from the neptune database once there are no more references to the class
         '''
         print("Closing neptune DB connection")
-        print(self.remote_connection)
         if self.remote_connection is not None:
             self.remote_connection.close()
 
