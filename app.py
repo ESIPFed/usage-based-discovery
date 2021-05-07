@@ -460,6 +460,7 @@ def verify_application(encoded_app_site):
     app_site = urllib.parse.unquote(encoded_app_site)
     g = GraphDB()
     if 'role' in session and session['role'] == 'supervisor':
+        print(f'verifying app with app_site {app_site} and orc_id {session["orcid"]}')
         g.verify_app(app_site, session['orcid'])
     return redirect(request.referrer)
 
