@@ -39,7 +39,7 @@
     crossorigin="anonymous"
   ></script>
   <script>
-    var stage = '{{stage}}'
+    var stage = ('{{stage}}' == 'dev' || '{{stage}}' == 'production') ? '{{stage}}' : '';
     var encoded_site = "{{app['encoded_site']}}"
   </script>
   <script src="{{ url_for('static', filename='index.js') }}"></script>
