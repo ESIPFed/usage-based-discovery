@@ -28,6 +28,8 @@ fa = FontAwesome(app)
 
 app.secret_key = os.urandom(32)
 stage = os.environ.get('STAGE')
+if os.environ.get('ENV') == 'local-app':
+    stage = ''
 client_secret = os.environ.get('CLIENT_SECRET')
 client_id = os.environ.get('CLIENT_ID')
 s3_bucket = os.environ.get('S3_BUCKET')
@@ -186,7 +188,7 @@ def login():
     else:
         session['role'] = 'general'
     session['orcid']= orcid
-    return redirect(stage)
+    return redirect(url_for('home'))
 
 @app.route('/logout')
 def logout():
