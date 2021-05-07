@@ -470,6 +470,7 @@ def verify_dataset(encoded_app_name, encoded_doi):
     app_name = urllib.parse.unquote(encoded_app_name)
     g = GraphDB()
     if 'role' in session and session['role'] == 'supervisor':
+        print(f'verifying dataset with app_name {app_name} and doi {doi} and orc_id {session["orcid"]}')
         g.verify_relationship(app_name, doi, session['orcid'])
     return redirect(request.referrer)
 
