@@ -68,19 +68,19 @@
 
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
 		        {% if 'all' in string_type %}
-                  <a class="dropdown-item active" href="{{stage}}/all/{{string_topic}}/all">All</a>
+                  <a class="dropdown-item active" href="{{ url_for('main', string_type='all', string_topic=string_topic, encoded_app_site='all') }}">All</a>
 		        {% else %}
-                  <a class="dropdown-item" href="{{stage}}/all/{{string_topic}}/all">All</a>
+                  <a class="dropdown-item" href="{{ url_for('main', string_type='all', string_topic=string_topic, encoded_app_site='all') }}">All</a>
 		        {% endif %}
 		        {% for t in all_types %}
                   {% if t in Types %}
 		            {% if t in Type and string_type!= 'all' %}
-		              <a class="dropdown-item active" href="{{stage}}/{{t}}/{{string_topic}}/all">{{t}}</a>
+		              <a class="dropdown-item active" href="{{ url_for('main', string_type=t, string_topic=string_topic, encoded_app_site='all') }}">{{t}}</a>
                     {% else %}
-		              <a class="dropdown-item" href="{{stage}}/{{t}}/{{string_topic}}/all">{{t}}</a>
+		              <a class="dropdown-item" href="{{ url_for('main', string_type=t, string_topic=string_topic, encoded_app_site='all') }}">{{t}}</a>
 		            {% endif %}
 		          {% else %}
-		            <a class="dropdown-item disabled" href="{{stage}}/{{t}}/{{string_topic}}/all">{{t}}</a>
+		            <a class="dropdown-item disabled" href="{{ url_for('main', string_type=t, string_topic=string_topic, encoded_app_site='all') }}">{{t}}</a>
                   {% endif %}
                 {% endfor %}
               </div>
@@ -99,9 +99,9 @@
 
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 {% for t in topics %} {% if topic == t %}
-		          <a class="dropdown-item active" href="{{stage}}/{{string_type}}/{{t}}/all">{{t}}</a>
+		          <a class="dropdown-item active" href="{{ url_for('main', string_type=string_type, string_topic=t, encoded_app_site='all') }}">{{t}}</a>
                 {% else %}
-		          <a class="dropdown-item" href="{{stage}}/{{string_type}}/{{t}}/all">{{t}}</a>
+		          <a class="dropdown-item" href="{{ url_for('main', string_type=string_type, string_topic=t, encoded_app_site='all') }}">{{t}}</a>
                 {% endif %} {% endfor %}
               </div>
             </div>

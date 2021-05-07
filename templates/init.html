@@ -14,16 +14,16 @@
       <h1 style="text-align: left;">
         Usage Based Discovery
         <span style="float: right;">
-          <a href="{{stage}}/explore" style="font-size: x-large;">Explore</a
+          <a href="{{ url_for('explore') }}" style="font-size: x-large;">Explore</a
           >&emsp;
-          <a href="{{stage}}/about" style="font-size: x-large;">About</a>&emsp;
+          <a href="{{ url_for('about') }}" style="font-size: x-large;">About</a>&emsp;
           {% if in_session %}
-          <a href="{{stage}}/add-relationship" style="font-size: x-large;"
+          <a href="{{ url_for('add_relationship') }}" style="font-size: x-large;"
             >Add Content</a
           >&emsp;
-          <a href="{{stage}}/logout" style="font-size: x-large;">Logout</a
+          <a href="{{ url_for('logout') }}" style="font-size: x-large;">Logout</a
           >&emsp; {% else %}
-          <a href="{{stage}}/auth" style="font-size: x-large;">Login</a>&emsp;
+          <a href="{{ url_for('auth') }}" style="font-size: x-large;">Login</a>&emsp;
           {% endif %}
         </span>
       </h1>
@@ -48,7 +48,7 @@
       <div class="menu-container">
         <div class="button-container">
           {% for topic, screenshot in topics_screenshot_zip %}
-	  <a class="topic-btn" href="{{stage}}/{{string_type}}/{{topic}}/all">
+	  <a class="topic-btn" href="{{ url_for('main', string_type=string_type, string_topic=topic, encoded_app_site='all') }}">
             <div class="card">
               <figure class="card__thumbnail">
                 <img src="{{screenshot}}" />
