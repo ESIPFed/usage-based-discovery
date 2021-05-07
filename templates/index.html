@@ -39,7 +39,7 @@
     crossorigin="anonymous"
   ></script>
   <script>
-    var stage = ('{{stage}}' == 'dev' || '{{stage}}' == 'production') ? '{{stage}}' : '';
+    var stage = ('{{stage}}' == '/dev' || '{{stage}}' == '/production') ? '{{stage}}' : '';
     var encoded_site = "{{app['encoded_site']}}"
   </script>
   <script src="{{ url_for('static', filename='index.js') }}"></script>
@@ -148,7 +148,7 @@
 	{% if trusted_user and undo%} 
 	<!-- undo btn -->
 	<button 
-	   onclick="if (confirm ( 'Are you sure you want to undo your last change?\nChange type: \n{{undo}}')) {window.location.href = '{{stage}}/undo';}" 
+	   onclick="if (confirm ( 'Are you sure you want to undo your last change?\nChange type: \n{{undo}}')) {window.location.href = '{{ url_for("undo") }}';}" 
      	  type="button"
       	  class="btn btn-warning btn-md"
       	  >Undo last change</button
@@ -182,7 +182,7 @@
 	    
 	    {% if app['verified'] == False %}
 	    <button 
-	      onclick="if (confirm ( 'Are you sure you want to verify the application')) {window.location.href = '{{stage}}/verify-application/{{app['encoded_site']}}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to verify the application')) {window.location.href = '{{ url_for("verify_application", encoded_app_site=app["encoded_site"]) }}';}" 
 	      type="button"
 	      class="btn btn-success btn-md"
 	      >Verify Application</button
@@ -195,7 +195,7 @@
 	      >Edit</button
             >
 	    <button 
-	      onclick="if (confirm ( 'Are you sure you want to delete the application?')) {window.location.href = '{{stage}}/delete_application/{{app['encoded_site']}}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to delete the application?')) {window.location.href = '{{ url_for("delete_application", encoded_app_site=app["encoded_site"]) }}';}" 
 	      type="button"
 	      class="btn btn-danger btn-md"
 	      >Delete Application</button
@@ -275,7 +275,7 @@
 	    {% if trusted_user and app%}
 	    {% if d[1]['verified'] == false %}
 	    <button
-	      onclick="if (confirm ( 'Are you sure you want to verify the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/verify-dataset/{{app['encoded_site']}}/{{d[2]['encoded_doi']}}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to verify the dataset {{d["title"]}}')) {window.location.href = '{{ url_for("verify_dataset", encoded_app_name=app["encoded_site"], encoded_doi=d[2]["encoded_doi"]) }}';}" 
 	      type="button"
 	      class="btn btn-success btn-sm"
 	      data-toggle="tooltip" 
@@ -285,7 +285,7 @@
             >
 	    {% endif %}
 	    <button 
-	      onclick="if (confirm ( 'Are you sure you want to unlink the dataset {{d["title"]}}')) {window.location.href = '{{stage}}/delete_dataset_relation/{{app['encoded_site']}}/{{d[2]['encoded_doi']}}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to unlink the dataset {{d["title"]}}')) {window.location.href = '{{ url_for("delete_dataset_relation", encoded_app_site=app["encoded_site"], encoded_doi=d[2]["encoded_doi"]) }}';}" 
 	      type="button"
 	      class="btn btn-danger btn-sm"
 	      data-toggle="tooltip" 
