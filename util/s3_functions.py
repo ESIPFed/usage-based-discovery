@@ -8,6 +8,7 @@ import boto3
 import os
 import subprocess
 import pathlib
+from flask import url_for
 
 class s3Functions():
 
@@ -105,6 +106,8 @@ class s3Functions():
         :param expiration: Time in seconds for the presigned URL to remain valid
         :return: Presigned URL as string. If error, returns None.
         """
+        if os.environ.get('ENV') == 'local-app':
+            return url_for('static', filename=file_name)
         # Generate a presigned URL for the S3 object
         s3 = boto3.client('s3')
         try:
