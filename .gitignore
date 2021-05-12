@@ -9,3 +9,5 @@ __pycache__/
 *.pem
 .vscode/settings.json
 .env
+
+!util/sample_data.csv
