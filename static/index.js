@@ -16,12 +16,12 @@ $(function(){
     })
 })
 
-function edit_application(app_site){
+function edit_application(ev, app_site){
     var payload = {"app_site" : app_site, "type":"edit_application"};
     var form = document.createElement('form');
     form.style.visibility = 'hidden'; // no user interaction is necessary
     form.method = 'POST'; // forms by default use GET query strings
-    form.action = stage + '/add-relationship';
+    form.action = ev.getAttribute('data-add-relationship-url');
     for (var key in payload) {
         console.log(key);
         var input = document.createElement('input');
@@ -30,13 +30,11 @@ function edit_application(app_site){
         form.appendChild(input); // add key/value pair to form
     }
     document.body.appendChild(form); // forms cannot be submitted outside of body
-    console.log(form)
     form.submit(); // send the payload and navigate
 }
 
-function add_annotation_form(e, encoded_doi){
-    console.log(e)
-    var annotation_form = `<form class="form annotation_form" name="form1" action="` + stage + `/add_annotation/` + encoded_site + `/${encoded_doi}" method="post"><div class="form-group">
+function add_annotation_form(e){
+    var annotation_form = '<form class="form annotation_form" name="form1" action="' + e.getAttribute('data-add-annotation-url') + `" method="post"><div class="form-group">
       <label>Annotation: </label>
       <textarea
         class="form-control"
@@ -51,6 +49,6 @@ function add_annotation_form(e, encoded_doi){
     $(e).remove();
 }
 
-function resolve_annotation(encoded_doi){
-    window.location.href = stage + `/resolve_annotation/` + encoded_site + `/${encoded_doi}`;
+function resolve_annotation(ev){
+    window.location.href = ev.getAttribute('data-resolve-url');
 }

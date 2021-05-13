@@ -27,12 +27,14 @@ app = Flask(__name__)
 fa = FontAwesome(app)
 
 app.secret_key = os.urandom(32)
-stage = os.environ.get('STAGE')
-if os.environ.get('ENV') == 'local-app':
-    stage = ''
 client_secret = os.environ.get('CLIENT_SECRET')
 client_id = os.environ.get('CLIENT_ID')
 s3_bucket = os.environ.get('S3_BUCKET')
+
+stage = os.environ.get('STAGE') # dev or production in aws
+if os.environ.get('ENV') == 'local-app':
+    stage = ''
+
 
 types = [
                 'unclassified',
@@ -101,8 +103,8 @@ To-Do: only refresh the app/datasets when you select another type/topic
 """
 
 # Main screen
-@app.route('/<string_type>/<string_topic>/<encoded_app_site>')
-def main(string_type, string_topic, encoded_app_site):
+@app.route('/<string_type>/<string_topic>/<path:app_site>')
+def main(string_type, string_topic, app_site):
     g = GraphDB()
     
     Type = string_type.split(',')
@@ -115,26 +117,20 @@ def main(string_type, string_topic, encoded_app_site):
     Types = sorted(g.get_types_by_topics(topic))
     
     topic = topic[0] # take this out later once multi select is in
-
-    # encode all apps, and doi's, original app name and doi is in a seperate variable 
-    app_site = urllib.parse.unquote(encoded_app_site)
     
     # query only for application relating to specified topic and type
     relapps = g.mapify(g.api( [topic] , Type))
-    # double encoding relapps to avoid special characters issues
-    for relapp in relapps:
-        relapp['encoded_site'] = urllib.parse.quote(urllib.parse.quote(relapp['site'], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
 
     # if there is no app specified, then it will set it to the first app in relapps
     if(app_site == 'all'):
-        return redirect(url_for('main', string_type=string_type, string_topic=string_topic, encoded_app_site=urllib.parse.unquote(relapps[0]['encoded_site']), safe=''))
+        return redirect(url_for('main', string_type=string_type, string_topic=string_topic, app_site=relapps[0]['site']))
+
 
     appsel = g.mapify(g.get_app(app_site))[0]
-    print(appsel)
-    appsel['encoded_site'] = urllib.parse.quote(urllib.parse.quote(appsel['site'], safe=''))
+    
     # query for all datasets relating to specified application
     datasets = g.get_datasets_by_app(app_site)
-    
+
     #getting temporary images for apps who don't have images
     s3 = s3Functions()
     filename = 'topic/'+topic+'.jpg' if appsel['screenshot'] == 'NA' else appsel['screenshot']
@@ -145,11 +141,7 @@ def main(string_type, string_topic, encoded_app_site):
     # filter apps and datasets based on if they are trusted
     if not trusted_user:
         relapps = list(filter(lambda relapp: relapp['verified']==True, relapps))
-    print(appsel)
-    print("datasets: \n", datasets)
-    for d in datasets:
-        d[2]['encoded_doi']=urllib.parse.quote(urllib.parse.quote(d[2]['doi'][0], safe=''), safe='') #safe ='' is there to translate '/' to '%2f' because we don't want / in our urls
-
+    
     undo = None
     if 'changes' in session and len(session['changes'])>0:
         undo = json.dumps(session['changes'][-1]['type'])
@@ -374,18 +366,14 @@ def upload_datasets_from_form(f, g, APP):
             g.delete_relationship(APP['site'], dataset[2]['doi'][0])
     g.delete_orphan_datasets()
 
-@app.route('/delete_dataset_relation/<encoded_app_site>/<encoded_doi>')
-def delete_dataset_relation(encoded_app_site, encoded_doi):
-    # double decode to avoid apache %2F translation, so %252F goes to %2F which goes to /
-    doi = urllib.parse.unquote(encoded_doi) 
-    app_site = urllib.parse.unquote(encoded_app_site)
+@app.route('/<path:app_site>/delete_dataset_relation/<path:doi>')
+def delete_dataset_relation(app_site, doi):
     if 'role' in session and session['role']=='supervisor':
         g = GraphDB() 
         #log this change in session to be able to undo later
         #dataset = g.mapify(g.get_dataset(doi))[0]
 
         print('app_site:\n\n\n', app_site, 'doi:\n\n\n', doi)
-
 
         dataset_path = g.get_dataset_by_app(app_site, doi)[0]
         change = {
@@ -405,10 +393,8 @@ def delete_dataset_relation(encoded_app_site, encoded_doi):
         g.delete_orphan_datasets()
     return redirect(request.referrer)
 
-@app.route('/delete_application/<encoded_app_site>')
-def delete_application(encoded_app_site):
-    # double decode to avoid apache %2F translation, so %252F goes to %2F which goes to /
-    app_site = urllib.parse.unquote(encoded_app_site)
+@app.route('/delete_application/<path:app_site>')
+def delete_application(app_site):
     if 'role' in session and session['role']=='supervisor':
         g = GraphDB() 
         #session 'changes' keeps a history of all changes made by that user
@@ -466,40 +452,30 @@ def undo():
         return redirect(request.referrer)
     return redirect(request.referrer)
 
-@app.route('/verify-application/<encoded_app_site>')
-def verify_application(encoded_app_site):
-    app_site = urllib.parse.unquote(encoded_app_site)
+@app.route('/verify-application/<path:app_site>')
+def verify_application(app_site):
     g = GraphDB()
     if 'role' in session and session['role'] == 'supervisor':
-        print(f'verifying app with app_site {app_site} and orc_id {session["orcid"]}')
         g.verify_app(app_site, session['orcid'])
     return redirect(request.referrer)
 
-@app.route('/verify-dataset/<encoded_app_name>/<encoded_doi>')
-def verify_dataset(encoded_app_name, encoded_doi):
-    doi = urllib.parse.unquote(encoded_doi) 
-    app_name = urllib.parse.unquote(encoded_app_name)
+@app.route('/<path:app_name>/verify-dataset/<path:doi>')
+def verify_dataset(app_name, doi):
     g = GraphDB()
     if 'role' in session and session['role'] == 'supervisor':
-        print(f'verifying dataset with app_name {app_name} and doi {doi} and orc_id {session["orcid"]}')
         g.verify_relationship(app_name, doi, session['orcid'])
     return redirect(request.referrer)
 
-@app.route('/add_annotation/<encoded_app_site>/<encoded_doi>', methods=["GET", "POST"])
-def add_annotation(encoded_app_site, encoded_doi):
+@app.route('/<path:app_site>/add_annotation/<path:doi>', methods=["GET", "POST"])
+def add_annotation(app_site, doi):
     if request.method == 'POST':
-        doi = urllib.parse.unquote(encoded_doi)
-        app_site = urllib.parse.unquote(encoded_app_site)
         f = request.form
-        print(f)
         g = GraphDB()
         g.add_annotation(app_site, doi, f['annotation'])
     return redirect(request.referrer)
 
-@app.route('/resolve_annotation/<encoded_app_site>/<encoded_doi>')
-def resolve_annotation(encoded_app_site, encoded_doi):
-    doi = urllib.parse.unquote(encoded_doi)
-    app_site = urllib.parse.unquote(encoded_app_site)
+@app.route('/<path:app_site>/resolve_annotation/<path:doi>')
+def resolve_annotation(app_site, doi):
     g = GraphDB()
     g.add_annotation(app_site, doi, '')
     return redirect(request.referrer)
