@@ -215,8 +215,12 @@ def add_relationship():
     
     '''
     if 'orcid' not in session:
-        redirect_uri = request.url_root + "/login"
-        return redirect("https://orcid.org/oauth/authorize?client_id=" + client_id + "&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
+        if os.environ.get('ENV') == 'local-app':
+            # bypass the orcid api
+            return redirect(url_for('login'))
+        else:
+            redirect_uri = request.url_root + "/login"
+            return redirect("https://orcid.org/oauth/authorize?client_id=" + client_id + "&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
     orcid = 'orcid' in session
     role = session['role'] 
 
