@@ -123,18 +123,20 @@ def main(string_type, string_topic, app_site):
     if not trusted_user:
         topic_apps = list(filter(lambda relapp: relapp['verified']==True, topic_apps))
 
-    # if there is no app specified, then it will set it to the first app in topic_apps
-    if(app_site == 'all'):
-        return redirect(url_for('main', string_type=string_type, string_topic=string_topic, app_site=topic_apps[0]['site']))
-
-    selected_app = g.mapify(g.get_app(app_site))[0]
+    selected_app = None
+    if(app_site != 'all'):
+        selected_app = g.mapify(g.get_app(app_site))[0]
+    elif(len(topic_apps) != 0):
+        selected_app=topic_apps[0]
     
     # query for all datasets relating to specified application
     datasets = g.get_datasets_by_app(app_site)
 
     #getting temporary images for apps who don't have images
     s3 = s3Functions()
-    filename = 'topic/'+topic+'.jpg' if selected_app['screenshot'] == 'NA' else selected_app['screenshot']
+    filename = 'topic/'+topic+'.jpg' 
+    if selected_app is not None and selected_app['screenshot'] != 'NA':
+        filename = selected_app['screenshot']
     screenshot = s3.create_presigned_url(s3_bucket, filename)
     
     undo = None

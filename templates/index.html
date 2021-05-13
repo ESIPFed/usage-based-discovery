@@ -152,6 +152,7 @@
         >
 	{% endif %}
 
+        {% if app != None %}
         <div class="heading">
           <h1 class="font">{{app['name']}}</h1>
           <a
@@ -205,9 +206,10 @@
             {{app['description'][:320]}}...
           </p>
         </div>
+        {% endif %}
         <div>
           <a
-            href="{{app['site']}}"
+            href="{{app['site'] if app != None else ''}}"
             target="_blank"
             class="font"
             style="align-self: center;"
