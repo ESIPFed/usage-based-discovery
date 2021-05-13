@@ -118,32 +118,33 @@ def main(string_type, string_topic, app_site):
     topic = topic[0] # take this out later once multi select is in
     
     # query only for application relating to specified topic and type
-    relapps = g.mapify(g.api( [topic] , Type))
+    topic_apps = g.mapify(g.api( [topic] , Type))
     # filter apps and datasets based on if they are trusted
     if not trusted_user:
-        relapps = list(filter(lambda relapp: relapp['verified']==True, relapps))
-        
-    # if there is no app specified, then it will set it to the first app in relapps
-    if(app_site == 'all'):
-        return redirect(url_for('main', string_type=string_type, string_topic=string_topic, app_site=relapps[0]['site']))
+        topic_apps = list(filter(lambda relapp: relapp['verified']==True, topic_apps))
 
-    appsel = g.mapify(g.get_app(app_site))[0]
+    # if there is no app specified, then it will set it to the first app in topic_apps
+    if(app_site == 'all'):
+        return redirect(url_for('main', string_type=string_type, string_topic=string_topic, app_site=topic_apps[0]['site']))
+
+    selected_app = g.mapify(g.get_app(app_site))[0]
     
     # query for all datasets relating to specified application
     datasets = g.get_datasets_by_app(app_site)
 
     #getting temporary images for apps who don't have images
     s3 = s3Functions()
-    filename = 'topic/'+topic+'.jpg' if appsel['screenshot'] == 'NA' else appsel['screenshot']
+    filename = 'topic/'+topic+'.jpg' if selected_app['screenshot'] == 'NA' else selected_app['screenshot']
     screenshot = s3.create_presigned_url(s3_bucket, filename)
     
     undo = None
     if 'changes' in session and len(session['changes'])>0:
         undo = json.dumps(session['changes'][-1]['type'])
+
     return render_template('index.html',\
         topic=topic, Type=Type, topics=topics, Types=Types, all_types=types,\
-        string_topic=string_topic, string_type=string_type, apps=relapps,\
-        app=appsel, datasets=datasets, screenshot=screenshot, \
+        string_topic=string_topic, string_type=string_type, apps=topic_apps,\
+        app=selected_app, datasets=datasets, screenshot=screenshot, \
         in_session=in_session, trusted_user=trusted_user, undo=undo)
 
 @app.route('/login')
