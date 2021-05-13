@@ -101,6 +101,9 @@ To-Do: only refresh the app/datasets when you select another type/topic
 # Main screen
 @app.route('/<string_type>/<string_topic>/<path:app_site>')
 def main(string_type, string_topic, app_site):
+    in_session = 'orcid' in session
+    trusted_user = 'role' in session and session['role']=='supervisor' 
+
     g = GraphDB()
     
     Type = string_type.split(',')
@@ -116,11 +119,13 @@ def main(string_type, string_topic, app_site):
     
     # query only for application relating to specified topic and type
     relapps = g.mapify(g.api( [topic] , Type))
-
+    # filter apps and datasets based on if they are trusted
+    if not trusted_user:
+        relapps = list(filter(lambda relapp: relapp['verified']==True, relapps))
+        
     # if there is no app specified, then it will set it to the first app in relapps
     if(app_site == 'all'):
         return redirect(url_for('main', string_type=string_type, string_topic=string_topic, app_site=relapps[0]['site']))
-
 
     appsel = g.mapify(g.get_app(app_site))[0]
     
@@ -131,12 +136,6 @@ def main(string_type, string_topic, app_site):
     s3 = s3Functions()
     filename = 'topic/'+topic+'.jpg' if appsel['screenshot'] == 'NA' else appsel['screenshot']
     screenshot = s3.create_presigned_url(s3_bucket, filename)
-    
-    in_session = 'orcid' in session
-    trusted_user = 'role' in session and session['role']=='supervisor' 
-    # filter apps and datasets based on if they are trusted
-    if not trusted_user:
-        relapps = list(filter(lambda relapp: relapp['verified']==True, relapps))
     
     undo = None
     if 'changes' in session and len(session['changes'])>0:
