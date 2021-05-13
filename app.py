@@ -130,7 +130,7 @@ def main(string_type, string_topic, app_site):
         selected_app=topic_apps[0]
     
     # query for all datasets relating to specified application
-    datasets = g.get_datasets_by_app(app_site)
+    datasets = g.get_datasets_by_app(selected_app['site'])
 
     #getting temporary images for apps who don't have images
     s3 = s3Functions()
