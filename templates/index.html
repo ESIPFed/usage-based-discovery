@@ -38,10 +38,7 @@
     integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
     crossorigin="anonymous"
   ></script>
-  <script>
-    var stage = ('{{stage}}' == '/dev' || '{{stage}}' == '/production') ? '{{stage}}' : '';
-    var site = "{{app['site']}}"
-  </script>
+
   <script src="{{ url_for('static', filename='index.js') }}"></script>
   <div class="container-fluid">
     <div class="row">

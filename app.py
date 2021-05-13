@@ -31,10 +31,6 @@ client_secret = os.environ.get('CLIENT_SECRET')
 client_id = os.environ.get('CLIENT_ID')
 s3_bucket = os.environ.get('S3_BUCKET')
 
-stage = os.environ.get('STAGE') # dev or production in aws
-if os.environ.get('ENV') == 'local-app':
-    stage = ''
-
 
 types = [
                 'unclassified',
@@ -80,23 +76,23 @@ def home(string_type):
     topics_screenshot_zip = zip(topic_list, screenshot_list)
     # in_session determines if the user is logged in, and if so they get their own privileges
     in_session = 'orcid' in session
-    return render_template('init.html', stage=stage, topics_screenshot_zip=topics_screenshot_zip, in_session=in_session, Type=Type, string_type=string_type)
+    return render_template('init.html', topics_screenshot_zip=topics_screenshot_zip, in_session=in_session, Type=Type, string_type=string_type)
 
 # Topic attribution
 @app.route('/topic-attribution')
 def topic_attribution():
-    return render_template('topic-attribution.html', stage=stage)
+    return render_template('topic-attribution.html')
 
 # About page
 @app.route('/about')
 def about():
-    return render_template('about.html', stage=stage)
+    return render_template('about.html')
 
 @app.route('/explore')
 def explore():
     g = GraphDB()
     data = g.get_data()
-    return render_template('graph.html', stage=stage, data=data)
+    return render_template('graph.html', data=data)
 
 """
 To-Do: only refresh the app/datasets when you select another type/topic
@@ -145,7 +141,7 @@ def main(string_type, string_topic, app_site):
     undo = None
     if 'changes' in session and len(session['changes'])>0:
         undo = json.dumps(session['changes'][-1]['type'])
-    return render_template('index.html', stage=stage,\
+    return render_template('index.html',\
         topic=topic, Type=Type, topics=topics, Types=Types, all_types=types,\
         string_topic=string_topic, string_type=string_type, apps=relapps,\
         app=appsel, datasets=datasets, screenshot=screenshot, \
@@ -245,16 +241,16 @@ def add_relationship():
             if 'autofill' in f and f['autofill']=='true':
                 auto_fill(f)
                 status= ""
-                return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics,types=types, role=role)
+                return render_template('add-relationship.html', status=status, form=f, topics=topics,types=types, role=role)
         except:
             status = "invalid URL"
-            return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, types=types, orcid=orcid, role=role)
+            return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, orcid=orcid, role=role)
 
         # Filling in the form when users try to edit an app
         if 'type' in f and f['type'] == 'edit_application':
             status = "edit_application"
             edit_application(f, g)
-            return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, types=types, orcid=orcid, role=role)
+            return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, orcid=orcid, role=role)
 
         # Check if submission is valid, if valid then we upload the content
         if validate_form(f):
@@ -272,13 +268,13 @@ def add_relationship():
             elif 'prev_app_site' not in f:
                 g.add_app(APP, discoverer=session['orcid']) # submitted as unverified (general user submitted)
             else: 
-                return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, types=types, orcid=orcid, role=role)
+                return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, orcid=orcid, role=role)
 
             #iterate through the forms dataset list
             upload_datasets_from_form(f, g, APP)
             status = "success"
 
-    return render_template('add-relationship.html', stage=stage, status=status, form=f, topics=topics, types=types, orcid=orcid, role=role)
+    return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, orcid=orcid, role=role)
 
 def auto_fill(f):
     fill = autofill(f['site'])
