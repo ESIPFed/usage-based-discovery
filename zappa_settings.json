@@ -1,0 +1,23 @@
+{
+    "dev": {
+        "slim_handler":true,
+        "app_function": "app.app",
+        "aws_region" : "YOUR_REGION",
+        "manage_roles" : true,
+        "profile_name": null,
+        "project_name": "usage-based-discovery-dev",
+        "runtime": "python3.7",
+        "s3_bucket": "YOUR_BUCKET",
+        "vpc_config": {
+                "SubnetIds": ["subnet-identifier"], 
+                "SecurityGroupIds": ["SECURITY_GROUP_ID", "SECURITY_GROUP_ID"]
+        },
+        "environment_variables": {
+                "NEPTUNEDBRO": "wss://<neptune endpoint>:<port>/gremlin", 
+                "CLIENT_SECRET": "YOUR_CLIENT_SECRET_FOR_ORCID_OAUTH",
+                "CLIENT_ID": "YOUR_CLIENT_ID_FOR_ORCID_OAUTH",
+                "SECRET_KEY": "YOUR_SECRET_KEY_FOR_FLASK_SESSION",
+                "S3_BUCKET": "YOUR_BUCKET"
+        }
+    }
+}
