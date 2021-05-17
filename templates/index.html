@@ -276,7 +276,7 @@
 	    {% if trusted_user and app%}
 	    {% if d[1]['verified'] == false %}
 	    <button
-	      onclick="if (confirm ( 'Are you sure you want to verify the dataset {{d["title"]}}')) {window.location.href = '{{ url_for("verify_dataset", app_name=app["site"], doi=d[2]["doi"]) }}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to verify the dataset {{d["title"]}}')) {window.location.href = '{{ url_for("verify_dataset", app_name=app["site"], doi=d[2]["doi"][0]) }}';}" 
 	      type="button"
 	      class="btn btn-success btn-sm"
 	      data-toggle="tooltip" 
@@ -286,7 +286,7 @@
             >
 	    {% endif %}
 	    <button 
-	      onclick="if (confirm ( 'Are you sure you want to unlink the dataset {{d["title"]}}')) {window.location.href = '{{ url_for("delete_dataset_relation", app_site=app["site"], doi=d[2]["doi"]) }}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to unlink the dataset {{d["title"]}}')) {window.location.href = '{{ url_for("delete_dataset_relation", app_site=app["site"], doi=d[2]["doi"][0]) }}';}" 
 	      type="button"
 	      class="btn btn-danger btn-sm"
 	      data-toggle="tooltip" 
