@@ -117,13 +117,23 @@ Screenshots will go into the S3 bucket listed in the config file.
 
 __(Q:  does bucket need to be pre-created? Need to find out...)__
 
-## To run the application in local developer mode
+## Local Development
 
-Load the graph database as described above, but rather than loading the data into an AWS Neptune cluster, load it into a local Gremlin DB. Instructions for Gremlin installation can be found at https://tinkerpop.apache.org/gremlin.html or you can run a Gremlin server in a container using Docker (https://hub.docker.com/r/tinkerpop/gremlin-server/). 
+Install (and use) **python3** if not already available. We recommend using a tool like **pyenv**.
 
-When running the DB locally, configure your DB url environment variable like this: `"NEPTUNEDBRO": "ws://localhost:8182/gremlin"`. If using Docker, be sure to expose port 8182 of the gremlin server to your local machine using the -p command (e.g.: `docker run -p 8182:8182 my-gremlin-server-image`).
+Download this repo to your computer.
 
-`$ python3 app.py`
+Rename `example_dotenv` to `.env` and set the appropriate values (which will allow for local devlopment).
+
+Create a virtual environment (https://docs.python.org/3/library/venv.html) in the root drectory where you cloned this repo, and keep it activated (`$ source venv/bin/activate`).
+
+Download the requirements `$ pip3 install -r requirements.txt`
+
+Set up and run a **Gremlin** server https://tinkerpop.apache.org/gremlin.html (via local installation) or via Docker (https://hub.docker.com/r/tinkerpop/gremlin-server/). If using Docker, be sure to expose port 8182 of the Gremlin server to your local machine using the -p command (e.g.: `docker run -p 8182:8182 my-gremlin-server-image`) or using the run options in Docker Desktop GUI.
+
+Load the DB by running `$ python3 load_graphy.py -i sample_data.csv` from the util directory.
+
+Run the **Flask** app via `$ python3 app.py`
 
 Browse to http://localhost:5000
 
