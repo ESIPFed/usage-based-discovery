@@ -122,6 +122,7 @@ def main(string_type, string_topic, app_site):
     # filter apps and datasets based on if they are trusted
     if not trusted_user:
         topic_apps = list(filter(lambda relapp: relapp['verified']==True, topic_apps))
+    topic_apps.sort(key=lambda x: x['name'], reverse=False)
 
     selected_app = None
     if(app_site != 'all'):
@@ -131,6 +132,7 @@ def main(string_type, string_topic, app_site):
     
     # query for all datasets relating to specified application
     datasets = g.get_datasets_by_app(selected_app['site'])
+    datasets.sort(key=lambda d: d[2]['title'][0], reverse=False)
 
     #getting temporary images for apps who don't have images
     s3 = s3Functions()
