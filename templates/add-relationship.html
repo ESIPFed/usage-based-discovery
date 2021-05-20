@@ -25,7 +25,7 @@
       action="{{ url_for('add_relationship') }}" method="post" novalidate>
       <h3>Add/Edit Application</h3>
       <div class="form-group">
-        <label>Topic*</label>
+        <label>Topic<span class="required-star">*</span></label>
         <select class="selectpicker" name="Topic[]" id="Topic" multiple required>
           {% for t in topics %}
           {% if t in f['Topic[]'] %}
@@ -54,7 +54,7 @@
       {% endif %}
 
       <div class="form-group">
-        <label>Type*</label>
+        <label>Type<span class="required-star">*</span></label>
         <select class="selectpicker" name="Type[]" id="Type" multiple required>
           {% for t in types %}
           {% if t in f['type[]'] %}
@@ -70,7 +70,7 @@
       </div>
 
       <div class="form-group">
-        <label>Application Website*</label>
+        <label>Application Website<span class="required-star">*</span></label>
         <div class='input-group mb-3'>
           <input type="url" class="form-control" id="formGroupExampleInput3" name="site" placeholder="Website"
             value="{{f.site}}" required />
@@ -87,7 +87,7 @@
         </div>
       </div>
       <div class="form-group">
-        <label>Application Name*</label>
+        <label>Application Name<span class="required-star">*</span></label>
         <input type="text" class="form-control" id="formGroupExampleInput" name="Application_Name"
           placeholder="Application name" value="{{f.Application_Name}}" required />
         <div class="valid-feedback">
@@ -95,7 +95,7 @@
         </div>
       </div>
       <div class="form-group">
-        <label>Application Description*</label>
+        <label>Application Description<span class="required-star">*</span></label>
         <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3"
           required />{{f.description}}</textarea>
       </div>
@@ -183,8 +183,9 @@
     .form-group {
       margin-bottom: 0.5rem;
     }
-
-    .form {}
+    .required-star {
+      color: red;
+    }
   </style>
 </body>
 

@@ -40,7 +40,7 @@ if (list_of_datasets.length==0){
 function add_dataset(value){
   id_val++;
   var dataset = `<div class='form-group added'>
-    <label>Dataset ${id_val}*</label>
+    <label>Dataset ${id_val}<span class="required-star">*</span></label>
     <div class='input-group mb-3'>
     <input
       type = "text"
@@ -65,7 +65,7 @@ function add_dataset(value){
 
 function add_doi(value){
       var DOI = `<div class='form-group added'>
-        <label>Dataset DOI ${id_val}*</label>
+        <label>Dataset DOI ${id_val}<span class="required-star">*</span></label>
         <input
           type= "url"
           class= "form-control"
