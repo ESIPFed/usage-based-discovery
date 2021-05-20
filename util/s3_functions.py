@@ -65,6 +65,12 @@ class s3Functions():
         s3 = boto3.resource('s3')
         s3.meta.client.upload_file(f, bucket_name, unique_filename)
 
+    def upload_image_obj(self, bucket_name, unique_filename, f):
+        if os.environ.get('ENV') == 'local-app':
+            return
+        s3 = boto3.resource('s3')
+        s3.meta.client.upload_fileobj(f, bucket_name, unique_filename)
+
     def get_file_local(self, file_name):
         with open(pathlib.Path.cwd() / file_name, mode='r') as f:
             return f.read()
