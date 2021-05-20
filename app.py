@@ -266,7 +266,10 @@ def add_relationship():
             APP = formatted_APP_from_form(f, g)
             if os.environ.get('ENV') != 'local-app':
                 upload_screenshot(APP, request)
-            
+            else:
+                print('Bypassing screenshot upload')
+            print(f"App screenshot was set to {APP['screenshot']}")
+
             # Logic to add topics that are custom if authorized
             if session['role'] == 'supervisor':
                 for topic in APP['topic']:
@@ -347,9 +350,12 @@ def formatted_APP_from_form(f, g):
 
 def upload_screenshot(APP, request):
     if 'image_file' in request.files.keys():
+        print(f"Request contains image screenshot { request.files['image_file'].filename }")
         s3 = s3Functions()
         s3.upload_image(s3_bucket, request.files['image_file'].filename, request.files['image_file'])
         APP['screenshot'] = request.files['image_file'].filename
+    else:
+        print('Request is missing screenshot')
 
 def upload_datasets_from_form(f, g, APP):
     list_of_datasets = []
