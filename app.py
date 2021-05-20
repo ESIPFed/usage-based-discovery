@@ -349,8 +349,8 @@ def formatted_APP_from_form(f, g):
     return APP
 
 def upload_screenshot(APP, request):
-    if 'image_file' in request.files.keys():
-        print(f"Request contains image screenshot { request.files['image_file'].filename }")
+    if 'image_file' in request.files.keys() and request.files['image_file'].filename != '':
+        print(f"Request contains image screenshot { request.files['image_file'] }")
         s3 = s3Functions()
         s3.upload_image_obj(s3_bucket, request.files['image_file'].filename, request.files['image_file'])
         APP['screenshot'] = request.files['image_file'].filename
