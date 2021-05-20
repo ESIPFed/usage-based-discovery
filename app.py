@@ -264,6 +264,8 @@ def add_relationship():
         if validate_form(f):
             f['screenshot'] = 'NA'
             APP = formatted_APP_from_form(f, g)
+            if os.environ.get('ENV') != 'local-app':
+                upload_screenshot(APP, request)
             
             # Logic to add topics that are custom if authorized
             if session['role'] == 'supervisor':
@@ -342,6 +344,12 @@ def formatted_APP_from_form(f, g):
             'description': f['description'] 
     }
     return APP
+
+def upload_screenshot(APP, request):
+    if 'image_file' in request.files.keys():
+        s3 = s3Functions()
+        s3.upload_image(s3_bucket, request.files['image_file'].filename, request.files['image_file'])
+        APP['screenshot'] = request.files['image_file'].filename
 
 def upload_datasets_from_form(f, g, APP):
     list_of_datasets = []
