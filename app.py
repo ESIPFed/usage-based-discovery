@@ -15,7 +15,7 @@ import subprocess
 app = Flask(__name__)
 fa = FontAwesome(app)
 
-app.secret_key = os.urandom(32)
+app.secret_key = os.environ.get('APP_SECRET_KEY')
 client_secret = os.environ.get('CLIENT_SECRET')
 client_id = os.environ.get('CLIENT_ID')
 s3_bucket = os.environ.get('S3_BUCKET')

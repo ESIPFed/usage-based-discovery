@@ -10,3 +10,6 @@ FLASK_ENV=development
 # copy an id from orcid.json to simulate a logged in orcid user
 # leave blank to simulate unauthenticated user
 ORCID=9020-0003-9403-1032
+
+# app secret key (see https://flask.palletsprojects.com/en/2.0.x/quickstart/#sessions)
+APP_SECRET_KEY=b'_5#y2L"F4Q8z\n\xec]/'
