@@ -60,7 +60,7 @@ Session = {
 # Initial screen
 @app.route('/<string_type>/') 
 @app.route('/', defaults={'string_type': 'all'})
-def home(string_type):
+def topics(string_type):
     # string_type is in this format: "<type>,<type2>,<type3>"
     Type = string_type.split(',')
     g = GraphDB()
@@ -76,7 +76,7 @@ def home(string_type):
     topics_screenshot_zip = zip(topic_list, screenshot_list)
     # in_session determines if the user is logged in, and if so they get their own privileges
     in_session = 'orcid' in session
-    return render_template('init.html', topics_screenshot_zip=topics_screenshot_zip, in_session=in_session, Type=Type, string_type=string_type)
+    return render_template('topics.html', topics_screenshot_zip=topics_screenshot_zip, in_session=in_session, Type=Type, string_type=string_type)
 
 # Topic attribution
 @app.route('/topic-attribution')
@@ -180,7 +180,7 @@ def login():
     else:
         session['role'] = 'general'
     session['orcid']= orcid
-    return redirect(url_for('home'))
+    return redirect(url_for('topics'))
 
 @app.route('/logout')
 def logout():
