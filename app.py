@@ -100,7 +100,7 @@ To-Do: only refresh the app/datasets when you select another type/topic
 
 # Main screen
 @app.route('/<string_type>/<string_topic>/<path:app_site>')
-def main(string_type, string_topic, app_site):
+def apps(string_type, string_topic, app_site):
     in_session = 'orcid' in session
     trusted_user = 'role' in session and session['role']=='supervisor' 
 
@@ -145,7 +145,7 @@ def main(string_type, string_topic, app_site):
     if 'changes' in session and len(session['changes'])>0:
         undo = json.dumps(session['changes'][-1]['type'])
 
-    return render_template('index.html',\
+    return render_template('apps.html',\
         topic=topic, Type=Type, topics=topics, Types=Types, all_types=types,\
         string_topic=string_topic, string_type=string_type, apps=topic_apps,\
         app=selected_app, datasets=datasets, screenshot=screenshot, \

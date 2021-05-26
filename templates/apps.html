@@ -16,7 +16,7 @@
     href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='apps.css') }}">
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 </head>
 
@@ -39,7 +39,7 @@
     crossorigin="anonymous"
   ></script>
 
-  <script src="{{ url_for('static', filename='index.js') }}"></script>
+  <script src="{{ url_for('static', filename='apps.js') }}"></script>
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-3 left-col">
@@ -65,19 +65,19 @@
 
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
 		        {% if 'all' in string_type %}
-                  <a class="dropdown-item active" href="{{ url_for('main', string_type='all', string_topic=string_topic, app_site='all') }}">All</a>
+                  <a class="dropdown-item active" href="{{ url_for('apps', string_type='all', string_topic=string_topic, app_site='all') }}">All</a>
 		        {% else %}
-                  <a class="dropdown-item" href="{{ url_for('main', string_type='all', string_topic=string_topic, app_site='all') }}">All</a>
+                  <a class="dropdown-item" href="{{ url_for('apps', string_type='all', string_topic=string_topic, app_site='all') }}">All</a>
 		        {% endif %}
 		        {% for t in all_types %}
                   {% if t in Types %}
 		            {% if t in Type and string_type!= 'all' %}
-		              <a class="dropdown-item active" href="{{ url_for('main', string_type=t, string_topic=string_topic, app_site='all') }}">{{t}}</a>
+		              <a class="dropdown-item active" href="{{ url_for('apps', string_type=t, string_topic=string_topic, app_site='all') }}">{{t}}</a>
                     {% else %}
-		              <a class="dropdown-item" href="{{ url_for('main', string_type=t, string_topic=string_topic, app_site='all') }}">{{t}}</a>
+		              <a class="dropdown-item" href="{{ url_for('apps', string_type=t, string_topic=string_topic, app_site='all') }}">{{t}}</a>
 		            {% endif %}
 		          {% else %}
-		            <a class="dropdown-item disabled" href="{{ url_for('main', string_type=t, string_topic=string_topic, app_site='all') }}">{{t}}</a>
+		            <a class="dropdown-item disabled" href="{{ url_for('apps', string_type=t, string_topic=string_topic, app_site='all') }}">{{t}}</a>
                   {% endif %}
                 {% endfor %}
               </div>
@@ -96,9 +96,9 @@
 
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 {% for t in topics %} {% if topic == t %}
-		          <a class="dropdown-item active" href="{{ url_for('main', string_type=string_type, string_topic=t, app_site='all') }}">{{t}}</a>
+		          <a class="dropdown-item active" href="{{ url_for('apps', string_type=string_type, string_topic=t, app_site='all') }}">{{t}}</a>
                 {% else %}
-		          <a class="dropdown-item" href="{{ url_for('main', string_type=string_type, string_topic=t, app_site='all') }}">{{t}}</a>
+		          <a class="dropdown-item" href="{{ url_for('apps', string_type=string_type, string_topic=t, app_site='all') }}">{{t}}</a>
                 {% endif %} {% endfor %}
               </div>
             </div>
@@ -108,7 +108,7 @@
           {% for a in apps %} 
           <form
             class="app"
-            action="{{ url_for('main', string_type=string_type, string_topic=topic, app_site=a['site']) }}"
+            action="{{ url_for('apps', string_type=string_type, string_topic=topic, app_site=a['site']) }}"
             onclick="document.location.reload(true)"
           >
 	      {% if app != None and a['name'] == app['name'] %}

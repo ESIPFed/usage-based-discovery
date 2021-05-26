@@ -48,7 +48,7 @@
       <div class="menu-container">
         <div class="button-container">
           {% for topic, screenshot in topics_screenshot_zip %}
-	  <a class="topic-btn" href="{{ url_for('main', string_type=string_type, string_topic=topic, app_site='all') }}">
+	  <a class="topic-btn" href="{{ url_for('apps', string_type=string_type, string_topic=topic, app_site='all') }}">
             <div class="card">
               <figure class="card__thumbnail">
                 <img src="{{screenshot}}" />
