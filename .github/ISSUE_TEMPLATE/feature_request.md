@@ -3,6 +3,11 @@ name: Feature Request 💡
 about: Suggest a new idea for the project.
 labels: enhancement
 ---
+### Priority:
+- [ ] low
+- [ ] medium
+- [ ] high
+
 ### Summary:
 Brief explanation of the feature.
 
