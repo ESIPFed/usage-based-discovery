@@ -5,20 +5,9 @@ from util.graph_db import GraphDB
 from util.s3_functions import s3Functions
 from flask import Flask, url_for, render_template, request, session, redirect
 from flask_fontawesome import FontAwesome
-import requests
 import json
-import urllib
 from util.autofill import autofill
 
-from gremlin_python import statics
-from gremlin_python.structure.graph import Graph
-from gremlin_python.process.graph_traversal import __
-from gremlin_python.process.strategies import *
-from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
-from gremlin_python.process.traversal import T
-
-import csv
-import base64
 from util.add_csv import db_input_csv
 import os
 import subprocess
