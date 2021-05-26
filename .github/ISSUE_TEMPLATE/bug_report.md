@@ -5,23 +5,27 @@ title: ''
 labels: bug
 assignees: ''
 ---
-# Describe the bug
+### Priority
+- [ ] low
+- [ ] medium
+- [ ] high
+### Bug description
 A clear and concise description of what the bug is.
-## To Reproduce
+### Steps to reproduce
 Steps to reproduce the behavior:
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
 4. See error
-# Expected behavior
+### Expected behavior
 A clear and concise description of what you expected to happen.
-## Screenshots or Error message
+### Screenshots or error message
 If applicable, add screenshots or Error message to help explain your problem.
-## Please complete the following information:
+### Platform information:
 - Browser [e.g. chrome, safari]
 - Any important Version information
 - Operating System [e.g. Linux, Windows]
-## Additional context
+### Additional context
 Add any other context about the problem here.
 
 
