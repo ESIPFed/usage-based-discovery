@@ -16,7 +16,6 @@ from util import secrets_manager
 app = Flask(__name__)
 fa = FontAwesome(app)
 
-app.secret_key = None
 if os.environ.get('ENV') == 'local-app':
     app.secret_key = os.environ.get('APP_SECRET_KEY')
 else:
