@@ -11,11 +11,16 @@ from util.autofill import autofill
 from util.add_csv import db_input_csv
 import os
 import subprocess
+from util import secrets_manager
 
 app = Flask(__name__)
 fa = FontAwesome(app)
 
-app.secret_key = os.environ.get('APP_SECRET_KEY')
+app.secret_key = None
+if os.environ.get('ENV') == 'local-app':
+    app.secret_key = os.environ.get('APP_SECRET_KEY')
+else:
+    app.secret_key = secrets_manager.get_secret('APP_SECRET_KEY')
 client_secret = os.environ.get('CLIENT_SECRET')
 client_id = os.environ.get('CLIENT_ID')
 s3_bucket = os.environ.get('S3_BUCKET')
