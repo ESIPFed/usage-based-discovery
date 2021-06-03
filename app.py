@@ -26,10 +26,10 @@ s3_bucket = os.environ.get('S3_BUCKET')
 
 
 types = [
-                'unclassified',
-                'Software',
-                'Research'
-            ]
+            'unclassified',
+            'Software',
+            'Research'
+        ]
 '''
 # app layout
 APP = {

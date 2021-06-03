@@ -2,11 +2,9 @@ import io
 import platform
 import re
 from time import sleep
-from PIL import Image
 from selenium import webdriver
 import boto3
 import os
-import subprocess
 import pathlib
 from flask import url_for
 
