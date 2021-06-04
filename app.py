@@ -537,10 +537,5 @@ def unhandled_exceptions(e, event, context):
     send_to_raygun(e, event)  # gather data you need and send
     return True # Prevent invocation retry
 
-@app.after_request
-def add_security_headers(resp):
-    resp.headers['Content-Security-Policy']='frame-ancestors \'self\' https://fbm.earthdata.nasa.gov/'
-    return resp
-
 if __name__ == '__main__':
     app.run(debug=True)
