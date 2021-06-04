@@ -348,7 +348,7 @@ def resize_image_file(image_file):
     pil_image = Image.open(image_file)
     pil_image.thumbnail((400, 400))
     new_file = io.BytesIO()
-    pil_image.save(new_file, format=pil_image.format, optimize=True, quality=85)
+    pil_image.save(new_file, format=pil_image.format, optimize=True, quality=90)
     new_file.seek(0)
 
     return new_file
