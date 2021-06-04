@@ -17,3 +17,4 @@ urllib3==1.26.4
 zappa==0.52.0
 python-dotenv
 Flask-FontAwesome==0.1.5
+Pillow

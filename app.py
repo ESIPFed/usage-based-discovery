@@ -13,6 +13,9 @@ import os
 import subprocess
 from util import secrets_manager
 
+from PIL import Image
+import io
+
 app = Flask(__name__)
 fa = FontAwesome(app)
 
@@ -341,12 +344,23 @@ def formatted_APP_from_form(f, g):
     }
     return APP
 
+def resize_image_file(image_file):
+    pil_image = Image.open(image_file)
+    pil_image.thumbnail((400, 400))
+    new_file = io.BytesIO()
+    pil_image.save(new_file, format=pil_image.format, optimize=True, quality=85)
+    new_file.seek(0)
+
+    return new_file
+
 def upload_screenshot(APP, request):
     if 'image_file' in request.files.keys() and request.files['image_file'].filename != '':
         print(f"Request contains image screenshot { request.files['image_file'] }")
+        file_name = request.files['image_file'].filename
+        resized_image = resize_image_file(request.files['image_file'])
         s3 = s3Functions()
-        s3.upload_image_obj(s3_bucket, request.files['image_file'].filename, request.files['image_file'])
-        APP['screenshot'] = request.files['image_file'].filename
+        s3.upload_image_obj(s3_bucket, file_name, resized_image)
+        APP['screenshot'] = file_name
     else:
         print('Request is missing screenshot')
 
