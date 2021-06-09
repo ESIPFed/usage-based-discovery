@@ -6,9 +6,7 @@ labels: bug
 assignees: ''
 ---
 ### Priority:
-- [ ] low
-- [ ] medium
-- [ ] high
+LOW, MEDIUM, HIGH
 
 ### Bug description:
 A clear and concise description of what the bug is.
