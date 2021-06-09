@@ -108,10 +108,9 @@
         </div>
         <div class="appresults">
           {% for a in apps %} 
-          <form
+          <span
             class="app"
-            action="{{ url_for('apps', string_type=string_type, string_topic=topic, app_site=a['site']) }}"
-            onclick="document.location.reload(true)"
+            onclick="window.location.assign('{{ url_for('apps', string_type=string_type, string_topic=topic, app_site=a['site']) }}')"
           >
 	      {% if app != None and a['name'] == app['name'] %}
             <button style="width: 100%;" class="selected-app font">
@@ -138,7 +137,7 @@
               <br /><br />
             </button>
 	  {% endif %}
-          </form>
+          </span>
           {% endfor %}
         </div>
       </div>

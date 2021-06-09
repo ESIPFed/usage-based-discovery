@@ -55,9 +55,8 @@ Session = {
 
 # Initial screen
 @app.route('/topics') 
-@app.route('/topics', defaults={'string_type': 'all'})
 def topics():
-    string_type = request.args.get('string_type')
+    string_type = request.args.get('string_type') or 'all'
     # string_type is in this format: "<type>,<type2>,<type3>"
     Type = string_type.split(',')
     g = GraphDB()
