@@ -54,9 +54,10 @@ Session = {
 '''
 
 # Initial screen
-@app.route('/<string_type>/') 
-@app.route('/', defaults={'string_type': 'all'})
-def topics(string_type):
+@app.route('/topics') 
+@app.route('/topics', defaults={'string_type': 'all'})
+def topics():
+    string_type = request.args.get('string_type')
     # string_type is in this format: "<type>,<type2>,<type3>"
     Type = string_type.split(',')
     g = GraphDB()
@@ -95,8 +96,12 @@ To-Do: only refresh the app/datasets when you select another type/topic
 """
 
 # Main screen
-@app.route('/<string_type>/<string_topic>/<path:app_site>')
-def apps(string_type, string_topic, app_site):
+@app.route('/apps')
+def apps():
+    app_site = request.args.get('app_site')
+    string_type = request.args.get('string_type')
+    string_topic = request.args.get('string_topic')
+
     in_session = 'orcid' in session
     trusted_user = 'role' in session and session['role']=='supervisor' 
 
@@ -391,8 +396,10 @@ def upload_datasets_from_form(f, g, APP):
             g.delete_relationship(APP['site'], dataset[2]['doi'][0])
     g.delete_orphan_datasets()
 
-@app.route('/<path:app_site>/delete_dataset_relation/<path:doi>')
-def delete_dataset_relation(app_site, doi):
+@app.route('/delete_dataset_relation')
+def delete_dataset_relation():
+    app_site = request.args.get('app_site')
+    doi = request.args.get('doi')
     if 'role' in session and session['role']=='supervisor':
         g = GraphDB() 
         #log this change in session to be able to undo later
@@ -418,8 +425,9 @@ def delete_dataset_relation(app_site, doi):
         g.delete_orphan_datasets()
     return redirect(request.referrer)
 
-@app.route('/delete_application/<path:app_site>')
-def delete_application(app_site):
+@app.route('/delete_application')
+def delete_application():
+    app_site = request.args.get('app_site')
     if 'role' in session and session['role']=='supervisor':
         g = GraphDB() 
         #session 'changes' keeps a history of all changes made by that user
@@ -477,30 +485,37 @@ def undo():
         return redirect(request.referrer)
     return redirect(request.referrer)
 
-@app.route('/verify-application/<path:app_site>')
-def verify_application(app_site):
+@app.route('/verify-application')
+def verify_application():
+    app_site = request.args.get('app_site')
     g = GraphDB()
     if 'role' in session and session['role'] == 'supervisor':
         g.verify_app(app_site, session['orcid'])
     return redirect(request.referrer)
 
-@app.route('/<path:app_name>/verify-dataset/<path:doi>')
-def verify_dataset(app_name, doi):
+@app.route('/verify-dataset')
+def verify_dataset():
+    app_name = request.args.get('app_name')
+    doi = request.args.get('doi')
     g = GraphDB()
     if 'role' in session and session['role'] == 'supervisor':
         g.verify_relationship(app_name, doi, session['orcid'])
     return redirect(request.referrer)
 
-@app.route('/<path:app_site>/add_annotation/<path:doi>', methods=["GET", "POST"])
-def add_annotation(app_site, doi):
+@app.route('/add_annotation', methods=["GET", "POST"])
+def add_annotation():
+    app_site = request.args.get('app_site')
+    doi = request.args.get('doi')
     if request.method == 'POST':
         f = request.form
         g = GraphDB()
         g.add_annotation(app_site, doi, f['annotation'])
     return redirect(request.referrer)
 
-@app.route('/<path:app_site>/resolve_annotation/<path:doi>')
-def resolve_annotation(app_site, doi):
+@app.route('/resolve_annotation')
+def resolve_annotation():
+    app_site = request.args.get('app_site')
+    doi = request.args.get('doi')
     g = GraphDB()
     g.add_annotation(app_site, doi, '')
     return redirect(request.referrer)
