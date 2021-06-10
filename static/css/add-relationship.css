@@ -8,3 +8,7 @@ body {
 .required-star {
     color: red;
 }
+
+.container {
+    padding-top: 5rem;
+}

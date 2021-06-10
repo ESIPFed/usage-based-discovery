@@ -19,6 +19,8 @@ body {
   max-height: 75px;
   width: 100%;
   padding: 15px;
+  z-index: 1;
+  position: fixed;
 }
 
 .topbar > h1 {

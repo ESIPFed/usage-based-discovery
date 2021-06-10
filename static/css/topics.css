@@ -4,11 +4,6 @@ body {
   overflow-x: initial;
 }
 
-.topbar {
-  z-index: 1;
-  position: fixed;
-}
-
 .main {
   height: auto;
   padding-top: 125px;

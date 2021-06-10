@@ -206,3 +206,7 @@ form {
 h1 {
   color: initial;
 }
+
+.container-fluid {
+  padding-top: 5rem;
+}
