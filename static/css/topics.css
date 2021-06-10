@@ -9,15 +9,6 @@ body {
   position: fixed;
 }
 
-a {
-  color: #cccccc;
-  transition: 0.3s;
-}
-
-a:hover {
-  color: #fff;
-}
-
 .main {
   height: auto;
   padding-top: 125px;

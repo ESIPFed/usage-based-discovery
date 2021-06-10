@@ -21,6 +21,10 @@ body {
   padding: 15px;
 }
 
+.topbar > h1 {
+  color: white;
+}
+
 h1 {
   color: white;
   font-family: "Maven Pro", sans-serif;
@@ -47,3 +51,15 @@ p {
   text-align: center;
 }
 
+a {
+  color: #cccccc;
+  transition: 0.3s;
+}
+
+a:hover {
+  color: #fff;
+}
+
+.navbar-brand {
+  font-size: 2rem;
+}

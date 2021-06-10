@@ -16,8 +16,21 @@
 </head>
 
 <body>
+  <div class="topbar">
+    <h1 style="text-align: left;">
+      <a href="{{ url_for('topics') }}" class="navbar-brand">Usage Based Discovery</a>&emsp;
+      <span style="float: right;">
+        <a href="{{ url_for('explore') }}" style="font-size: x-large;">Explore</a>&emsp;
+        <a href="{{ url_for('about') }}" style="font-size: x-large;">About</a>&emsp;
+        {% if in_session %}
+        <a href="{{ url_for('add_relationship') }}" style="font-size: x-large;">Add Content</a>&emsp;
+        <a href="{{ url_for('logout') }}" style="font-size: x-large;">Logout</a>&emsp; {% else %}
+        <a href="{{ url_for('auth') }}" style="font-size: x-large;">Login</a>&emsp;
+        {% endif %}
+      </span>
+    </h1>
+  </div>
   <div class="container-sm">
-    <a href="{{ url_for('topics') }}" style="font-size: x-large;">Topics Page</a>
     <!--
                 these set of if statements is to set the values in the form to none if the submission was valid
         -->
@@ -25,7 +38,7 @@
     %} {% endif %}
     <form class="form needs-validation justify-content-center col-6 mt-4" id="form1" name="form1" enctype=multipart/form-data
       action="{{ url_for('add_relationship') }}" method="post" novalidate>
-      <h3>Add/Edit Application</h3>
+      
       <div class="form-group">
         <label>Topic<span class="required-star">*</span></label>
         <select class="selectpicker" name="Topic[]" id="Topic" multiple required>

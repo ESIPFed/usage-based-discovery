@@ -77,18 +77,21 @@ def topics():
 # Topic attribution
 @app.route('/topic-attribution')
 def topic_attribution():
-    return render_template('topic-attribution.html')
+    in_session = 'orcid' in session
+    return render_template('topic-attribution.html', in_session=in_session)
 
 # About page
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    in_session = 'orcid' in session
+    return render_template('about.html', in_session=in_session)
 
 @app.route('/explore')
 def explore():
+    in_session = 'orcid' in session
     g = GraphDB()
     data = g.get_data()
-    return render_template('graph.html', data=data)
+    return render_template('graph.html', data=data, in_session=in_session)
 
 """
 To-Do: only refresh the app/datasets when you select another type/topic
@@ -249,16 +252,16 @@ def add_relationship():
             if 'autofill' in f and f['autofill']=='true':
                 auto_fill(f)
                 status= ""
-                return render_template('add-relationship.html', status=status, form=f, topics=topics,types=types, role=role)
+                return render_template('add-relationship.html', status=status, form=f, topics=topics,types=types, role=role, in_session=orcid)
         except:
             status = "invalid URL"
-            return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, orcid=orcid, role=role)
+            return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, orcid=orcid, role=role, in_session=orcid)
 
         # Filling in the form when users try to edit an app
         if 'type' in f and f['type'] == 'edit_application':
             status = "edit_application"
             edit_application(f, g)
-            return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, orcid=orcid, role=role)
+            return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, orcid=orcid, role=role, in_session=orcid)
 
         # Check if submission is valid, if valid then we upload the content
         if validate_form(f):
@@ -281,13 +284,13 @@ def add_relationship():
             elif 'prev_app_site' not in f:
                 g.add_app(APP, discoverer=session['orcid']) # submitted as unverified (general user submitted)
             else: 
-                return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, orcid=orcid, role=role)
+                return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, orcid=orcid, role=role, in_session=orcid)
 
             #iterate through the forms dataset list
             upload_datasets_from_form(f, g, APP)
             status = "success"
 
-    return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, orcid=orcid, role=role)
+    return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, orcid=orcid, role=role, in_session=orcid)
 
 def auto_fill(f):
     fill = autofill(f['site'])

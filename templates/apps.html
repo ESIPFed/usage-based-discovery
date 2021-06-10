@@ -43,15 +43,25 @@
   <script>feedback.init();</script>
 
   <script src="{{ url_for('static', filename='js/apps.js') }}"></script>
+
+  <div class="topbar">
+    <h1 style="text-align: left;">
+      <a href="{{ url_for('topics') }}" class="navbar-brand">Usage Based Discovery</a>&emsp;
+      <span style="float: right;">
+        <a href="{{ url_for('explore') }}" style="font-size: x-large;">Explore</a>&emsp;
+        <a href="{{ url_for('about') }}" style="font-size: x-large;">About</a>&emsp;
+        {% if in_session %}
+        <a href="{{ url_for('add_relationship') }}" style="font-size: x-large;">Add Content</a>&emsp;
+        <a href="{{ url_for('logout') }}" style="font-size: x-large;">Logout</a>&emsp; {% else %}
+        <a href="{{ url_for('auth') }}" style="font-size: x-large;">Login</a>&emsp;
+        {% endif %}
+      </span>
+    </h1>
+  </div>
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-3 left-col">
         <div class="title">
-          <h1 class="eosdis">
-            <a href="{{ url_for('topics') }}" style="color: white; text-decoration: none;">
-              Usage Based Discovery
-            </a>
-          </h1>
           <div class="d-flex justify-content-around flex-wrap">
             <div class="dropdown show">
               <a
@@ -225,9 +235,6 @@
       </div>
 
       <div class="col-md-3 right-col">
-        <div class="dataset-head">
-          <h2 class="eosdis">Datasets</h2>
-        </div>
         <div class="dataset-results">
           {% for d in datasets %}
           <div class="dataset-div">
