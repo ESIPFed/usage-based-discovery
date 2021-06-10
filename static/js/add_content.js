@@ -138,6 +138,15 @@ function add_topic(){
 $(function () {
   'use strict'
 
+  $('#image_file').on('change', function() {
+    const fileSize = this.files[0].size / 1024 / 1024; // in MiB
+    alert(fileSize)
+    if (fileSize > 4) {
+      alert('File size exceeds 4 MiB');
+      $(this).val('');
+    }
+  });
+
   // Fetch all the forms we want to apply custom Bootstrap validation styles to
   var forms = document.querySelectorAll('.needs-validation')
 
