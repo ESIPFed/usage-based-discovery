@@ -11,6 +11,8 @@
     integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous" />
   <link href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/default.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/add-relationship.css') }}">
 </head>
 
 <body>
@@ -181,14 +183,6 @@
     var site = form_values['site']
   </script>
   <script src="{{ url_for('static', filename='js/add_content.js') }}"></script>
-  <style>
-    .form-group {
-      margin-bottom: 0.5rem;
-    }
-    .required-star {
-      color: red;
-    }
-  </style>
 </body>
 
 </html>

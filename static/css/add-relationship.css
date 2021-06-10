@@ -1,0 +1,10 @@
+body {
+    overflow-y: initial;
+}
+
+.form-group {
+    margin-bottom: 0.5rem;
+}
+.required-star {
+    color: red;
+}
