@@ -54,7 +54,7 @@ Session = {
 '''
 
 # Initial screen
-@app.route('/topics') 
+@app.route('/') 
 def topics():
     string_type = request.args.get('string_type') or 'all'
     # string_type is in this format: "<type>,<type2>,<type3>"
