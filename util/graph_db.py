@@ -137,6 +137,12 @@ class GraphDB:
             return info
         return self.graph_trav.V(info).valueMap().toList()
 
+    def get_leader_board(self):
+        return {
+            'apps': self.graph_trav.V().hasLabel('application').valueMap().toList(),
+            'uses': self.graph_trav.V().hasLabel('application').outE().hasLabel('uses').valueMap().toList()
+        }
+
     def get_topics_by_types(self, types):
         return self.graph_trav.V().has('type', within(*types)).outE('about').otherV().values('topic').toSet()
 

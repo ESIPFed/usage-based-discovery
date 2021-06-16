@@ -17,6 +17,7 @@ from PIL import Image
 import io
 
 app = Flask(__name__)
+app.config['JSON_SORT_KEYS'] = False
 fa = FontAwesome(app)
 
 if os.environ.get('ENV') == 'local-app':
@@ -535,6 +536,43 @@ def add_csv():
             print(did_it_work)
             return "CSV values successfully added"
     return "Please check data headers and try again"
+
+def parse_stats(app_stat_keys, app_list):
+    app_stats = {}
+    for app_stat_key in app_stat_keys:
+        key_stats = {}
+        for app in app_list:
+            if app_stat_key in app:
+                stat_value = None
+                if isinstance(app[app_stat_key], list):
+                    stat_value = app[app_stat_key][0]
+                else:
+                    stat_value = app[app_stat_key]
+                if stat_value in key_stats:
+                    key_stats[stat_value] +=1
+                else:
+                    key_stats[stat_value] = 1
+        key_stats = {k: v for k, v in sorted(key_stats.items(), key=lambda x: x[1], reverse=True)}
+        app_stats[app_stat_key] = key_stats
+    return app_stats
+
+@app.route('/leader_board', methods=["GET"])
+def leader_board():
+    from flask import jsonify
+    g = GraphDB()
+    leader_board_data = g.get_leader_board()
+    
+    stat_keys = ['discoverer', 'verifier']
+
+    app_list = leader_board_data['apps']
+    app_stats = parse_stats(stat_keys, app_list)
+    
+    uses_list = leader_board_data['uses']
+    uses_stats = parse_stats(stat_keys, uses_list)
+
+    return jsonify({'stats': {'apps': app_stats, 'datasets': uses_stats}})
+
+
 '''
 Add this in when you create the 404,400,500.html. 
 
