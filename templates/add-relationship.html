@@ -23,6 +23,7 @@
         <a href="{{ url_for('explore') }}" style="font-size: x-large;">Explore</a>&emsp;
         <a href="{{ url_for('about') }}" style="font-size: x-large;">About</a>&emsp;
         {% if in_session %}
+        <a href="{{ url_for('leader_board') }}" style="font-size: x-large;">Leaderboard</a>&emsp;
         <a href="{{ url_for('add_relationship') }}" style="font-size: x-large;">Add Content</a>&emsp;
         <a href="{{ url_for('logout') }}" style="font-size: x-large;">Logout</a>&emsp; {% else %}
         <a href="{{ url_for('auth') }}" style="font-size: x-large;">Login</a>&emsp;
