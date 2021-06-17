@@ -556,9 +556,13 @@ def parse_stats(app_stat_keys, app_list):
         app_stats[app_stat_key] = key_stats
     return app_stats
 
-@app.route('/leader_board', methods=["GET"])
+@app.route('/leader-board', methods=["GET"])
 def leader_board():
-    from flask import jsonify
+    orcid = None
+    in_session = 'orcid' in session
+    if in_session:
+        orcid = session['orcid']
+
     g = GraphDB()
     leader_board_data = g.get_leader_board()
     
@@ -570,7 +574,7 @@ def leader_board():
     uses_list = leader_board_data['uses']
     uses_stats = parse_stats(stat_keys, uses_list)
 
-    return jsonify({'stats': {'apps': app_stats, 'datasets': uses_stats}})
+    return render_template('leader-board.html', stats={'apps': app_stats, 'datasets': uses_stats}, in_session=in_session, orcid=orcid)
 
 
 '''
