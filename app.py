@@ -288,7 +288,7 @@ def add_relationship():
                 return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, orcid=orcid, role=role, in_session=orcid)
 
             #iterate through the forms dataset list
-            upload_datasets_from_form(f, g, APP)
+            upload_datasets_from_form(f, g, APP, session)
             status = "success"
 
     return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, orcid=orcid, role=role, in_session=orcid)
@@ -372,7 +372,8 @@ def upload_screenshot(APP, request):
     else:
         print('Request is missing screenshot')
 
-def upload_datasets_from_form(f, g, APP):
+def upload_datasets_from_form(f, g, APP, session):
+    discoverer = session['orcid'] if 'orcid' in session else ''
     list_of_datasets = []
     list_of_DOIs = []
     for key,value in f.items(): 
@@ -390,7 +391,7 @@ def upload_datasets_from_form(f, g, APP):
             g.update_dataset(DOI, DATASET)
         else:
             g.add_dataset(DATASET)
-        g.add_relationship(f['site'],DOI)
+        g.add_relationship(f['site'],DOI, discoverer=discoverer)
     #if the DB has a DOI that the form doesn't then remove that relationship
     datasets = g.get_datasets_by_app(APP['site'])
     for dataset in datasets:
