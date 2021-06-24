@@ -171,6 +171,10 @@ function linkArc(d) {
             A${r},${r} 0 0,1 ${d.target.x},${d.target.y}`;
 }
 
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function info(d) {
     var str = ""
     if(d.label == "application"){
@@ -180,19 +184,21 @@ function info(d) {
         else{
             str += "Unverified "
         }
-        str += d.type + " ";
-        str += d.label + "<br><br>";
+        str += capitalize(String(d.type)) + " ";
+        str += capitalize(d.label) + 
+            (d.essential_variable ? (" (" + d.essential_variable + ")") : "") +
+            "<br><br>";
         str += d.name + "<br><br>";
         str += d.site + "<br><br>";
         str += d.description;
     }
     if(d.label == "dataset"){
-        str += d.label + "<br><br>";
+        str += "Dataset<br><br>";
         str += d.title + "<br><br>";
         str += d.doi;
     }
     if(d.label == "topic"){
-        str += d.topic + " " + d.label;
+        str += d.topic + " Topic";
     }
     if(d.label == "about"){
         str += d.label;

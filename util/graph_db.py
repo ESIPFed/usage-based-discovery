@@ -190,7 +190,7 @@ class GraphDB:
         queries database for a list of datasets related to the given topic
         Sample return:
         [ path[
-            { 'site': [''], 'publication': [''], 'name': [], 'publication': [], 'description': [] },
+            { 'site': [''], 'publication': [''], 'name': [], 'publication': [], 'description': [], 'essential_variable': [] },
             { verified: True, orcid: '0000-0000-0000-0000' },
             { 'title': [''], 'doi': [''] }],
           path[ {APP}, {EDGE}, {DATASET} ] , ...]
@@ -202,7 +202,7 @@ class GraphDB:
         queries database for a list of datasets that are connected to the given application
         Sample return:
         [ path[
-            { 'site': [''], 'publication': [''], 'name': [], 'publication': [], ... },
+            { 'site': [''], 'publication': [''], 'name': [], 'publication': [], 'description': [], 'essential_variable': [] },
             { verified: True, orcid: '0000-0000-0000-0000' },
             { 'title': [''], 'doi': [''] }],
           path[ {APP}, {EDGE}, {DATASET} ], ... ]
@@ -247,7 +247,8 @@ class GraphDB:
             'site': 'https://example.com',
             'screenshot': 'image.png',
             'publication': 'publication',
-            'description': 'sample description for a sample app'
+            'description': 'sample description for a sample app',
+            'essential_variable': 'Precipitation'
         }
         '''
         self.graph_trav.V().has('application', 'site', app['site']) \
@@ -257,6 +258,7 @@ class GraphDB:
                 .property('screenshot', app['screenshot']) \
                 .property('publication', app['publication']) \
                 .property('description', app['description']) \
+                .property('essential_variable', app['essential_variable']) \
                 .property('discoverer', discoverer) \
                 .property('verified', verified) \
                 .property('verifier', verifier)).next()
@@ -345,6 +347,7 @@ class GraphDB:
             .property(Cardinality.single, 'site', app['site']) \
             .property(Cardinality.single, 'screenshot', app['screenshot']) \
             .property(Cardinality.single, 'publication', app['publication']) \
+            .property(Cardinality.single, 'essential_variable', app['essential_variable']) \
             .property(Cardinality.single, 'description', app['description']).next()
         for i in range(len(app['topic'])):
             self.connect_topic(app['site'], app['topic'][i])

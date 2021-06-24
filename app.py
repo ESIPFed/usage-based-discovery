@@ -42,7 +42,8 @@ APP = {
     'type': [<type_1>, <type_2>] #multi-property so it returns as a list in value_map graph function
     'screenshot': 'Testing-123.png',
     'publication': 'None' or '<url>',
-    'description': 'example description 123'
+    'description': 'example description 123',
+    'essential_variable': 'Precipitation'
 }
 
 # session layout
@@ -328,6 +329,8 @@ def edit_application(f, g):
     f['type[]'] = app['type']
     f['Application_Name'] = app['name']
     f['description'] = app['description']
+    if 'essential_variable' in app:
+      f['essential_variable'] = app['essential_variable']
     f['Topic[]'] = g.get_app_topics(app['site'])
     f['site'] = app['site']
     f['Publication_Link'] = app['publication']
@@ -358,7 +361,8 @@ def formatted_APP_from_form(f, g):
             'site': f['site'],
             'screenshot': f['screenshot'],
             'publication': f['Publication_Link'],
-            'description': f['description'] 
+            'description': f['description'],
+            'essential_variable': f['essential_variable']  
     }
     return APP
 

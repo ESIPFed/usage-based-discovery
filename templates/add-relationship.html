@@ -7,6 +7,7 @@
   </title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- CSS only -->
+  {{ fontawesome_html() }}
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous" />
   <link href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap" rel="stylesheet" />
@@ -35,7 +36,8 @@
     <div class='col-12'>
       {% if status == "success" %}
       <div class="alert alert-success mt-3" id="success" role="alert">
-        Success! We've added "{{ form.Application_Name }}" to our database. Go to <a target="__blank" class="alert-link" href="{{ url_for('apps', string_type='all', string_topic=form['Topic[]'][0], app_site=form.site) }}">{{ form.Application_Name }}</a>.
+        Success! We've saved <a class="alert-link" href="{{ url_for('apps', string_type='all', string_topic=form['Topic[]'][0], app_site=form.site) }}">{{ form.Application_Name }}</a> to our database. 
+        Feel free to continue adding more applications or papers below.
       </div>
       {% endif %}
       {% if status == "failure" %}
@@ -160,13 +162,12 @@
         </div>
       </div>
       <div class="form-group">
-        <button id="add_dataset_btn" class="btn btn-success btn-add" type="button"
+        <button id="add_dataset_btn" class="btn btn-success btn-add fas fa-plus" type="button"
           onclick="add_dataset('');add_doi('');">
-          Add Dataset
         </button>
       </div>
       <div class="form-group my-4">
-        <button id="submit_btn" type="submit" class="btn btn-primary">Submit Application</button>
+        <button id="submit_btn" type="submit" class="btn btn-primary">Submit</button>
       </div>
     </form>
     
