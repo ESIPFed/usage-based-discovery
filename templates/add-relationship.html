@@ -35,7 +35,7 @@
     <div class='col-12'>
       {% if status == "success" %}
       <div class="alert alert-success mt-3" id="success" role="alert">
-        Success! We've added "{{ form.Application_Name }}" to our database.
+        Success! We've added "{{ form.Application_Name }}" to our database. Go to <a target="__blank" class="alert-link" href="{{ url_for('apps', string_type='all', string_topic=form['Topic[]'][0], app_site=form.site) }}">{{ form.Application_Name }}</a>.
       </div>
       {% endif %}
       {% if status == "failure" %}
