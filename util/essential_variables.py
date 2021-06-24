@@ -51,7 +51,7 @@ values = ["Precipitation",
 "Nitrous Oxide",
 "Nutrients",
 "Ocean Colour",
-"Oxyben",
+"Oxygen",
 "Transient Tracers",
 "Marine Habitat Properties",
 "Plankton"]
