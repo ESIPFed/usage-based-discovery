@@ -244,6 +244,7 @@ def add_relationship():
         # Getting multiple values of 'Topic[]', 'Type[]'; empty if non-existant
         f['Topic[]'] = request.form.getlist('Topic[]')
         f['Type[]'] = request.form.getlist('Type[]')
+        f['EssentialVariable[]'] = request.form.getlist('EssentialVariable[]')
         print(f)
         status = "failure" # preset 
 
