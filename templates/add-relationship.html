@@ -70,6 +70,18 @@
       {% endif %}
 
       <div class="form-group">
+        <label>Essential Variable<span class="required-star">*</span></label>
+        <select class="selectpicker" name="EssentialVariable[]" id="EssentialVariable" multiple required>
+          {% for v in essential_variables %}
+          <option value="{{v}}">{{v}}</option>
+          {% endfor %}
+        </select>
+        <div class="valid-feedback">
+          Looks good!
+        </div>
+      </div>
+
+      <div class="form-group">
         <label>Type<span class="required-star">*</span></label>
         <select class="selectpicker" name="Type[]" id="Type" multiple required>
           {% for t in types %}
@@ -86,9 +98,9 @@
       </div>
 
       <div class="form-group">
-        <label>Application Website<span class="required-star">*</span></label>
+        <label>Website<span class="required-star">*</span></label>
         <div class='input-group mb-3'>
-          <input type="url" class="form-control" id="formGroupExampleInput3" name="site" placeholder="Website"
+          <input type="url" class="form-control" id="formGroupExampleInput3" name="site" placeholder="https://doi.org/10.1007/s10546-020-00562-5"
             value="{{f.site}}" required />
           <div class="input-group-append">
             <button class="btn btn-primary" type="button" onclick="autofill()">Autofill</button>
@@ -98,27 +110,28 @@
           </div>
         </div>
         <div class="form-group">
-          <label class="custom-file-label" for="image_file">Application Image</label>
+          <label class="custom-file-label" for="image_file">Image</label>
           <input type="file" name="image_file" class="custom-file-input" id="image_file" accept="image/*">
         </div>
       </div>
       <div class="form-group">
-        <label>Application Name<span class="required-star">*</span></label>
+        <label>Name<span class="required-star">*</span></label>
         <input type="text" class="form-control" id="formGroupExampleInput" name="Application_Name"
-          placeholder="Application name" value="{{f.Application_Name}}" required />
+          placeholder="Impact of Wildfire on the Surface Energy Balance in Six California Case Studies" value="{{f.Application_Name}}" required />
         <div class="valid-feedback">
           Looks good!
         </div>
       </div>
       <div class="form-group">
-        <label>Application Description<span class="required-star">*</span></label>
+        <label>Description<span class="required-star">*</span></label>
         <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3"
           required />{{f.description}}</textarea>
       </div>
       <div class="form-group">
         <label>Publication Link</label>
         <input type="text" class="form-control" id="formGroupExampleInput4" name="Publication_Link"
-          placeholder="Publication link" value="{{f.Publication_Link}}" />
+          placeholder="Link for a publication associated with an application" value="{{f.Publication_Link}}" />
+        <small class="form-text text-muted">Only fill this in if Type=Software.</small>
         <div class="valid-feedback">
           Looks good!
         </div>
