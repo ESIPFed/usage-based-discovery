@@ -255,18 +255,18 @@ def add_relationship():
                 auto_fill(f)
                 status= ""
                 return render_template('add-relationship.html', status=status, form=f, topics=topics,types=types, 
-                role=role, in_session=orcid, essential_variables=essential_variables.values)
+                    role=role, in_session=orcid, essential_variables=essential_variables.values)
         except:
             status = "invalid URL"
             return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, 
-            orcid=orcid, role=role, in_session=orcid, essential_variables=essential_variables.values)
+                orcid=orcid, role=role, in_session=orcid, essential_variables=essential_variables.values)
 
         # Filling in the form when users try to edit an app
         if 'type' in f and f['type'] == 'edit_application':
             status = "edit_application"
             edit_application(f, g)
             return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, 
-            orcid=orcid, role=role, in_session=orcid, essential_variables=essential_variables.values)
+                orcid=orcid, role=role, in_session=orcid, essential_variables=essential_variables.values)
 
         # Check if submission is valid, if valid then we upload the content
         if validate_form(f):
@@ -294,14 +294,14 @@ def add_relationship():
                 g.add_app(APP, discoverer=session['orcid']) # submitted as unverified (general user submitted)
             else: 
                 return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, 
-                orcid=orcid, role=role, in_session=orcid, essential_variables=essential_variables.values)
+                    orcid=orcid, role=role, in_session=orcid, essential_variables=essential_variables.values)
 
             #iterate through the forms dataset list
             upload_datasets_from_form(f, g, APP, session)
             status = "success"
 
     return render_template('add-relationship.html', status=status, form=f, topics=topics, types=types, 
-    orcid=orcid, role=role, in_session=orcid, essential_variables=essential_variables.values)
+        orcid=orcid, role=role, in_session=orcid, essential_variables=essential_variables.values)
 
 def auto_fill(f):
     fill = autofill(f['site'])
