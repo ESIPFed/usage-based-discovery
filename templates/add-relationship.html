@@ -88,10 +88,15 @@
       {% endif %}
 
       <div class="form-group">
-        <label>Essential Variable<span class="required-star">*</span></label>
-        <select class="selectpicker" name="EssentialVariable[]" id="EssentialVariable" multiple required>
+        <label>Essential Variable</label>
+        <select class="selectpicker" name="essential_variable" id="essential_variable">
+          <option value="">None</option>
           {% for v in essential_variables %}
+          {% if v == f['essential_variable'] %}
+          <option value="{{v}}" selected>{{v}}</option>
+          {% else %}
           <option value="{{v}}">{{v}}</option>
+          {% endif %}          
           {% endfor %}
         </select>
         <div class="valid-feedback">
