@@ -251,17 +251,19 @@ class GraphDB:
             'essential_variable': 'Precipitation'
         }
         '''
-        self.graph_trav.V().has('application', 'site', app['site']) \
+        app_trav = self.graph_trav.V().has('application', 'site', app['site']) \
                 .fold().coalesce(unfold(), addV('application') \
                 .property('name', app['name']) \
                 .property('site', app['site']) \
                 .property('screenshot', app['screenshot']) \
                 .property('publication', app['publication']) \
                 .property('description', app['description']) \
-                .property('essential_variable', app['essential_variable']) \
                 .property('discoverer', discoverer) \
                 .property('verified', verified) \
-                .property('verifier', verifier)).next()
+                .property('verifier', verifier))
+        if 'essential_variable' in app:
+            app_trav = app_trav.property('essential_variable', app['essential_variable'])
+        app_trav.next()
         for i in range(len(app['topic'])):
             self.connect_topic(app['site'], app['topic'][i])
         for i in range(len(app['type'])):

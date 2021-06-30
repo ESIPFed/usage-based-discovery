@@ -210,3 +210,10 @@ h1 {
 .container-fluid {
   padding-top: 5rem;
 }
+
+.heading > h1 > .badge.bg-info {
+  font-size: .4em;
+  padding-right: .6em;
+  padding-left: .6em;
+  border-radius: 10rem;
+}

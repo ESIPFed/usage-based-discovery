@@ -167,7 +167,11 @@
 
         {% if app != None %}
         <div class="heading">
-          <h1 class="font">{{app['name']}}</h1>
+          <h1 class="font">{{app['name']}} 
+            {% if 'essential_variable' in app %}
+            <span class="badge badge-pill bg-info">{{ app['essential_variable'] }}</span>
+            {% endif %}
+          </h1>
           <a
             href="{{app['site']}}"
             target="_blank"
