@@ -66,7 +66,7 @@
           <div class="d-flex justify-content-around flex-wrap">
             <div class="dropdown show">
               <a
-                class="btn btn-lg btn-secondary dropdown-toggle"
+                class="btn btn-lg btn-outline-secondary dropdown-toggle"
                 href="#"
                 role="button"
                 id="dropdownMenuLink"
@@ -110,7 +110,7 @@
 
             <div class="dropdown show">
               <a
-                class="btn btn-lg btn-secondary dropdown-toggle"
+                class="btn btn-lg btn-outline-secondary dropdown-toggle"
                 href="#"
                 role="button"
                 id="dropdownMenuLink"
@@ -171,7 +171,7 @@
 	<button 
 	   onclick="if (confirm ( 'Are you sure you want to undo your last change?\nChange type: \n{{undo}}')) {window.location.href = '{{ url_for("undo") }}';}" 
      	  type="button"
-      	  class="btn btn-warning btn-md"
+      	  class="btn btn-outline-warning btn-md"
       	  >Undo last change</button
         >
 	{% endif %}
@@ -187,7 +187,7 @@
             href="{{app['site']}}"
             target="_blank"
             style="align-self: center;"
-            class="btn btn-secondary btn-md"
+            class="btn btn-outline-secondary btn-md"
             role="button"
             aria-pressed="true"
             >Website</a
@@ -198,7 +198,7 @@
             href="{{app['publication']}}"
             target="_blank"
             style="align-self: center;"
-            class="btn btn-secondary btn-md"
+            class="btn btn-outline-secondary btn-md"
             role="button"
             aria-pressed="true"
             >Publication</a
@@ -210,7 +210,7 @@
 	    <button 
 	      onclick="if (confirm ( 'Are you sure you want to verify {{app['name']}}?')) {window.location.href = '{{ url_for("verify_application", app_site=app["site"]) }}';}" 
 	      type="button"
-	      class="btn btn-success btn-md"
+	      class="btn btn-outline-success btn-md"
 	      >Verify</button
       	    >
 	    {% endif %}
@@ -218,13 +218,13 @@
 	      onclick="edit_application(this, '{{app['site']}}')"  
 	      type="button"
         data-add-relationship-url="{{ url_for('add_relationship') }}"
-	      class="btn btn-warning btn-md"
+	      class="btn btn-outline-warning btn-md"
 	      >Edit</button
             >
 	    <button 
 	      onclick="if (confirm ( 'Are you sure you want to delete {{app['name']}}?')) {window.location.href = '{{ url_for("delete_application", app_site=app["site"]) }}';}" 
 	      type="button"
-	      class="btn btn-danger btn-md"
+	      class="btn btn-outline-danger btn-md"
 	      >Delete Application</button
       	    >
 	  {% endif %} 
@@ -259,21 +259,21 @@
 
 	    <a
 	      tabindex="0" 
-	      class="btn btn-success btn-sm transparent annotation" 
+	      class="btn btn-outline-success btn-sm transparent annotation" 
 	      role="button" 
 	      data-toggle="popover" 
 	      data-placement= "bottom"
 	      data-trigger="focus" 
 	      data-html="true"
 	      title="Annotations" 
-	      data-content="<p>{{d[1]['annotation']}}</p><button class='btn btn-primary btn-sm' data-resolve-url='{{ url_for('resolve_annotation', app_site=app['site'], doi=d[2]['doi'][0]) }}' onclick='resolve_annotation(this);'>Resolve</button>">
+	      data-content="<p>{{d[1]['annotation']}}</p><button class='btn btn-outline-primary btn-sm' data-resolve-url='{{ url_for('resolve_annotation', app_site=app['site'], doi=d[2]['doi'][0]) }}' onclick='resolve_annotation(this);'>Resolve</button>">
 
 	      <span class="tt" title="see annotations">	      
 	        <span class="fas fa-comment"></span>
 	      </span></a>
 	      {% endif %}
 	      <div class="btn-group">
-	        <button type="button" class="btn btn-secondary transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	        <button type="button" class="btn btn-outline-secondary transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 
 		  <span class="fas fa-ellipsis-v"></span> 
 
@@ -292,7 +292,7 @@
             <a
               href="{{d[2]['doi'][0]}}"
               target="_blank"
-              class="btn btn-secondary btn-sm"
+              class="btn btn-outline-secondary btn-sm"
               role="button"
               aria-pressed="true"
               >See Dataset &rarr;</a
@@ -303,7 +303,7 @@
 	    <button
 	      onclick="if (confirm ( 'Are you sure you want to verify {{d[2]['title'][0]}}?')) {window.location.href = '{{ url_for("verify_dataset", app_name=app["site"], doi=d[2]["doi"][0]) }}';}" 
 	      type="button"
-	      class="btn btn-success btn-sm"
+	      class="btn btn-outline-success btn-sm"
 	      data-toggle="tooltip" 
 	      data-placement="top" 
 	      title="Verify Dataset Relationship"
@@ -313,7 +313,7 @@
 	    <button 
 	      onclick="if (confirm ( 'Are you sure you want to unlink {{d[2]['title'][0]}}?')) {window.location.href = '{{ url_for("delete_dataset_relation", app_site=app["site"], doi=d[2]["doi"][0]) }}';}" 
 	      type="button"
-	      class="btn btn-danger btn-sm"
+	      class="btn btn-outline-danger btn-sm"
 	      data-toggle="tooltip" 
 	      data-placement="top" 
 	      title="Unlink Dataset Relationship"
@@ -325,7 +325,7 @@
 	    <span class="tt" title="see ORCid">
 	    <a 
 	      tabindex="0" 
-	      class="btn btn-success btn-sm" 
+	      class="btn btn-outline-success btn-sm" 
 	      role="button" 
 	      data-toggle="popover" 
 	      data-placement= "bottom"
