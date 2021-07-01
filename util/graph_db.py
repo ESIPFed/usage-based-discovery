@@ -10,6 +10,7 @@ from gremlin_python.process.graph_traversal import unfold, inE, addV, addE, outV
 from gremlin_python.process.traversal import Cardinality, T, Direction, P, within
 from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
 from gremlin_python.driver.tornado.transport import TornadoTransport
+from util import essential_variables
 
 def valid_endpoint(endpoint):
     '''
@@ -261,7 +262,7 @@ class GraphDB:
                 .property('discoverer', discoverer) \
                 .property('verified', verified) \
                 .property('verifier', verifier))
-        if 'essential_variable' in app:
+        if 'essential_variable' in app and app['essential_variable'] in essential_variables.values:
             app_trav = app_trav.property('essential_variable', app['essential_variable'])
         app_trav.next()
         for i in range(len(app['topic'])):
@@ -342,7 +343,7 @@ class GraphDB:
         '''
         updates application vertex in the database with new information
         '''
-        self.graph_trav.V().has('application', 'site', site) \
+        app_trav = self.graph_trav.V().has('application', 'site', site) \
             .sideEffect(__.outE("about").where(otherV().hasLabel("topic")).drop()) \
             .sideEffect(__.properties('type').drop()) \
             .property(Cardinality.single, 'name', app['name']) \
@@ -350,7 +351,10 @@ class GraphDB:
             .property(Cardinality.single, 'screenshot', app['screenshot']) \
             .property(Cardinality.single, 'publication', app['publication']) \
             .property(Cardinality.single, 'essential_variable', app['essential_variable']) \
-            .property(Cardinality.single, 'description', app['description']).next()
+            .property(Cardinality.single, 'description', app['description'])
+        if 'essential_variable' in app and app['essential_variable'] in essential_variables.values:
+            app_trav = app_trav.property('essential_variable', app['essential_variable'])
+        app_trav.next()
         for i in range(len(app['topic'])):
             self.connect_topic(app['site'], app['topic'][i])
         for i in range(len(app['type'])):
