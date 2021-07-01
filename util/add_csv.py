@@ -37,7 +37,7 @@ def db_input_csv(fstring, orcid):
             line['topic'][index] = t.strip()
             print(graph.add_topic(line['topic'][index]))
         if {'app_discoverer', 'app_verified', 'app_verifier'}.issubset(headers):
-            graph.add_app(line, discoverer=line['app_discoverer'], verified=('True'==line['app_verified']), verifier=line['app_verifier'])
+            graph.add_app(line, discoverer=line['app_discoverer'], verified=('true'==line['app_verified'].lower()), verifier=line['app_verifier'])
         else: 
             graph.add_app(line, discoverer=orcid, verified=True, verifier=orcid)
             #graph.add_app(line)
@@ -45,7 +45,7 @@ def db_input_csv(fstring, orcid):
         if {'discoverer', 'verifier', 'verified'}.issubset(headers):
             print('new line:\n', line)
             print('verifier:\n', line['verified'])
-            graph.add_relationship(line['site'], line['doi'], discoverer=line['discoverer'], verified='True'==line['verified'], verifier=line['verifier'], annotation=line['annotation'])
+            graph.add_relationship(line['site'], line['doi'], discoverer=line['discoverer'], verified='true'==line['verified'].lower(), verifier=line['verifier'], annotation=line['annotation'])
         else:
             graph.add_relationship(line['site'], line['doi'], discoverer=orcid, verified=True, verifier=orcid)
 
