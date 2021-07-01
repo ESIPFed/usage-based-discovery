@@ -58,7 +58,7 @@ def db_input_csv(input_file):
                 graph.add_app(
                     app=line, 
                     discoverer=line['app_discoverer'], 
-                    verified=('True'==line['app_verified']), 
+                    verified=('true'==line['app_verified'].lower()), 
                     verifier=line['app_verifier'])
             else: 
                 # put your orcid Id in for discoverer and verifier
@@ -81,7 +81,7 @@ def db_input_csv(input_file):
                     site=line['site'], 
                     doi=line['doi'], 
                     discoverer=line['discoverer'], 
-                    verified='True'==line['verified'], 
+                    verified='true'==line['verified'].lower(), 
                     verifier=line['verifier'], 
                     annotation=line['annotation'])
             else:
