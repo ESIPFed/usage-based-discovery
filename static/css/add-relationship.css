@@ -12,3 +12,7 @@ body {
 .container {
     padding-top: 5rem;
 }
+
+form label {
+    display: block;
+}

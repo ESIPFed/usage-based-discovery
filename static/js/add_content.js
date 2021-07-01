@@ -131,7 +131,7 @@ function add_topic(){
     $('#custom_topic').val('');//reset input field
     var topic_to_add_html = `<option value='${topic_to_add}' selected>${topic_to_add}</option>`
     $('#Topic').append(topic_to_add_html);
-    $('#custom_topic_list').append(topic_to_add+', ');
+    $('#custom_topic_list').append('<span class="badge badge-pill badge-secondary bg-secondary my-1">' + topic_to_add + '</span>&nbsp;');
 
 }
 
