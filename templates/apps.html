@@ -197,10 +197,10 @@
 	    
 	    {% if app['verified'] == False %}
 	    <button 
-	      onclick="if (confirm ( 'Are you sure you want to verify the application')) {window.location.href = '{{ url_for("verify_application", app_site=app["site"]) }}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to verify {{app['name']}}?')) {window.location.href = '{{ url_for("verify_application", app_site=app["site"]) }}';}" 
 	      type="button"
 	      class="btn btn-success btn-md"
-	      >Verify Application</button
+	      >Verify</button
       	    >
 	    {% endif %}
 	    <button
@@ -211,7 +211,7 @@
 	      >Edit</button
             >
 	    <button 
-	      onclick="if (confirm ( 'Are you sure you want to delete the application?')) {window.location.href = '{{ url_for("delete_application", app_site=app["site"]) }}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to delete {{app['name']}}?')) {window.location.href = '{{ url_for("delete_application", app_site=app["site"]) }}';}" 
 	      type="button"
 	      class="btn btn-danger btn-md"
 	      >Delete Application</button
@@ -290,7 +290,7 @@
 	    {% if trusted_user and app%}
 	    {% if d[1]['verified'] == false %}
 	    <button
-	      onclick="if (confirm ( 'Are you sure you want to verify the dataset {{d["title"]}}')) {window.location.href = '{{ url_for("verify_dataset", app_name=app["site"], doi=d[2]["doi"][0]) }}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to verify {{d[2]['title'][0]}}?')) {window.location.href = '{{ url_for("verify_dataset", app_name=app["site"], doi=d[2]["doi"][0]) }}';}" 
 	      type="button"
 	      class="btn btn-success btn-sm"
 	      data-toggle="tooltip" 
@@ -300,7 +300,7 @@
             >
 	    {% endif %}
 	    <button 
-	      onclick="if (confirm ( 'Are you sure you want to unlink the dataset {{d["title"]}}')) {window.location.href = '{{ url_for("delete_dataset_relation", app_site=app["site"], doi=d[2]["doi"][0]) }}';}" 
+	      onclick="if (confirm ( 'Are you sure you want to unlink {{d[2]['title'][0]}}?')) {window.location.href = '{{ url_for("delete_dataset_relation", app_site=app["site"], doi=d[2]["doi"][0]) }}';}" 
 	      type="button"
 	      class="btn btn-danger btn-sm"
 	      data-toggle="tooltip" 
