@@ -74,24 +74,35 @@
                 aria-haspopup="true"
                 aria-expanded="false"
               >
-                Type: {{string_type}}
+                Type: {{string_type.capitalize() if string_type.lower() != "software" else "Application"}}
               </a>
 
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
 		        {% if 'all' in string_type %}
-                  <a class="dropdown-item active" href="{{ url_for('apps', string_type='all', string_topic=string_topic, app_site='all') }}">All</a>
+                  <a class="dropdown-item active" 
+                    href="{{ url_for('apps', string_type='all', string_topic=string_topic, app_site='all') }}">All</a>
 		        {% else %}
-                  <a class="dropdown-item" href="{{ url_for('apps', string_type='all', string_topic=string_topic, app_site='all') }}">All</a>
+                  <a class="dropdown-item" 
+                    href="{{ url_for('apps', string_type='all', string_topic=string_topic, app_site='all') }}">All</a>
 		        {% endif %}
 		        {% for t in all_types %}
                   {% if t in Types %}
 		            {% if t in Type and string_type!= 'all' %}
-		              <a class="dropdown-item active" href="{{ url_for('apps', string_type=t, string_topic=string_topic, app_site='all') }}">{{t}}</a>
+		              <a class="dropdown-item active" 
+                    href="{{ url_for('apps', string_type=t, string_topic=string_topic, app_site='all') }}">
+                    {{t.capitalize() if t != "Software" else "Application"}}
+                  </a>
                     {% else %}
-		              <a class="dropdown-item" href="{{ url_for('apps', string_type=t, string_topic=string_topic, app_site='all') }}">{{t}}</a>
+		              <a class="dropdown-item" 
+                    href="{{ url_for('apps', string_type=t, string_topic=string_topic, app_site='all') }}">
+                    {{t.capitalize() if t != "Software" else "Application"}}
+                  </a>
 		            {% endif %}
 		          {% else %}
-		            <a class="dropdown-item disabled" href="{{ url_for('apps', string_type=t, string_topic=string_topic, app_site='all') }}">{{t}}</a>
+		            <a class="dropdown-item disabled" 
+                  href="{{ url_for('apps', string_type=t, string_topic=string_topic, app_site='all') }}">
+                  {{t.capitalize() if t != "Software" else "Application"}}
+                </a>
                   {% endif %}
                 {% endfor %}
               </div>

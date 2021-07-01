@@ -77,9 +77,9 @@
               <select class="selectpicker" name="Type[]" id="Type" data-width="100%" multiple required>
                 {% for t in types %}
                 {% if t in f['type[]'] %}
-                <option value="{{t}}" selected>{{t}}</option>
+                <option value="{{t}}" selected>{% if t.lower() == 'software' %}{{ "Application" }}{% else %}{{ t.capitalize() }}{% endif %}</option>
                 {% else %}
-                <option value="{{t}}">{{t}}</option>
+                <option value="{{t}}">{% if t.lower() == 'software' %}{{ "Application" }}{% else %}{{ t.capitalize() }}{% endif %}</option>
                 {% endif %}
                 {% endfor %}
               </select>

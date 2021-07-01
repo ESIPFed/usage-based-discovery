@@ -184,8 +184,7 @@ function info(d) {
         else{
             str += "Unverified "
         }
-        str += capitalize(String(d.type)) + " ";
-        str += capitalize(d.label) + 
+        str += capitalize((String(d.type).replace("Software", "Application"))) + " " +
             (d.essential_variable ? (" (" + d.essential_variable + ")") : "") +
             "<br><br>";
         str += d.name + "<br><br>";
