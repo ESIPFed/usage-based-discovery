@@ -28,6 +28,11 @@ body {
   border-radius: 5px;
 }
 
+.button-container .card {
+  border-radius: .35rem;
+  border: none;
+}
+
 .topic-btn {
   margin: 15px;
 }
