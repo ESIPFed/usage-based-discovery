@@ -50,6 +50,10 @@ body {
   overflow-y: auto;
 }
 
+.appresults button {
+  border-width: 1px;
+}
+
 .btn {
   margin:.3rem;
 }
@@ -156,6 +160,7 @@ form {
   font-family: "Maven Pro", sans-serif;
   text-align: center;
   border-bottom: solid;
+  border-bottom-width: 1px;
 }
 
 .more-options {
