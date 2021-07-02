@@ -1,4 +1,5 @@
 <html lang="en">
+
 <head>
   <title>Usage Based Discovery</title>
   <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='nasalogo.png') }}">
@@ -6,40 +7,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- CSS only -->
   {{ fontawesome_html() }}
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
-    crossorigin="anonymous"
-  />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap" rel="stylesheet" />
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/default.css') }}">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/apps.css') }}">
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 </head>
 
 <body>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <!-- JavaScript Bundle with Popper -->
-  <script
-    src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"
-  ></script>
-  <script
-    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
     integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-    crossorigin="anonymous"
-  ></script>
-  <script
-    src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
     integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
-    crossorigin="anonymous"
-  ></script>
-  <script type="text/javascript" src="https://fbm.earthdata.nasa.gov/for/Usage%20Based%20Discovery/feedback.js"></script>
+    crossorigin="anonymous"></script>
+  <script type="text/javascript"
+    src="https://fbm.earthdata.nasa.gov/for/Usage%20Based%20Discovery/feedback.js"></script>
   <script>feedback.init();</script>
 
   <script src="{{ url_for('static', filename='js/apps.js') }}"></script>
@@ -65,81 +54,67 @@
         <div class="title">
           <div class="d-flex justify-content-around flex-wrap">
             <div class="dropdown show">
-              <a
-                class="btn btn-lg btn-outline-secondary dropdown-toggle"
-                href="#"
-                role="button"
-                id="dropdownMenuLink"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
+              <a class="btn btn-lg btn-outline-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Type: {{string_type.capitalize() if string_type.lower() != "software" else "Application"}}
               </a>
 
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-		        {% if 'all' in string_type %}
-                  <a class="dropdown-item active" 
-                    href="{{ url_for('apps', string_type='all', string_topic=string_topic, app_site='all') }}">All</a>
-		        {% else %}
-                  <a class="dropdown-item" 
-                    href="{{ url_for('apps', string_type='all', string_topic=string_topic, app_site='all') }}">All</a>
-		        {% endif %}
-		        {% for t in all_types %}
-                  {% if t in Types %}
-		            {% if t in Type and string_type!= 'all' %}
-		              <a class="dropdown-item active" 
-                    href="{{ url_for('apps', string_type=t, string_topic=string_topic, app_site='all') }}">
-                    {{t.capitalize() if t != "Software" else "Application"}}
-                  </a>
-                    {% else %}
-		              <a class="dropdown-item" 
-                    href="{{ url_for('apps', string_type=t, string_topic=string_topic, app_site='all') }}">
-                    {{t.capitalize() if t != "Software" else "Application"}}
-                  </a>
-		            {% endif %}
-		          {% else %}
-		            <a class="dropdown-item disabled" 
+                {% if 'all' in string_type %}
+                <a class="dropdown-item active"
+                  href="{{ url_for('apps', string_type='all', string_topic=string_topic, app_site='all') }}">All</a>
+                {% else %}
+                <a class="dropdown-item"
+                  href="{{ url_for('apps', string_type='all', string_topic=string_topic, app_site='all') }}">All</a>
+                {% endif %}
+                {% for t in all_types %}
+                {% if t in Types %}
+                {% if t in Type and string_type!= 'all' %}
+                <a class="dropdown-item active"
                   href="{{ url_for('apps', string_type=t, string_topic=string_topic, app_site='all') }}">
                   {{t.capitalize() if t != "Software" else "Application"}}
                 </a>
-                  {% endif %}
+                {% else %}
+                <a class="dropdown-item"
+                  href="{{ url_for('apps', string_type=t, string_topic=string_topic, app_site='all') }}">
+                  {{t.capitalize() if t != "Software" else "Application"}}
+                </a>
+                {% endif %}
+                {% else %}
+                <a class="dropdown-item disabled"
+                  href="{{ url_for('apps', string_type=t, string_topic=string_topic, app_site='all') }}">
+                  {{t.capitalize() if t != "Software" else "Application"}}
+                </a>
+                {% endif %}
                 {% endfor %}
               </div>
             </div>
 
             <div class="dropdown show">
-              <a
-                class="btn btn-lg btn-outline-secondary dropdown-toggle"
-                href="#"
-                role="button"
-                id="dropdownMenuLink"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >Topic: {{topic}}</a>
+              <a class="btn btn-lg btn-outline-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Topic: {{topic}}</a>
 
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 {% for t in topics %} {% if topic == t %}
-		          <a class="dropdown-item active" href="{{ url_for('apps', string_type=string_type, string_topic=t, app_site='all') }}">{{t}}</a>
+                <a class="dropdown-item active"
+                  href="{{ url_for('apps', string_type=string_type, string_topic=t, app_site='all') }}">{{t}}</a>
                 {% else %}
-		          <a class="dropdown-item" href="{{ url_for('apps', string_type=string_type, string_topic=t, app_site='all') }}">{{t}}</a>
+                <a class="dropdown-item"
+                  href="{{ url_for('apps', string_type=string_type, string_topic=t, app_site='all') }}">{{t}}</a>
                 {% endif %} {% endfor %}
               </div>
             </div>
           </div>
         </div>
         <div class="appresults">
-          {% for a in apps %} 
-          <span
-            class="app"
-            onclick="window.location.assign('{{ url_for('apps', string_type=string_type, string_topic=topic, app_site=a['site']) }}')"
-          >
-	      {% if app != None and a['name'] == app['name'] %}
+          {% for a in apps %}
+          <span class="app"
+            onclick="window.location.assign('{{ url_for('apps', string_type=string_type, string_topic=topic, app_site=a['site']) }}')">
+            {% if app != None and a['name'] == app['name'] %}
             <button style="width: 100%;" class="selected-app font">
-	      {% if not a['verified'] %}
-	      <span class="fas fa-flag"></span>
-	      {% endif %}
+              {% if not a['verified'] %}
+              <span class="fas fa-flag"></span>
+              {% endif %}
               <br />
               <h4 class="font">
                 <strong>{{a['name']}}</strong>
@@ -148,86 +123,61 @@
               <strong>{{a['description'][:50]}}...</strong>
               <br /><br />
             </button>
-          {% else %}
+            {% else %}
             <button style="width: 100%;" class="font">
-	      {% if not a['verified'] %}
-	      <span class="fas fa-flag"></span>
-	      {% endif %}
+              {% if not a['verified'] %}
+              <span class="fas fa-flag"></span>
+              {% endif %}
               <br />
               <h4 class="font">{{a['name']}}</h4>
               <!--<em class="font">Datasets: 1</em>-->
               {{a['description'][:50]}}...
               <br /><br />
             </button>
-	  {% endif %}
+            {% endif %}
           </span>
           {% endfor %}
         </div>
       </div>
 
       <div class="col-md-6">
-	{% if trusted_user and undo%} 
-	<!-- undo btn -->
-	<button 
-	   onclick="if (confirm ( 'Are you sure you want to undo your last change?\nChange type: \n{{undo}}')) {window.location.href = '{{ url_for("undo") }}';}" 
-     	  type="button"
-      	  class="btn btn-outline-warning btn-md"
-      	  >Undo last change</button
-        >
-	{% endif %}
+        {% if trusted_user and undo%}
+        <!-- undo btn -->
+        <button
+          onclick="if (confirm ( 'Are you sure you want to undo your last change?\nChange type: \n{{undo}}')) {window.location.href = '{{ 
+          url_for("undo") }}';}" type="button" class="btn btn-outline-warning btn-md">Undo last change</button>
+        {% endif %}
 
         {% if app != None %}
         <div class="heading">
-          <h1 class="font">{{app['name']}} 
+          <h1 class="font">{{app['name']}}
             {% if 'essential_variable' in app %}
             <span class="badge badge-pill bg-info">{{ app['essential_variable'] }}</span>
             {% endif %}
           </h1>
-          <a
-            href="{{app['site']}}"
-            target="_blank"
-            style="align-self: center;"
-            class="btn btn-outline-secondary btn-md"
-            role="button"
-            aria-pressed="true"
-            >Website</a
-          >
+          <a href="{{app['site']}}" target="_blank" style="align-self: center;" class="btn btn-outline-secondary btn-md"
+            role="button" aria-pressed="true">Website</a>
           <!--publication link, if none then DON'T INCLUDE-->
           {% if app['publication'] != 'None' and app['publication'] %}
-          <a
-            href="{{app['publication']}}"
-            target="_blank"
-            style="align-self: center;"
-            class="btn btn-outline-secondary btn-md"
-            role="button"
-            aria-pressed="true"
-            >Publication</a
-          >
+          <a href="{{app['publication']}}" target="_blank" style="align-self: center;"
+            class="btn btn-outline-secondary btn-md" role="button" aria-pressed="true">Publication</a>
           {% endif %}
-	  {% if trusted_user %}
-	    
-	    {% if app['verified'] == False %}
-	    <button 
-	      onclick="if (confirm ( 'Are you sure you want to verify {{app['name']}}?')) {window.location.href = '{{ url_for("verify_application", app_site=app["site"]) }}';}" 
-	      type="button"
-	      class="btn btn-outline-success btn-md"
-	      >Verify</button
-      	    >
-	    {% endif %}
-	    <button
-	      onclick="edit_application(this, '{{app['site']}}')"  
-	      type="button"
-        data-add-relationship-url="{{ url_for('add_relationship') }}"
-	      class="btn btn-outline-warning btn-md"
-	      >Edit</button
-            >
-	    <button 
-	      onclick="if (confirm ( 'Are you sure you want to delete {{app['name']}}?')) {window.location.href = '{{ url_for("delete_application", app_site=app["site"]) }}';}" 
-	      type="button"
-	      class="btn btn-outline-danger btn-md"
-	      >Delete Application</button
-      	    >
-	  {% endif %} 
+          {% if trusted_user %}
+
+          {% if app['verified'] == False %}
+          <button
+            onclick="if (confirm ( 'Are you sure you want to verify {{app['name']}}?')) {window.location.href = '{{ 
+            url_for("verify_application", app_site=app["site"]) }}';}" type="button"
+            class="btn btn-outline-success btn-md">Verify</button>
+          {% endif %}
+          <button onclick="edit_application(this, '{{app['site']}}')" type="button"
+            data-add-relationship-url="{{ url_for('add_relationship') }}"
+            class="btn btn-outline-warning btn-md">Edit</button>
+          <button
+            onclick="if (confirm ( 'Are you sure you want to delete {{app['name']}}?')) {window.location.href = '{{ 
+            url_for("delete_application", app_site=app["site"]) }}';}" type="button" class="btn btn-outline-danger btn-md">Delete
+            Application</button>
+          {% endif %}
           <br />
           <!--application website description-->
           <p class="font" style="align-self: center;">
@@ -236,16 +186,8 @@
         </div>
         {% endif %}
         <div>
-          <a
-            href="{{app['site'] if app != None else ''}}"
-            target="_blank"
-            class="font"
-            style="align-self: center;"
-          >
-            <img
-              src="{{screenshot}}"
-              class="screenshot"
-            />
+          <a href="{{app['site'] if app != None else ''}}" target="_blank" class="font" style="align-self: center;">
+            <img src="{{screenshot}}" class="screenshot" />
           </a>
         </div>
       </div>
@@ -254,96 +196,65 @@
         <div class="dataset-results">
           {% for d in datasets %}
           <div class="dataset-div">
-	    <div class= "more-options">
-	      {% if d[1]['annotation'] != '' %}
+            <div class="more-options">
+              {% if d[1]['annotation'] != '' %}
 
-	    <a
-	      tabindex="0" 
-	      class="btn btn-outline-success btn-sm transparent annotation" 
-	      role="button" 
-	      data-toggle="popover" 
-	      data-placement= "bottom"
-	      data-trigger="focus" 
-	      data-html="true"
-	      title="Annotations" 
-	      data-content="<p>{{d[1]['annotation']}}</p><button class='btn btn-outline-primary btn-sm' data-resolve-url='{{ url_for('resolve_annotation', app_site=app['site'], doi=d[2]['doi'][0]) }}' onclick='resolve_annotation(this);'>Resolve</button>">
+              <a tabindex="0" class="btn btn-outline-success btn-sm transparent annotation" role="button"
+                data-toggle="popover" data-placement="bottom" data-trigger="focus" data-html="true" title="Annotations"
+                data-content="<p>{{d[1]['annotation']}}</p><button class='btn btn-outline-primary btn-sm' data-resolve-url='{{ url_for('resolve_annotation', app_site=app['site'], doi=d[2]['doi'][0]) }}' onclick='resolve_annotation(this);'>Resolve</button>">
 
-	      <span class="tt" title="see annotations">	      
-	        <span class="fas fa-comment"></span>
-	      </span></a>
-	      {% endif %}
-	      <div class="btn-group">
-	        <button type="button" class="btn btn-outline-secondary transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="tt" title="see annotations">
+                  <span class="fas fa-comment"></span>
+                </span></a>
+              {% endif %}
+              <div class="btn-group">
+                <button type="button" class="btn btn-outline-secondary transparent" data-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false">
 
-		  <span class="fas fa-ellipsis-v"></span> 
+                  <span class="fas fa-ellipsis-v"></span>
 
-	        </button>
-	        <div class="dropdown-menu dropdown-menu-right" id="more_options">
-		  <button class="dropdown-item" type="button" data-add-annotation-url='{{ url_for("add_annotation", app_site=app["site"], doi=d[2]["doi"][0]) }}' onclick="add_annotation_form(this);" id="annotation_btn">Add annotation</button>
-	          <!--
-		  <button class="dropdown-item" type="button" id="second_item">(not working)Change dataset name</button>
-	          <button class="dropdown-item" type="button">(not working)Change dataset DOI</button>
-		  -->
-	        </div>
-	      </div>
-	    </div>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" id="more_options">
+                  <button class="dropdown-item" type="button"
+                    data-add-annotation-url='{{ url_for("add_annotation", app_site=app["site"], doi=d[2]["doi"][0]) }}'
+                    onclick="add_annotation_form(this);" id="annotation_btn">Add annotation</button>
+                </div>
+              </div>
+            </div>
             <br />
             <h4 class="font">{{d[2]['title'][0]}}</h4>
-            <a
-              href="{{d[2]['doi'][0]}}"
-              target="_blank"
-              class="btn btn-outline-secondary btn-sm"
-              role="button"
-              aria-pressed="true"
-              >See Dataset &rarr;</a
-            >
-	    <!-- only shows if you are a trusted user and the app is selected -->
-	    {% if trusted_user and app%}
-	    {% if d[1]['verified'] == false %}
-	    <button
-	      onclick="if (confirm ( 'Are you sure you want to verify {{d[2]['title'][0]}}?')) {window.location.href = '{{ url_for("verify_dataset", app_name=app["site"], doi=d[2]["doi"][0]) }}';}" 
-	      type="button"
-	      class="btn btn-outline-success btn-sm"
-	      data-toggle="tooltip" 
-	      data-placement="top" 
-	      title="Verify Dataset Relationship"
-	      >Verify</button
-            >
-	    {% endif %}
-	    <button 
-	      onclick="if (confirm ( 'Are you sure you want to unlink {{d[2]['title'][0]}}?')) {window.location.href = '{{ url_for("delete_dataset_relation", app_site=app["site"], doi=d[2]["doi"][0]) }}';}" 
-	      type="button"
-	      class="btn btn-outline-danger btn-sm"
-	      data-toggle="tooltip" 
-	      data-placement="top" 
-	      title="Unlink Dataset Relationship"
-	      ><span class="fas fa-unlink"></span></button
-      	    > 
-	    {% endif %}
-	    {% if d[1]['verified'] %}
+            <a href="{{d[2]['doi'][0]}}" target="_blank" class="btn btn-outline-secondary btn-sm" role="button"
+              aria-pressed="true">See Dataset &rarr;</a>
+            <!-- only shows if you are a trusted user and the app is selected -->
+            {% if trusted_user and app%}
+            {% if d[1]['verified'] == false %}
+            <button
+              onclick="if (confirm ( 'Are you sure you want to verify {{d[2]['title'][0]}}?')) {window.location.href = '{{ 
+              url_for("verify_dataset", app_name=app["site"], doi=d[2]["doi"][0]) }}';}" type="button"
+              class="btn btn-outline-success btn-sm" data-toggle="tooltip" data-placement="top"
+              title="Verify Dataset Relationship">Verify</button>
+            {% endif %}
+            <button
+              onclick="if (confirm ( 'Are you sure you want to unlink {{d[2]['title'][0]}}?')) {window.location.href = '{{ 
+              url_for("delete_dataset_relation", app_site=app["site"], doi=d[2]["doi"][0]) }}';}" type="button"
+              class="btn btn-outline-danger btn-sm" data-toggle="tooltip" data-placement="top"
+              title="Unlink Dataset Relationship"><span class="fas fa-unlink"></span></button>
+            {% endif %}
+            {% if d[1]['verified'] %}
 
-	    <span class="tt" title="see ORCid">
-	    <a 
-	      tabindex="0" 
-	      class="btn btn-outline-success btn-sm" 
-	      role="button" 
-	      data-toggle="popover" 
-	      data-placement= "bottom"
-	      data-trigger="focus" 
-	      data-html="true"
-	      title="ORCiD" 
-	      data-content="<a href='https://orcid.org/{{d[1]['verifier']}}'>
+            <span class="tt" title="see ORCid">
+              <a tabindex="0" class="btn btn-outline-success btn-sm" role="button" data-toggle="popover"
+                data-placement="bottom" data-trigger="focus" data-html="true" title="ORCiD" data-content="<a href='https://orcid.org/{{d[1]['verifier']}}'>
 		<img alt='ORCID logo' src='https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png' width='16' height='16' />
 		{{d[1]['verifier']}}
-		</a>"><span class="fas fa-check"></span></a
-	    >
-	    </span>
+		</a>"><span class="fas fa-check"></span></a>
+            </span>
 
-	    {% endif %}
+            {% endif %}
             <br /><br />
           </div>
           {% endfor %}
-       </div>
+        </div>
       </div>
     </div>
   </div>
