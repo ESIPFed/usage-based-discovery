@@ -7,8 +7,7 @@ Load a set of application-dataset relationships in CSV form into a Neptune graph
 import sys
 sys.path.append("../")
 import csv
-import json
-import re
+import csv_helper
 from util.graph_db import GraphDB
 
 def db_input_csv(fstring, orcid):
@@ -29,10 +28,9 @@ def db_input_csv(fstring, orcid):
         print(line)
         if not 'type' in line.keys():
             line['type'] = 'unclassified'
-        line['topic'] = re.sub("\]|\[|\'", '', line['topic'])
-        line['topic'] = line['topic'].split(',')
-        line['type'] = re.sub("\]|\[|\'", '', line['type'])
-        line['type'] = line['type'].split(',')
+        line['topic'] = csv_helper.list_from_string(line['topic'])
+        line['type'] = csv_helper.list_from_string(line['type'])
+        line['essential_variable'] = csv_helper.list_from_string(line['essential_variable'])
         for index, t in enumerate(line['topic']):
             line['topic'][index] = t.strip()
             print(graph.add_topic(line['topic'][index]))

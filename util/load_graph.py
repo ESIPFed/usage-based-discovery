@@ -9,8 +9,7 @@ import sys
 sys.path.append("../")
 import csv
 import argparse
-import json
-import re
+import csv_helper
 from graph_db import GraphDB
 
 def parse_options():
@@ -38,13 +37,9 @@ def db_input_csv(input_file):
             if not 'type' in line.keys():
                 line['type'] = 'unclassified'
             
-            # parse topics (app can belong to many topics[])
-            line['topic'] = re.sub("\]|\[|\'", '', line['topic'])
-            line['topic'] = line['topic'].split(',')
-            
-            # parse types (app node can have multiple types[])
-            line['type'] = re.sub("\]|\[|\'", '', line['type'])
-            line['type'] = line['type'].split(',')
+            line['topic'] = csv_helper.list_from_string(line['topic'])
+            line['type'] = csv_helper.list_from_string(line['type'])
+            line['essential_variable'] = csv_helper.list_from_string(line['essential_variable'])
             
             # add each topic[], before adding the app
             for index, t in enumerate(line['topic']):

@@ -249,10 +249,10 @@ class GraphDB:
             'screenshot': 'image.png',
             'publication': 'publication',
             'description': 'sample description for a sample app',
-            'essential_variable': 'Precipitation'
+            'essential_variable': ['Precipitation']
         }
         '''
-        app_trav = self.graph_trav.V().has('application', 'site', app['site']) \
+        self.graph_trav.V().has('application', 'site', app['site']) \
                 .fold().coalesce(unfold(), addV('application') \
                 .property('name', app['name']) \
                 .property('site', app['site']) \
@@ -261,14 +261,16 @@ class GraphDB:
                 .property('description', app['description']) \
                 .property('discoverer', discoverer) \
                 .property('verified', verified) \
-                .property('verifier', verifier))
-        if 'essential_variable' in app and app['essential_variable'] in essential_variables.values:
-            app_trav = app_trav.property('essential_variable', app['essential_variable'])
-        app_trav.next()
+                .property('verifier', verifier)) \
+                .next()
         for i in range(len(app['topic'])):
             self.connect_topic(app['site'], app['topic'][i])
         for i in range(len(app['type'])):
             self.add_app_property(app['site'], 'type', app['type'][i])
+        if 'essential_variable' in app:
+            for i in range(len(app['essential_variable'])):
+                if app['essential_variable'][i] in essential_variables.values:
+                    self.add_app_property(app['site'], 'essential_variable', app['essential_variable'][i])
 
     def add_topic(self, topic):
         '''
@@ -343,7 +345,7 @@ class GraphDB:
         '''
         updates application vertex in the database with new information
         '''
-        app_trav = self.graph_trav.V().has('application', 'site', site) \
+        self.graph_trav.V().has('application', 'site', site) \
             .sideEffect(__.outE("about").where(otherV().hasLabel("topic")).drop()) \
             .sideEffect(__.properties('type').drop()) \
             .property(Cardinality.single, 'name', app['name']) \
@@ -351,14 +353,16 @@ class GraphDB:
             .property(Cardinality.single, 'screenshot', app['screenshot']) \
             .property(Cardinality.single, 'publication', app['publication']) \
             .property(Cardinality.single, 'essential_variable', app['essential_variable']) \
-            .property(Cardinality.single, 'description', app['description'])
-        if 'essential_variable' in app and app['essential_variable'] in essential_variables.values:
-            app_trav = app_trav.property('essential_variable', app['essential_variable'])
-        app_trav.next()
+            .property(Cardinality.single, 'description', app['description']) \
+            .next()
         for i in range(len(app['topic'])):
             self.connect_topic(app['site'], app['topic'][i])
         for i in range(len(app['type'])):
             self.add_app_property(app['site'], 'type', app['type'][i])
+        if 'essential_variable' in app:
+            for i in range(len(app['essential_variable'])):
+                if app['essential_variable'][i] in essential_variables.values:
+                    self.add_app_property(app['site'], 'essential_variable', app['essential_variable'][i])
 
     def update_app_property(self, site, prop, value):
         '''

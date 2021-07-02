@@ -140,7 +140,6 @@
             <div class="form-group">
               <label>Essential Variable</label>
               <select class="selectpicker" name="essential_variable" id="essential_variable" data-width="100%" data-size="false" multiple>
-                <option value="">None</option>
                 {% for v in essential_variables %}
                 {% if v in f['essential_variable'] %}
                 <option value="{{v}}" selected>{{v}}</option>

@@ -31,6 +31,7 @@ def db_output_csv():
             row = []
             row.append(graph.get_app_topics(app['site']))
             row.append(app['type'])
+            row.append(app['essential_variable'])
             row.append(app['name'])
             row.append(app['site'])
             row.append(app['screenshot'])

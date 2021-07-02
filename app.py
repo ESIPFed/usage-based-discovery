@@ -43,7 +43,7 @@ APP = {
     'screenshot': 'Testing-123.png',
     'publication': 'None' or '<url>',
     'description': 'example description 123',
-    'essential_variable': 'Precipitation'
+    'essential_variable': '[Precipitation]'
 }
 
 # session layout
@@ -245,7 +245,7 @@ def add_relationship():
         # Getting multiple values of 'Topic[]', 'Type[]'; empty if non-existant
         f['Topic[]'] = request.form.getlist('Topic[]')
         f['Type[]'] = request.form.getlist('Type[]')
-        f['EssentialVariable[]'] = request.form.getlist('EssentialVariable[]')
+        f['essential_variable'] = request.form.getlist('essential_variable')
         print(f)
         status = "failure" # preset 
 
