@@ -348,11 +348,11 @@ class GraphDB:
         self.graph_trav.V().has('application', 'site', site) \
             .sideEffect(__.outE("about").where(otherV().hasLabel("topic")).drop()) \
             .sideEffect(__.properties('type').drop()) \
+            .sideEffect(__.properties('essential_variable').drop()) \
             .property(Cardinality.single, 'name', app['name']) \
             .property(Cardinality.single, 'site', app['site']) \
             .property(Cardinality.single, 'screenshot', app['screenshot']) \
             .property(Cardinality.single, 'publication', app['publication']) \
-            .property(Cardinality.single, 'essential_variable', app['essential_variable']) \
             .property(Cardinality.single, 'description', app['description']) \
             .next()
         for i in range(len(app['topic'])):
