@@ -7,7 +7,7 @@ Load a set of application-dataset relationships in CSV form into a Neptune graph
 import sys
 sys.path.append("../")
 import csv
-import csv_helper
+from util import csv_helper
 from util.graph_db import GraphDB
 
 def db_input_csv(fstring, orcid):

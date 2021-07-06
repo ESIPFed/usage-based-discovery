@@ -9,7 +9,7 @@ import sys
 sys.path.append("../")
 import csv
 import argparse
-import csv_helper
+from util import csv_helper
 from graph_db import GraphDB
 
 def parse_options():

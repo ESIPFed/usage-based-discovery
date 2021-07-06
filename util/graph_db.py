@@ -119,7 +119,7 @@ class GraphDB:
     def mapify(self, valuemap):
         for item in valuemap:
             for prop in item.keys():
-                if len(item[prop]) == 1 and prop != 'type':
+                if len(item[prop]) == 1 and prop != 'type' and prop != 'essential_variable':
                     item[prop] = item[prop][0]
         return valuemap
 
