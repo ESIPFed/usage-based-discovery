@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 import sys
 sys.path.append("../")
 from util.graph_db import GraphDB, valid_endpoint
@@ -16,7 +19,8 @@ APP = {
         'name': 'Testing 123',
         'screenshot': 'Testing 123.jpg',
         'publication': 'None',
-        'description': 'example description 123'
+        'description': 'example description 123',
+        'essential_variable': ["Carbon Dioxide","Methane","Invalid Variable"]
 }
 
 CHANGE_APP = {
@@ -26,7 +30,8 @@ CHANGE_APP = {
         'name': 'Change Testing 123',
         'screenshot': 'Change Testing 123.jpg',
         'publication': 'Change None',
-        'description': 'Change example description 123'
+        'description': 'Change example description 123',
+        'essential_variable': ["Carbon Dioxide","Greenhouse Gases"]
 }
 
 CHANGE_PROP_APP = {
@@ -35,7 +40,8 @@ CHANGE_PROP_APP = {
         'name': 'Change Testing 123',
         'screenshot': 'Change Testing 123.jpg',
         'publication': 'Change None',
-        'description': 'summary of usage/application'
+        'description': 'summary of usage/application',
+        'essential_variable': ["Carbon Dioxide","Greenhouse Gases"]
 }
 
 DATASET = {'title': 'dataset', 'doi': DOI}
@@ -122,7 +128,9 @@ class TestInit():
     def test_get_dataset_by_app(self):
         path = self.db.get_dataset_by_app(SITE, DOI)[0]
         print(path)
-        assert path[0] == {'site': ['https://example.com'], 'type': ['Unclassified'], 'publication': ['None'], 'name': ['Testing 123'], 'description': ['example description 123'], 'screenshot': ['Testing 123.jpg'], 'discoverer': [''], 'verified': [False], 'verifier': ['']}
+        assert path[0] == {'site': ['https://example.com'], 'type': ['Unclassified'], 'publication': ['None'], 'name': ['Testing 123'], 
+            'description': ['example description 123'], 'screenshot': ['Testing 123.jpg'], 'discoverer': [''], 'verified': [False], 
+            'verifier': [''], 'essential_variable': ["Carbon Dioxide","Methane"]}
         assert path[1] == {'annotation': '', 'verifier': '', 'verified': False, 'discoverer': ''}
         assert path[2] == {'title': ['dataset'], 'doi': ['1234567890']}
 
@@ -130,7 +138,9 @@ class TestInit():
         self.db.verify_relationship(SITE, DOI, '0000-0000-0000-0000')
         path = self.db.get_dataset_by_app(SITE, DOI)[0]
         print(path)
-        assert path[0] == {'site': ['https://example.com'], 'type': ['Unclassified'], 'publication': ['None'], 'name': ['Testing 123'], 'description': ['example description 123'], 'screenshot': ['Testing 123.jpg'], 'discoverer': [''], 'verified': [False], 'verifier': ['']}
+        assert path[0] == {'site': ['https://example.com'], 'type': ['Unclassified'], 'publication': ['None'], 'name': ['Testing 123'], 
+            'description': ['example description 123'], 'screenshot': ['Testing 123.jpg'], 'discoverer': [''], 'verified': [False], 
+            'verifier': [''], 'essential_variable': ["Carbon Dioxide","Methane"]}
         assert path[1] == {'annotation': '', 'verifier': '0000-0000-0000-0000', 'verified': True, 'discoverer': ''}
         assert path[2] == {'title': ['dataset'], 'doi': ['1234567890']}
 
@@ -138,7 +148,9 @@ class TestInit():
         self.db.verify_app(SITE, '0000-0000-0000-0000')
         app = self.db.get_app(SITE)[0]
         print(app)
-        assert app == {'site': ['https://example.com'], 'type': ['Unclassified'], 'publication': ['None'], 'name': ['Testing 123'], 'description': ['example description 123'], 'screenshot': ['Testing 123.jpg'], 'discoverer': [''], 'verified': [True], 'verifier': ['0000-0000-0000-0000']}
+        assert app == {'site': ['https://example.com'], 'type': ['Unclassified'], 'publication': ['None'], 'name': ['Testing 123'], 
+            'description': ['example description 123'], 'screenshot': ['Testing 123.jpg'], 'discoverer': [''], 'verified': [True], 
+            'verifier': ['0000-0000-0000-0000'], 'essential_variable': ["Carbon Dioxide","Methane"]}
 
     def test_update_app(self):
         self.db.add_topic(CHANGE_TOPIC)
@@ -146,6 +158,7 @@ class TestInit():
         app = self.db.mapify(self.db.get_app(CHANGE_SITE))
         CHANGE_APP.pop('topic')
         print(CHANGE_APP, app[0])
+        assert(app[0]['essential_variable'] == CHANGE_APP['essential_variable'])
         assert CHANGE_APP.items() <= app[0].items()
 
     def test_update_app_property(self):
