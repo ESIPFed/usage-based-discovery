@@ -3,11 +3,12 @@ load_dotenv()
 
 from util.graph_db import GraphDB
 from util.s3_functions import s3Functions
-from flask import Flask, url_for, render_template, request, session, redirect
+from flask import Flask, url_for, render_template, request, session, redirect, abort
 from flask_fontawesome import FontAwesome
 import json
 from util.autofill import autofill
 from util import essential_variables
+from util import change_topics
 from util.add_csv import db_input_csv
 import os
 import subprocess
@@ -54,6 +55,15 @@ Session = {
 }
 
 '''
+@app.errorhandler(403)
+def forbidden(error):
+    return error, 403
+
+@app.before_request
+def before_request():
+    if '/admin' in request.url:
+        if (not 'role' in session) or (not session['role'] == 'supervisor'):
+            abort(403)
 
 # Initial screen
 @app.route('/') 
@@ -590,6 +600,28 @@ def leader_board():
     uses_stats = parse_stats(stat_keys, uses_list)
 
     return render_template('leader-board.html', stats={'apps': app_stats, 'datasets': uses_stats}, in_session=in_session, orcid=orcid)
+
+@app.route('/admin/change-topic', methods=["GET"])
+def get_change_topic():
+    in_session = 'orcid' in session
+    g = GraphDB()
+    return render_template('change-topic.html', topics=g.get_topics(), in_session=in_session)
+
+@app.route('/admin/change-topic', methods=["POST"])
+def post_change_topic():
+    in_session = 'orcid' in session
+    g = GraphDB()
+    old_name = request.form['old-name'].strip()
+    new_name = request.form['new-name'].strip()
+    if old_name and new_name:
+        change_topics.rename(old_name, new_name)
+        alert = {'success': f'Changed topic from {old_name} to {new_name}'}
+        return render_template('change-topic.html', topics=g.get_topics(), in_session=in_session, alert=alert)
+    else:
+        alert = {'danger': 'New and old topic name must not be blank.'}
+        return render_template('change-topic.html', topics=g.get_topics(), in_session=in_session, alert=alert), 422
+    
+    
 
 
 '''

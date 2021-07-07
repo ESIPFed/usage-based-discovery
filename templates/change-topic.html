@@ -1,0 +1,103 @@
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>
+    Usage Based Discovery | Change Topic
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- CSS only -->
+  {{ fontawesome_html() }}
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/default.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/change-topic.css') }}">
+</head>
+
+<body>
+  <div class="topbar">
+    <h1 style="text-align: left;">
+      <a href="{{ url_for('topics') }}" class="navbar-brand">Usage Based Discovery</a>&emsp;
+      <span style="float: right;">
+        <a href="{{ url_for('explore') }}" style="font-size: x-large;">Explore</a>&emsp;
+        <a href="{{ url_for('about') }}" style="font-size: x-large;">About</a>&emsp;
+        {% if in_session %}
+        <a href="{{ url_for('leader_board') }}" style="font-size: x-large;">Leaderboard</a>&emsp;
+        <a href="{{ url_for('add_relationship') }}" style="font-size: x-large;">Add Content</a>&emsp;
+        <a href="{{ url_for('logout') }}" style="font-size: x-large;">Logout</a>&emsp; {% else %}
+        <a href="{{ url_for('auth') }}" style="font-size: x-large;">Login</a>&emsp;
+        {% endif %}
+      </span>
+    </h1>
+  </div>
+  <div class="container container-sm">
+    <div class="row">
+      <div class='col-12'>
+        {% if alert and "success" in alert %}
+        <div class="alert alert-success mt-3" id="success" role="alert">
+          {{ alert['success'] }}
+        </div>
+        {% endif %}
+        {% if alert and "danger" in alert %}
+        <div class="alert alert-danger mt-3" id="failure" role="alert">
+          {{ alert['danger'] }}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="row">
+      <form class="form needs-validation col-12" id="form1" name="form1" enctype=multipart/form-data
+        action="{{ url_for('post_change_topic') }}" method="post" novalidate>
+        <div class="row mt-3">
+          <div class="col-6">
+
+          </div>
+          <div class="col-6 d-flex justify-content-end">
+            <button id="submit_btn" type="submit" class="btn btn-success">Submit</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class='col-6'>
+            <div class="form-group">
+            <label>Old Name<span class="required-star">*</span></label>
+            <select class="selectpicker" name="old-name" id="old-name" data-width="100%" required>
+                {% for t in topics %}
+                <option value="{{t}}">{{t}}</option>
+                {% endfor %}
+            </select>
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="form-group">
+                <label>New Name<span class="required-star">*</span></label>
+                <input type="text" class="form-control" id="new-name" name="new-name"
+                  placeholder="Fire and Ice"
+                  value="" required />
+                <div class="valid-feedback">
+                  Looks good!
+                </div>
+              </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+</body>
+
+</html>

@@ -1,12 +1,5 @@
-from graph_db import GraphDB
+from util.graph_db import GraphDB
 
-def changeTopics():
-    #air to atmospheric aerosols
-    #snowfall to snow
-    #Soil Moisture to Soil Properties
-    #add Air Quaility
+def rename(old_name, new_name):
     g = GraphDB()
-    g.rename_topic('Air', 'Air Quality')
-
-if __name__ == '__main__':
-    changeTopics()
+    g.rename_topic(old_name, new_name)
