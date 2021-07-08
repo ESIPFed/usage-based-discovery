@@ -62,27 +62,31 @@
         <div class="row">
           <div class='col-6'>
             <div class="form-group">
-            <label>Old Name<span class="required-star">*</span></label>
-            <select class="selectpicker" name="old-name" id="old-name" data-width="100%" required>
+              <label>Topic Name<span class="required-star">*</span></label>
+              <select class="selectpicker" name="old-name" id="old-name" data-width="100%" data-size="false" required>
                 {% for t in topics %}
                 <option value="{{t}}">{{t}}</option>
                 {% endfor %}
-            </select>
-            <div class="valid-feedback">
+              </select>
+              <div class="valid-feedback">
                 Looks good!
+              </div>
             </div>
+            <div class="form-group">
+              <label>New Name<span class="required-star">*</span></label>
+              <input type="text" class="form-control" id="new-name" name="new-name" placeholder="Fire and Ice" value=""
+                required />
+              <div class="valid-feedback">
+                Looks good!
+              </div>
             </div>
+            
           </div>
           <div class="col-6">
             <div class="form-group">
-                <label>New Name<span class="required-star">*</span></label>
-                <input type="text" class="form-control" id="new-name" name="new-name"
-                  placeholder="Fire and Ice"
-                  value="" required />
-                <div class="valid-feedback">
-                  Looks good!
-                </div>
-              </div>
+              <label class="custom-file-label" for="image_file">Image</label>
+              <input type="file" name="image_file" class="custom-file-input" id="image_file" accept="image/*">
+            </div>
           </div>
         </div>
       </form>

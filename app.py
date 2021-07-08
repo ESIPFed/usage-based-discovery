@@ -244,7 +244,7 @@ def add_relationship():
     role = session['role'] 
 
     g = GraphDB()
-    topics = g.get_topics()
+    topics = sorted(g.get_topics())
     status= "none"
     f=None
 
@@ -285,8 +285,9 @@ def add_relationship():
         if validate_form(f):
             f['screenshot'] = 'NA'
             APP = formatted_APP_from_form(f, g)
-            if os.environ.get('ENV') != 'local-app':
-                upload_screenshot(APP, request)
+            file_name = upload_image(request, (400, 400))
+            if file_name:
+                APP['screenshot'] = file_name
             else:
                 print('Bypassing screenshot upload')
             print(f"App screenshot was set to {APP['screenshot']}")
@@ -378,25 +379,28 @@ def formatted_APP_from_form(f, g):
     }
     return APP
 
-def resize_image_file(image_file):
+def resize_image_file(image_file, dims):
     pil_image = Image.open(image_file)
-    pil_image.thumbnail((400, 400))
+    pil_image.thumbnail(dims)
     new_file = io.BytesIO()
     pil_image.save(new_file, format=pil_image.format, optimize=True)
     new_file.seek(0)
 
     return new_file
 
-def upload_screenshot(APP, request):
+def upload_image(request, dims, img_path=None):
     if 'image_file' in request.files.keys() and request.files['image_file'].filename != '':
-        print(f"Request contains image screenshot { request.files['image_file'] }")
+        print(f"Request contains image { request.files['image_file'] }")
         file_name = request.files['image_file'].filename
-        resized_image = resize_image_file(request.files['image_file'])
+        if img_path:
+            file_name = img_path
+        resized_image = resize_image_file(request.files['image_file'], dims)
         s3 = s3Functions()
         s3.upload_image_obj(s3_bucket, file_name, resized_image)
-        APP['screenshot'] = file_name
+        return file_name
     else:
-        print('Request is missing screenshot')
+        print('Request is missing image')
+        return None
 
 def upload_datasets_from_form(f, g, APP, session):
     discoverer = session['orcid'] if 'orcid' in session else ''
@@ -607,21 +611,33 @@ def leader_board():
 def get_change_topic():
     in_session = 'orcid' in session
     g = GraphDB()
-    return render_template('change-topic.html', topics=g.get_topics(), in_session=in_session)
+    topics = sorted(g.get_topics())
+    return render_template('change-topic.html', topics=topics, in_session=in_session)
 
 @app.route('/admin/change-topic', methods=["POST"])
 def post_change_topic():
     in_session = 'orcid' in session
     g = GraphDB()
+    topics = sorted(g.get_topics())
+    edits = []
+
     old_name = request.form['old-name'].strip()
     new_name = request.form['new-name'].strip()
-    if old_name and new_name:
+    if new_name:
         change_topics.rename(old_name, new_name)
-        alert = {'success': f'Changed topic from {old_name} to {new_name}'}
-        return render_template('change-topic.html', topics=g.get_topics(), in_session=in_session, alert=alert)
+        edits.append(f'Renamed {old_name} to {new_name}.')
+
+    img_name = new_name if new_name else old_name
+    img_path = f'topic/{img_name}.jpg'
+    if upload_image(request, dims=(640, 427), img_path=img_path):
+        edits.append(f'Uploaded a new topic image {img_path}.')
+
+    if edits:
+        alert = { 'success': f'Your edits were successful. { " ".join(edits) }' }
+        return render_template('change-topic.html', topics=topics, in_session=in_session, alert=alert)
     else:
-        alert = {'danger': 'New and old topic name must not be blank.'}
-        return render_template('change-topic.html', topics=g.get_topics(), in_session=in_session, alert=alert), 422
+        alert = {'danger': 'We did not proccess this change request because the changes requested were invalid or nonexistent.'}
+        return render_template('change-topic.html', topics=topics, in_session=in_session, alert=alert), 422
     
     
 

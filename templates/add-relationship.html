@@ -110,7 +110,7 @@
             </div>
             <div class="form-group">
               <label>Topic<span class="required-star">*</span></label>
-              <select class="selectpicker" name="Topic[]" id="Topic" data-width="100%" multiple required>
+              <select class="selectpicker" name="Topic[]" id="Topic" data-width="100%" data-size="false" multiple required>
                 {% for t in topics %}
                 {% if t in f['Topic[]'] %}
                 <option value="{{t}}" selected>{{t}}</option>
