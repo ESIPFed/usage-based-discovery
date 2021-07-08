@@ -95,6 +95,7 @@ body {
 .card__thumbnail > img {
   /* Tip: use 1:1 ratio images */
   height: 100%; /* or width when img.width > img.height */
+  width: 100%;
 }
 
 /* Styles the title inside the img container */

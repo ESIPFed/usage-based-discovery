@@ -618,7 +618,6 @@ def get_change_topic():
 def post_change_topic():
     in_session = 'orcid' in session
     g = GraphDB()
-    topics = sorted(g.get_topics())
     edits = []
 
     old_name = request.form['old-name'].strip()
@@ -632,6 +631,7 @@ def post_change_topic():
     if upload_image(request, dims=(640, 427), img_path=img_path):
         edits.append(f'Uploaded a new topic image {img_path}.')
 
+    topics = sorted(g.get_topics())
     if edits:
         alert = { 'success': f'Your edits were successful. { " ".join(edits) }' }
         return render_template('change-topic.html', topics=topics, in_session=in_session, alert=alert)

@@ -1,4 +1,4 @@
-values = ["Precipitation",
+values = sorted(["Precipitation",
 "Surface Pressure",
 "Surface Radiation Budget",
 "Surface Winds",
@@ -54,4 +54,4 @@ values = ["Precipitation",
 "Oxygen",
 "Transient Tracers",
 "Marine Habitat Properties",
-"Plankton"]
+"Plankton"])
