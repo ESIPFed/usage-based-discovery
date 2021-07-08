@@ -141,8 +141,8 @@ $(function () {
   $('#image_file').on('change', function() {
     const fileSize = this.files[0].size / 1024 / 1024; // in MiB
     // alert(fileSize)
-    if (fileSize > 4) {
-      alert('File size exceeds 4 MiB');
+    if (fileSize > 10) {
+      alert('File size exceeds 10 MiB');
       $(this).val('');
     }
   });
