@@ -21,7 +21,7 @@ class s3Functions():
         if os.environ.get('ENV') == 'local-app':
             return
         s3_resource = boto3.resource('s3')
-        s3_resource.Object(bucket_name, new_path).copy_from(CopySource=old_path)
+        s3_resource.Object(bucket_name, new_path).copy_from(CopySource=f'{bucket_name}/{old_path}')
         s3_resource.Object(bucket_name, old_path).delete()
 
     def upload_image_from_url(self, bucket_name, url, CHROME_DRIVER):
