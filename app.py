@@ -86,7 +86,7 @@ def topics():
     topics_screenshot_zip = zip(topic_list, screenshot_list)
     # in_session determines if the user is logged in, and if so they get their own privileges
     in_session = 'orcid' in session
-    return render_template('topics.html', topics_screenshot_zip=topics_screenshot_zip, in_session=in_session, Type=Type, string_type=string_type)
+    return render_template('topics.html', topics_screenshot_zip=topics_screenshot_zip, in_session=in_session, Type=Type, string_type=string_type, role=session['role'])
 
 # Topic attribution
 @app.route('/topic-attribution')
@@ -620,10 +620,22 @@ def get_change_topic():
 def post_change_topic():
     in_session = 'orcid' in session
     g = GraphDB()
-    edits = []
 
     old_name = request.form['old-name'].strip()
-    new_name = request.form['new-name'].strip()
+    new_name = request.form['new-name'].strip()    
+
+    if request.form['action'] == 'delete':
+        topics = sorted(g.get_topics())
+        if old_name:
+            g.delete_topic(old_name)
+            alert = { 'success': f'{old_name} was deleted.' }
+            return render_template('change-topic.html', topics=topics, in_session=in_session, alert=alert)
+        else:
+            alert = {'danger': 'You must specify a topic to delete.'}
+            return render_template('change-topic.html', topics=topics, in_session=in_session, alert=alert), 422
+
+    edits = []
+
     if new_name and old_name:
         change_topics.rename(old_name, new_name)
         edits.append(f'Renamed {old_name} to {new_name}.')

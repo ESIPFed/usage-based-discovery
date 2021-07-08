@@ -391,6 +391,12 @@ class GraphDB:
         '''
         return self.graph_trav.V().drop().iterate()
 
+    def delete_topic(self, topic):
+        '''
+        deletes topic vertex in the database
+        '''
+        return self.graph_trav.V().has('topic', 'topic', topic).drop().iterate()
+
     def delete_app(self, site):
         '''
         deletes application vertex in the database

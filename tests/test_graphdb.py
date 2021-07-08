@@ -294,6 +294,12 @@ class TestInit():
         assert len(result) == 1
         assert siteA in result and siteB not in result and siteC not in result
 
+    def test_delete_topic(self):
+        old_num_vertices = self.db.get_vertex_count()
+        self.db.delete_topic('Fire')
+        assert(self.db.get_topics() == ['Water'])
+        assert((old_num_vertices - 1) == self.db.get_vertex_count())
+
     def test_clear_database_end(self):
         print(self.db.clear_database())
         assert self.db.get_vertex_count() == 0
