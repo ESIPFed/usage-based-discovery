@@ -626,10 +626,17 @@ def post_change_topic():
         change_topics.rename(old_name, new_name)
         edits.append(f'Renamed {old_name} to {new_name}.')
 
-    img_name = new_name if new_name else old_name
-    img_path = f'topic/{img_name}.jpg'
-    if upload_image(request, dims=(640, 427), img_path=img_path):
-        edits.append(f'Uploaded a new topic image {img_path}.')
+    old_path = f'topic/{old_name}.jpg'
+    new_path = f'topic/{new_name}.jpg'
+    img_path = new_path if new_name else old_path
+    did_upload = upload_image(request, dims=(640, 427), img_path=img_path)
+    if did_upload:
+        edits.append(f'Uploaded a new topic image {new_path}.')
+        
+    if new_name and not did_upload:
+        s3 = s3Functions()
+        s3.rename_file(s3_bucket, old_path, new_path)
+        edits.append(f'Renamed topic image from {old_path} to {new_path}.')
 
     topics = sorted(g.get_topics())
     if edits:
