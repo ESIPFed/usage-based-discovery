@@ -631,7 +631,7 @@ def post_change_topic():
     img_path = new_path if new_name else old_path
     did_upload = upload_image(request, dims=(640, 427), img_path=img_path)
     if did_upload:
-        edits.append(f'Uploaded a new topic image {new_path}.')
+        edits.append(f'Uploaded a new topic image {img_path}.')
         
     if new_name and not did_upload:
         s3 = s3Functions()
