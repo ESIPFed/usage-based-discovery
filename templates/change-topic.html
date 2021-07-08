@@ -64,10 +64,12 @@
             <div class="form-group">
               <label>Topic Name<span class="required-star">*</span></label>
               <select class="selectpicker" name="old-name" id="old-name" data-width="100%" data-size="false" required>
+                <option value="" selected></option>
                 {% for t in topics %}
                 <option value="{{t}}">{{t}}</option>
                 {% endfor %}
               </select>
+              <small id="" class="form-text text-muted">Leave this selection blank if creating a new topic.</small>
               <div class="valid-feedback">
                 Looks good!
               </div>
@@ -76,6 +78,7 @@
               <label>New Name<span class="required-star">*</span></label>
               <input type="text" class="form-control" id="new-name" name="new-name" placeholder="Fire and Ice" value=""
                 required />
+                <small id="" class="form-text text-muted">The name of your new topic or the new name for an existing topic.</small>
               <div class="valid-feedback">
                 Looks good!
               </div>
@@ -86,6 +89,7 @@
             <div class="form-group">
               <label class="custom-file-label" for="image_file">Image</label>
               <input type="file" name="image_file" class="custom-file-input" id="image_file" accept="image/*">
+              <small id="" class="form-text text-muted">Upload a new image. Otherwise the existing image will be reused.</small>
             </div>
           </div>
         </div>

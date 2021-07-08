@@ -77,7 +77,7 @@ def topics():
     if string_type == 'all':
         Type = types
         string_type= 'all'
-    topic_list = sorted(g.get_topics_by_types(Type))
+    topic_list = sorted(g.get_topics())
     # attatch presigned url to each topic to get a topic icon to display
     s3 = s3Functions()
     screenshot_list = []
@@ -148,8 +148,10 @@ def apps():
         selected_app=topic_apps[0]
     
     # query for all datasets relating to specified application
-    datasets = g.get_datasets_by_app(selected_app['site'])
-    datasets.sort(key=lambda d: d[2]['title'][0], reverse=False)
+    datasets = []
+    if selected_app:
+        datasets = g.get_datasets_by_app(selected_app['site'])
+        datasets.sort(key=lambda d: d[2]['title'][0], reverse=False)
 
     #getting temporary images for apps who don't have images
     s3 = s3Functions()
@@ -622,9 +624,12 @@ def post_change_topic():
 
     old_name = request.form['old-name'].strip()
     new_name = request.form['new-name'].strip()
-    if new_name:
+    if new_name and old_name:
         change_topics.rename(old_name, new_name)
         edits.append(f'Renamed {old_name} to {new_name}.')
+    if new_name and not old_name:
+        g.add_topic(new_name)
+        edits.append(f'Created a new topic named {new_name}.')
 
     old_path = f'topic/{old_name}.jpg'
     new_path = f'topic/{new_name}.jpg'
@@ -633,14 +638,14 @@ def post_change_topic():
     if did_upload:
         edits.append(f'Uploaded a new topic image {img_path}.')
         
-    if new_name and not did_upload:
+    if new_name and old_name and not did_upload:
         s3 = s3Functions()
         s3.rename_file(s3_bucket, old_path, new_path)
         edits.append(f'Renamed topic image from {old_path} to {new_path}.')
 
     topics = sorted(g.get_topics())
     if edits:
-        alert = { 'success': f'Your edits were successful. { " ".join(edits) }' }
+        alert = { 'success': f'{ " ".join(edits) }' }
         return render_template('change-topic.html', topics=topics, in_session=in_session, alert=alert)
     else:
         alert = {'danger': 'We did not proccess this change request because the changes requested were invalid or nonexistent.'}

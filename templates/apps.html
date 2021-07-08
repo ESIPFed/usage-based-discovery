@@ -186,12 +186,12 @@
             {{app['description'][:320]}}...
           </p>
         </div>
-        {% endif %}
         <div>
           <a href="{{app['site'] if app != None else ''}}" target="_blank" class="font" style="align-self: center;">
             <img src="{{screenshot}}" class="screenshot" />
           </a>
         </div>
+        {% endif %}
       </div>
 
       <div class="col-md-3 right-col">
