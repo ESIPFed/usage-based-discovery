@@ -1,17 +1,9 @@
-try:
-    from flask import Flask
-    import sys
-    sys.path.append("../")
-    from util.graph_db import GraphDB
-    from app import app as flask_app
-    import pytest
-    import urllib
-except Exception as e:
-    print("Some Modules are Missing {} ".format(e))
+from util.graph_db import GraphDB
+from app import app as flask_app
+from flask import url_for
 
 NAME = 'Testing123'
 SITE = 'https///:example.com'
-ENCODED_SITE =  urllib.parse.quote(urllib.parse.quote(SITE, safe=''), safe='') 
 
 TOPIC = 'Test'
 TYPE = 'unclassified'
@@ -25,20 +17,27 @@ APP = {
         'description': 'example description 123'
 }
 
-class TestFlask():
+class TestApp():
+
+    def get_url_for(self, route, **kwargs):
+        with self.flask_app.app_context():
+            return url_for(route, **dict(kwargs, _external=False))
 
     def setup_method(self):
+        flask_app.testing = True
+        flask_app.config['SERVER_NAME'] = 'localhost'
+        self.flask_app = flask_app
         self.client = flask_app.test_client()
 
     def test_base_route(self):
-        url = '/'
+        url = self.get_url_for('topics')
         response = self.client.get(url)
-        print(response)
-        print(response.data)
+        # print(response)
+        # print(response.data)
         assert response.status_code == 200
 
     def test_about_route(self):
-        url = '/about'
+        url = self.get_url_for('about')
         response= self.client.get(url)
         assert response.status_code == 200
 
@@ -47,26 +46,26 @@ class TestFlask():
         test_g = GraphDB()
         test_g.add_topic(TOPIC)
         test_g.add_app(APP, verified=True)
-        url = '/{}/{}/{}'.format(TYPE,TOPIC,ENCODED_SITE)
+        url = self.get_url_for('apps', string_type=TYPE, string_topic=TOPIC, app_site=SITE)
         response=self.client.get(url)
         data = str(response.data)
-        print(data)
+        # print(data)
         assert response.status_code == 200
         assert NAME in data
         assert TOPIC in data
-        url = '/{}/{}/{}'.format('all',TOPIC,'all')
+        url = self.get_url_for('apps', string_type='all', string_topic=TOPIC, app_site='all')
         response=self.client.get(url)
         data = str(response.data)
-        print(data)
-        assert response.status_code == 302 
+        # print(data)
+        assert response.status_code == 200 
  
     def test_explore_route(self):
-        url = '/explore'
+        url = self.get_url_for('explore')
         response = self.client.get(url)
         assert response.status_code == 200
         data = str(response.data)
         data = response.data.decode("utf-8")
-        print(data)
+        # print(data)
         test_g = GraphDB()
         test_g.verify_app(SITE, 'temp-orcid')
         assert NAME in data
