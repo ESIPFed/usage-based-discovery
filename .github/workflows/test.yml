@@ -41,7 +41,9 @@ jobs:
 
     - name: Run Gremlin Server
       run: |
-        wget -q https://mirrors.sonic.net/apache/tinkerpop/3.4.10/apache-tinkerpop-gremlin-server-3.4.10-bin.zip
+        if ! wget -o logfile -q https://mirrors.sonic.net/apache/tinkerpop/3.4.10/apache-tinkerpop-gremlin-server-3.4.10-bin.zip; then
+          cat logfile
+        fi
         unzip -q apache-tinkerpop-gremlin-server-3.4.10-bin.zip
         cd apache-tinkerpop-gremlin-server-3.4.10
         bin/gremlin-server.sh conf/gremlin-server-modern.yaml &
