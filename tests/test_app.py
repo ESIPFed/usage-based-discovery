@@ -26,7 +26,8 @@ class TestApp():
             return url_for(route, **dict(kwargs, _external=False))
 
     def setup_class(self):
-        pass
+        setup_env(flask_env='development')
+        self.db = GraphDB()
 
     def setup_method(self):
         setup_env(flask_env='development')
@@ -34,8 +35,7 @@ class TestApp():
         flask_app.testing = True
         flask_app.config['SERVER_NAME'] = 'localhost.localdomain'
         self.flask_app = flask_app
-        db = GraphDB()
-        db.clear_database()
+        self.db.clear_database()
 
     def test_base_route(self):
         url = self.get_url_for('topics')
@@ -51,9 +51,8 @@ class TestApp():
 
     def test_app_route(self):
         #add gremlin topic and app
-        db = GraphDB()
-        db.add_topic(TOPIC)
-        db.add_app(APP, verified=True)
+        self.db.add_topic(TOPIC)
+        self.db.add_app(APP, verified=True)
         url = self.get_url_for('apps', string_type=TYPE, string_topic=TOPIC, app_site=SITE)
         response = self.flask_app.test_client().get(url)
         data = str(response.data)
@@ -68,16 +67,15 @@ class TestApp():
         assert response.status_code == 200 
  
     def test_explore_route(self):
-        db = GraphDB()
-        db.add_topic(TOPIC)
-        db.add_app(APP, verified=True)
+        self.db.add_topic(TOPIC)
+        self.db.add_app(APP, verified=True)
         url = self.get_url_for('explore')
         response = self.flask_app.test_client().get(url)
         assert response.status_code == 200
         data = str(response.data)
         data = response.data.decode("utf-8")
         # print(data)
-        db.verify_app(SITE, 'temp-orcid')
+        self.db.verify_app(SITE, 'temp-orcid')
         assert NAME in data
         assert TOPIC in data
 
@@ -95,9 +93,8 @@ class TestApp():
             setup_env(flask_env='development', orcid="9020-0003-9403-1032")
             c.get(self.get_url_for('login'), follow_redirects=True)
 
-            db = GraphDB()
-            db.add_topic(TOPIC)
-            assert db.get_topics() == [TOPIC]
+            self.db.add_topic(TOPIC)
+            assert self.db.get_topics() == [TOPIC]
             rv = c.post(self.get_url_for('post_change_topic'), 
                 content_type='multipart/form-data', 
                 data={
@@ -106,15 +103,14 @@ class TestApp():
                     'action': 'edit'
                 })
             assert rv.status_code == 200
-            assert db.get_topics() == ['a new topic name']
+            assert self.db.get_topics() == ['a new topic name']
 
     def test_change_topic_route_new(self):
         with self.flask_app.test_client() as c:
             setup_env(flask_env='development', orcid="9020-0003-9403-1032")
             c.get(self.get_url_for('login'), follow_redirects=True)
 
-            db = GraphDB()
-            assert db.get_topics() == []
+            assert self.db.get_topics() == []
             rv = c.post(self.get_url_for('post_change_topic'), 
                 content_type='multipart/form-data', 
                 data={
@@ -123,16 +119,15 @@ class TestApp():
                     'action': 'edit'
                 })
             assert rv.status_code == 200
-            assert db.get_topics() == ['a new topic name']
+            assert self.db.get_topics() == ['a new topic name']
 
     def test_change_topic_route_delete(self):
         with self.flask_app.test_client() as c:
             setup_env(flask_env='development', orcid="9020-0003-9403-1032")
             c.get(self.get_url_for('login'), follow_redirects=True)
 
-            db = GraphDB()
-            db.add_topic(TOPIC)
-            assert db.get_topics() == [TOPIC]
+            self.db.add_topic(TOPIC)
+            assert self.db.get_topics() == [TOPIC]
             rv = c.post(self.get_url_for('post_change_topic'), 
                 content_type='multipart/form-data', 
                 data={
@@ -141,6 +136,6 @@ class TestApp():
                     'action': 'delete'
                 })
             assert rv.status_code == 200
-            assert db.get_topics() == []
+            assert self.db.get_topics() == []
 
         
