@@ -86,7 +86,8 @@ def topics():
     topics_screenshot_zip = zip(topic_list, screenshot_list)
     # in_session determines if the user is logged in, and if so they get their own privileges
     in_session = 'orcid' in session
-    return render_template('topics.html', topics_screenshot_zip=topics_screenshot_zip, in_session=in_session, Type=Type, string_type=string_type, role=session['role'])
+    role = session['role'] if 'role' in session else None
+    return render_template('topics.html', topics_screenshot_zip=topics_screenshot_zip, in_session=in_session, Type=Type, string_type=string_type, role=role)
 
 # Topic attribution
 @app.route('/topic-attribution')
