@@ -1,9 +1,5 @@
-from dotenv import load_dotenv
-load_dotenv()
-
-import sys
-sys.path.append("../")
 from util.graph_db import GraphDB, valid_endpoint
+from util.env_helper import setup_env
 
 SITE = 'https://example.com'
 DOI = '1234567890'
@@ -60,6 +56,7 @@ def test_invalid_endpoint():
 class TestInit():
 
     def setup_method(self):
+        setup_env(flask_env='development')
         self.db = GraphDB()
 
     def teardown_method(self):

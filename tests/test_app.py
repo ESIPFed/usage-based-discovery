@@ -1,6 +1,7 @@
 from util.graph_db import GraphDB
-from app import app as flask_app
+from app import create_app
 from flask import url_for
+from util.env_helper import setup_env
 
 NAME = 'Testing123'
 SITE = 'https///:example.com'
@@ -24,8 +25,10 @@ class TestApp():
             return url_for(route, **dict(kwargs, _external=False))
 
     def setup_method(self):
+        setup_env(flask_env='development')
+        flask_app = create_app()
         flask_app.testing = True
-        flask_app.config['SERVER_NAME'] = 'localhost'
+        flask_app.config['SERVER_NAME'] = 'localhost.localdomain'
         self.flask_app = flask_app
         self.client = flask_app.test_client()
 

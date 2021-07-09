@@ -11,14 +11,14 @@ from flask import url_for
 class s3Functions():
 
     def __init__(self):
-        if os.environ.get('ENV') != 'local-app':
+        if os.environ.get('FLASK_ENV') != 'development':
             self.s3= boto3.client('s3')
 
     def __del__(self):
         pass
 
     def rename_file(self, bucket_name, old_path, new_path):
-        if os.environ.get('ENV') == 'local-app':
+        if os.environ.get('FLASK_ENV') == 'development':
             return
         s3_resource = boto3.resource('s3')
         s3_resource.Object(bucket_name, new_path).copy_from(CopySource=f'{bucket_name}/{old_path}')
@@ -35,7 +35,7 @@ class s3Functions():
         Returns output filename, basically the meat of the URL,
         using '-' in place of non-alphnumeric chars, plus .png
         """
-        if os.environ.get('ENV') == 'local-app':
+        if os.environ.get('FLASK_ENV') == 'development':
             return
         file_name = re.sub(r'^https?://', '', url)
         file_name = re.sub(r'\W', '-', file_name) + '.png'
@@ -53,7 +53,7 @@ class s3Functions():
         https://chromedriver.storage.googleapis.com/:
         linux64 or mac64
         """
-        if os.environ.get('ENV') == 'local-app':
+        if os.environ.get('FLASK_ENV') == 'development':
             return
         os_suffix = {'Linux':'linux64', 'Darwin':'mac64'}
         path = "../drivers/chromedriver89." + os_suffix.get(platform.system())
@@ -65,13 +65,13 @@ class s3Functions():
         return webdriver.Chrome(path, options=option)
 
     def upload_image(self, bucket_name, unique_filename, f):
-        if os.environ.get('ENV') == 'local-app':
+        if os.environ.get('FLASK_ENV') == 'development':
             return
         s3 = boto3.resource('s3')
         s3.meta.client.upload_file(f, bucket_name, unique_filename)
 
     def upload_image_obj(self, bucket_name, unique_filename, f):
-        if os.environ.get('ENV') == 'local-app':
+        if os.environ.get('FLASK_ENV') == 'development':
             return
         s3 = boto3.resource('s3')
         s3.meta.client.upload_fileobj(f, bucket_name, unique_filename)
@@ -81,7 +81,7 @@ class s3Functions():
             return f.read()
 
     def get_file(self, bucket_name, file_name):
-        if os.environ.get('ENV') == 'local-app':
+        if os.environ.get('FLASK_ENV') == 'development':
             return self.get_file_local(file_name)
         s3 = boto3.resource('s3')
         bucket = s3.Bucket(bucket_name)
@@ -96,7 +96,7 @@ class s3Functions():
 #        return image_list
 
     def list_s3_objects(self, bucket_name):
-        if os.environ.get('ENV') == 'local-app':
+        if os.environ.get('FLASK_ENV') == 'development':
             return
         s3 = boto3.resource('s3')
         bucket = s3.Bucket(bucket_name)
@@ -104,7 +104,7 @@ class s3Functions():
         return s3_list
 
     def delete_image(self, bucket_name, file_name):
-        if os.environ.get('ENV') == 'local-app':
+        if os.environ.get('FLASK_ENV') == 'development':
             return
         s3 = boto3.resource('s3')
         obj = s3.Object(bucket_name, file_name)
@@ -117,7 +117,7 @@ class s3Functions():
         :param expiration: Time in seconds for the presigned URL to remain valid
         :return: Presigned URL as string. If error, returns None.
         """
-        if os.environ.get('ENV') == 'local-app':
+        if os.environ.get('FLASK_ENV') == 'development':
             return url_for('static', filename=file_name)
         # Generate a presigned URL for the S3 object
         s3 = boto3.client('s3')

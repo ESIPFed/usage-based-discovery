@@ -123,17 +123,15 @@ Install (and use) **python3** if not already available. We recommend using a too
 
 Download this repo to your computer.
 
-Rename `example_dotenv` to `.env` and set the appropriate values (which will allow for local devlopment).
-
 Create a virtual environment (https://docs.python.org/3/library/venv.html) in the root drectory where you cloned this repo, and keep it activated (`$ source venv/bin/activate`).
 
 Download the requirements `$ pip3 install -r requirements.txt`
 
 Set up and run a **Gremlin** server https://tinkerpop.apache.org/gremlin.html (via local installation) or via Docker (https://hub.docker.com/r/tinkerpop/gremlin-server/). If using Docker, be sure to expose port 8182 of the Gremlin server to your local machine using the -p command (e.g.: `docker run -p 8182:8182 my-gremlin-server-image`) or using the run options in Docker Desktop GUI.
 
-Load the DB by running `$ python3 load_graphy.py -i sample_data.csv` from the util directory.
+Load the DB by running `$ python -m util.load_graph -i util/sample_data.csv -e development` from the root directory.
 
-Run the **Flask** app via `$ python3 app.py`
+Run the **Flask** app via `$ python app.py -e development`
 
 Browse to http://localhost:5000
 

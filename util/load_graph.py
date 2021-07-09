@@ -3,19 +3,17 @@
 load_graph.py
 Load a set of application-dataset relationships in CSV form into a Neptune graph database
 """
-from dotenv import load_dotenv
-load_dotenv()
-import sys
-sys.path.append("../")
 import csv
 import argparse
 from util import csv_helper
-from graph_db import GraphDB
+from util.graph_db import GraphDB
+from util.env_helper import setup_env
 
 def parse_options():
     """parse the command line options, returning input file and Neptune endpoint"""
     parser = argparse.ArgumentParser(description="Load CSV input into UBD Neptune database")
     parser.add_argument('-i', '--ifile', default='graph_snapshot.csv', metavar="input-pathname")
+    parser.add_argument('-e')
     return parser.parse_args()
 
 def db_input_csv(input_file):
@@ -88,4 +86,6 @@ def db_input_csv(input_file):
 
 if __name__ == '__main__':
     args = parse_options()
+    if args.e == 'development':
+        setup_env(flask_env='development')
     db_input_csv(args.ifile)
