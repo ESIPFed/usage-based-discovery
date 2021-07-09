@@ -1,12 +1,11 @@
 name: Unit Testing
 
 on:
-#   push:
-#     paths-ignore:
-#       - 'README.md'
-#     branches: 
-#       - main
-#       - dev
+  push:
+    paths-ignore:
+      - 'README.md'
+    branches: 
+      - main
   workflow_dispatch:
 
 jobs:
