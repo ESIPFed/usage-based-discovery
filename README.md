@@ -135,6 +135,8 @@ Run the **Flask** app via `$ python app.py -e development`
 
 Browse to http://localhost:5000
 
+Test via `$ pytest`
+
 ## Security
 
 Install git-secrets on your machine to prevent yourself from accidentally committing sensitive info (like access keys, secrets) to your GitHub repo:
