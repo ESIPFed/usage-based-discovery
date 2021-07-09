@@ -1,9 +1,5 @@
-from dotenv import load_dotenv
-load_dotenv()
-
-import sys
-sys.path.append("../")
 from util.graph_db import GraphDB, valid_endpoint
+from util.env_helper import setup_env
 
 SITE = 'https://example.com'
 DOI = '1234567890'
@@ -60,6 +56,7 @@ def test_invalid_endpoint():
 class TestInit():
 
     def setup_method(self):
+        setup_env(flask_env='development')
         self.db = GraphDB()
 
     def teardown_method(self):
@@ -295,10 +292,28 @@ class TestInit():
         assert siteA in result and siteB not in result and siteC not in result
 
     def test_delete_topic(self):
+        self.db.add_app({
+            'type': '',
+            'topic': ['Fire'],
+            'name': 'samplename2',
+            'site': 'https://example2.com',
+            'screenshot': 'image2.png',
+            'publication': 'publication2',
+            'description': 'sample description for a sample app2',
+            'essential_variable': ['Precipitation']
+        })
+        self.db.add_dataset({
+            'doi': 'datadoi',
+            'title': 'samplename'
+        })
+        self.db.add_relationship('https://example2.com', 'datadoi')
+
         old_num_vertices = self.db.get_vertex_count()
+        old_num_edges = self.db.get_edge_count()
         self.db.delete_topic('Fire')
         assert(self.db.get_topics() == ['Water'])
         assert((old_num_vertices - 1) == self.db.get_vertex_count())
+        assert((old_num_edges - 3) == self.db.get_edge_count())
 
     def test_clear_database_end(self):
         print(self.db.clear_database())
