@@ -26,20 +26,15 @@ class TestApp():
             return url_for(route, **dict(kwargs, _external=False))
 
     def setup_class(self):
-        pass
-
-    def teardown_method(self):
-        self.db = None
+        setup_env(flask_env='development')
+        self.db = GraphDB()
 
     def setup_method(self):
         setup_env(flask_env='development')
-        
         flask_app = create_app()
         flask_app.testing = True
         flask_app.config['SERVER_NAME'] = 'localhost.localdomain'
         self.flask_app = flask_app
-        
-        self.db = GraphDB()
         self.db.clear_database()
 
     def test_base_route(self):

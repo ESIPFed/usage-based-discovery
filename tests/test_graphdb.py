@@ -55,12 +55,12 @@ def test_invalid_endpoint():
 
 class TestInit():
 
-    def setup_method(self):
+    def setup_class(self):
         setup_env(flask_env='development')
         self.db = GraphDB()
 
-    def teardown_method(self):
-        self.db = None
+    def setup_method(self):
+        pass
 
     def test_clear_database_start(self):
         print(self.db.clear_database())
