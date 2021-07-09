@@ -1,3 +1,6 @@
+from argparse import ArgumentParser
+from util import env_helper
+
 types = [
             'unclassified',
             'Software',
@@ -665,20 +668,16 @@ def create_app():
     
     return flask_app
 
-app = None
+# check if running in non-production mode,
+# in which case we should use env_helper.setup_env()
+parser = ArgumentParser()
+parser.add_argument('-e')
+args = parser.parse_args()
+flask_env = args.e
+if flask_env == 'development':
+    env_helper.setup_env(flask_env=flask_env)
+
+app = create_app()
 
 if __name__ == '__main__':
-  from argparse import ArgumentParser
-  from util import env_helper
-  
-  # check if running in non-production mode,
-  # in which case we should use env_helper.setup_env()
-  parser = ArgumentParser()
-  parser.add_argument('-e')
-  args = parser.parse_args()
-  flask_env = args.e
-  if flask_env == 'development':
-      env_helper.setup_env(flask_env=flask_env)
-
-  app = create_app()
   app.run(debug=True)
