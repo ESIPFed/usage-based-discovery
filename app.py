@@ -41,20 +41,20 @@ def create_app():
     from PIL import Image
     import io
 
-    app = Flask(__name__)
-    app.config['JSON_SORT_KEYS'] = False
-    FontAwesome(app)
+    flask_app = Flask(__name__)
+    flask_app.config['JSON_SORT_KEYS'] = False
+    FontAwesome(flask_app)
 
     if os.environ.get('FLASK_ENV') == 'development':
-        app.secret_key = os.environ.get('APP_SECRET_KEY')
+        flask_app.secret_key = os.environ.get('APP_SECRET_KEY')
     else:
-        app.secret_key = secrets_manager.get_secret('APP_SECRET_KEY')
+        flask_app.secret_key = secrets_manager.get_secret('APP_SECRET_KEY')
     
-    @app.errorhandler(403)
+    @flask_app.errorhandler(403)
     def forbidden(error):
         return error, 403
 
-    @app.before_request
+    @flask_app.before_request
     def before_request():
         supervisor_routes = ['/admin', '/delete_application', '/delete_dataset_relation', 
             '/verify-application', '/verify-dataset', '/add-csv']
@@ -63,7 +63,7 @@ def create_app():
                 abort(403)
 
     # Initial screen
-    @app.route('/') 
+    @flask_app.route('/') 
     def topics():
         string_type = request.args.get('string_type') or 'all'
         # string_type is in this format: "<type>,<type2>,<type3>"
@@ -85,18 +85,18 @@ def create_app():
         return render_template('topics.html', topics_screenshot_zip=topics_screenshot_zip, in_session=in_session, Type=Type, string_type=string_type, role=role)
 
     # Topic attribution
-    @app.route('/topic-attribution')
+    @flask_app.route('/topic-attribution')
     def topic_attribution():
         in_session = 'orcid' in session
         return render_template('topic-attribution.html', in_session=in_session)
 
     # About page
-    @app.route('/about')
+    @flask_app.route('/about')
     def about():
         in_session = 'orcid' in session
         return render_template('about.html', in_session=in_session)
 
-    @app.route('/explore')
+    @flask_app.route('/explore')
     def explore():
         in_session = 'orcid' in session
         g = GraphDB()
@@ -108,7 +108,7 @@ def create_app():
     """
 
     # Main screen
-    @app.route('/apps')
+    @flask_app.route('/apps')
     def apps():
         app_site = request.args.get('app_site')
         string_type = request.args.get('string_type')
@@ -166,7 +166,7 @@ def create_app():
             app=selected_app, datasets=datasets, screenshot=screenshot, \
             in_session=in_session, trusted_user=trusted_user, undo=undo)
 
-    @app.route('/login')
+    @flask_app.route('/login')
     def login():
         '''
         we get a code from the url that orcid has redirected us back to our site with. 
@@ -199,13 +199,13 @@ def create_app():
         session['orcid']= orcid
         return redirect(url_for('topics'))
 
-    @app.route('/logout')
+    @flask_app.route('/logout')
     def logout():
         del session['orcid']
         del session['role']
         return redirect(request.referrer)
 
-    @app.route('/auth')
+    @flask_app.route('/auth')
     def auth():
         '''
         send the user to orcid with our app's client_id
@@ -219,7 +219,7 @@ def create_app():
         return redirect("https://orcid.org/oauth/authorize?client_id=" + os.environ.get('CLIENT_ID') + \
             "&response_type=code&scope=/authenticate&redirect_uri=" + redirect_uri)
 
-    @app.route('/add-relationship', methods=["GET","POST"])
+    @flask_app.route('/add-relationship', methods=["GET","POST"])
     def add_relationship():
         '''
         only allowing people logged in to be able to add-relationships
@@ -432,7 +432,7 @@ def create_app():
                 g.delete_relationship(APP['site'], dataset[2]['doi'][0])
         g.delete_orphan_datasets()
 
-    @app.route('/delete_dataset_relation')
+    @flask_app.route('/delete_dataset_relation')
     def delete_dataset_relation():
         app_site = request.args.get('app_site')
         doi = request.args.get('doi')
@@ -461,7 +461,7 @@ def create_app():
             g.delete_orphan_datasets()
         return redirect(request.referrer)
 
-    @app.route('/delete_application')
+    @flask_app.route('/delete_application')
     def delete_application():
         app_site = request.args.get('app_site')
         if 'role' in session and session['role']=='supervisor':
@@ -494,7 +494,7 @@ def create_app():
         redirect_path = request.referrer.rsplit('/',1)[0] + '/all' # this is so we direct to .../topic/all instead of .../topic/app (topic/app doesn't exit after it gets deleted)
         return redirect(redirect_path)
 
-    @app.route('/undo')
+    @flask_app.route('/undo')
     def undo():
         change = None
         #create stack implementation to make undo's 
@@ -521,7 +521,7 @@ def create_app():
             return redirect(request.referrer)
         return redirect(request.referrer)
 
-    @app.route('/verify-application')
+    @flask_app.route('/verify-application')
     def verify_application():
         app_site = request.args.get('app_site')
         g = GraphDB()
@@ -529,7 +529,7 @@ def create_app():
             g.verify_app(app_site, session['orcid'])
         return redirect(request.referrer)
 
-    @app.route('/verify-dataset')
+    @flask_app.route('/verify-dataset')
     def verify_dataset():
         app_name = request.args.get('app_name')
         doi = request.args.get('doi')
@@ -538,7 +538,7 @@ def create_app():
             g.verify_relationship(app_name, doi, session['orcid'])
         return redirect(request.referrer)
 
-    @app.route('/add_annotation', methods=["GET", "POST"])
+    @flask_app.route('/add_annotation', methods=["GET", "POST"])
     def add_annotation():
         app_site = request.args.get('app_site')
         doi = request.args.get('doi')
@@ -548,7 +548,7 @@ def create_app():
             g.add_annotation(app_site, doi, f['annotation'])
         return redirect(request.referrer)
 
-    @app.route('/resolve_annotation')
+    @flask_app.route('/resolve_annotation')
     def resolve_annotation():
         app_site = request.args.get('app_site')
         doi = request.args.get('doi')
@@ -557,7 +557,7 @@ def create_app():
         return redirect(request.referrer)
 
 
-    @app.route('/add-csv', methods=["GET", "POST"])
+    @flask_app.route('/add-csv', methods=["GET", "POST"])
     def add_csv():
         print(request.files)
         if request.method=="POST" and session['role']=='supervisor':
@@ -589,7 +589,7 @@ def create_app():
             app_stats[app_stat_key] = key_stats
         return app_stats
 
-    @app.route('/leader-board', methods=["GET"])
+    @flask_app.route('/leader-board', methods=["GET"])
     def leader_board():
         orcid = None
         in_session = 'orcid' in session
@@ -609,14 +609,14 @@ def create_app():
 
         return render_template('leader-board.html', stats={'apps': app_stats, 'datasets': uses_stats}, in_session=in_session, orcid=orcid)
 
-    @app.route('/admin/change-topic', methods=["GET"])
+    @flask_app.route('/admin/change-topic', methods=["GET"])
     def get_change_topic():
         in_session = 'orcid' in session
         g = GraphDB()
         topics = sorted(g.get_topics())
         return render_template('change-topic.html', topics=topics, in_session=in_session)
 
-    @app.route('/admin/change-topic', methods=["POST"])
+    @flask_app.route('/admin/change-topic', methods=["POST"])
     def post_change_topic():
         in_session = 'orcid' in session
         g = GraphDB()
@@ -663,7 +663,9 @@ def create_app():
             alert = {'danger': 'We did not proccess this change request because the changes requested were invalid or nonexistent.'}
             return render_template('change-topic.html', topics=topics, in_session=in_session, alert=alert), 422
     
-    return app
+    return flask_app
+
+app = None
 
 if __name__ == '__main__':
   from argparse import ArgumentParser
@@ -679,5 +681,4 @@ if __name__ == '__main__':
       env_helper.setup_env(flask_env=flask_env)
 
   app = create_app()
-
   app.run(debug=True)
