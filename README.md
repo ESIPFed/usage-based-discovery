@@ -131,7 +131,7 @@ Set up and run a **Gremlin** server https://tinkerpop.apache.org/gremlin.html (v
 
 Load the DB by running `$ python -m util.load_graph -i util/sample_data.csv -e development` from the root directory.
 
-Run the **Flask** app via `$ python app.py -e development`
+Run the **Flask** app via `$ python app_local.py`
 
 Browse to http://localhost:5000
 

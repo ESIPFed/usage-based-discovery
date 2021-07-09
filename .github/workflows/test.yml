@@ -48,9 +48,6 @@ jobs:
 
     - name: PyTest
       run: |
-        export NEPTUNEDBRO=ws://localhost:8182/gremlin
-        export STAGE=
-        export S3_BUCKET=test-parth-bucket
         pytest -v -s
 
     - name: Stop Gremlin Server

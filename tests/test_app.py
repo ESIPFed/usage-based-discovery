@@ -1,7 +1,10 @@
-from util.graph_db import GraphDB
-from app import create_app
-from flask import url_for, session
 from util.env_helper import setup_env
+setup_env(flask_env='development')
+
+from util.graph_db import GraphDB
+from app_factory import create_app
+from flask import url_for, session
+
 import os
 
 NAME = 'Testing123'
@@ -26,7 +29,6 @@ class TestApp():
             return url_for(route, **dict(kwargs, _external=False))
 
     def setup_class(self):
-        setup_env(flask_env='development')
         self.db = GraphDB()
 
     def setup_method(self):
