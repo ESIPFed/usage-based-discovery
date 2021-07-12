@@ -626,13 +626,9 @@ def create_app():
 
         if request.form['action'] == 'delete':
             topics = sorted(g.get_topics())
-            if old_name:
-                g.delete_topic(old_name)
-                alert = { 'success': f'{old_name} was deleted.' }
-                return render_template('change-topic.html', topics=topics, in_session=in_session, alert=alert)
-            else:
-                alert = {'danger': 'You must specify a topic to delete.'}
-                return render_template('change-topic.html', topics=topics, in_session=in_session, alert=alert), 422
+            g.delete_topic(old_name)
+            alert = { 'success': f'{old_name} was deleted.' }
+            return render_template('change-topic.html', topics=topics, in_session=in_session, alert=alert)
 
         edits = []
 

@@ -141,4 +141,38 @@ class TestApp():
             assert rv.status_code == 200
             assert self.db.get_topics() == []
 
+    def test_change_topic_route_delete_empty_name(self):
+        with self.flask_app.test_client() as c:
+            load_vars(flask_env='development', orcid="9020-0003-9403-1032")
+            c.get(self.get_url_for('login'), follow_redirects=True)
+
+            self.db.add_topic('')
+            assert self.db.get_topics() == ['']
+            rv = c.post(self.get_url_for('post_change_topic'), 
+                content_type='multipart/form-data', 
+                data={
+                    'old-name': '',
+                    'new-name': '',
+                    'action': 'delete'
+                })
+            assert rv.status_code == 200
+            assert self.db.get_topics() == []
+
+    def test_change_topic_route_delete_nonexistent_returns_200(self):
+        with self.flask_app.test_client() as c:
+            load_vars(flask_env='development', orcid="9020-0003-9403-1032")
+            c.get(self.get_url_for('login'), follow_redirects=True)
+
+            self.db.add_topic('Cyclones')
+            assert self.db.get_topics() == ['Cyclones']
+            rv = c.post(self.get_url_for('post_change_topic'), 
+                content_type='multipart/form-data', 
+                data={
+                    'old-name': '',
+                    'new-name': '',
+                    'action': 'delete'
+                })
+            assert rv.status_code == 200
+            assert self.db.get_topics() == ['Cyclones']
+
         
