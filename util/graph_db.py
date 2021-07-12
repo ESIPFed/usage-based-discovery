@@ -18,6 +18,17 @@ def valid_endpoint(endpoint):
     '''
     return (endpoint.startswith("wss://") or endpoint.startswith("ws://")) and endpoint.endswith(":8182/gremlin")
 
+# Temp fix for: https://issues.apache.org/jira/browse/TINKERPOP-2388
+class CustomTornadoTransport(TornadoTransport):
+    def close(self):
+        self._loop.run_sync(lambda: self._ws.close())
+        message = self._loop.run_sync(lambda: self._ws.read_message())
+        # This situation shouldn't really happen. Since the connection was closed,
+        # the next message should be None
+        if message is not None:
+            raise RuntimeError("Connection was not properly closed")
+        self._loop.close()
+
 class GraphDB:
     '''
     GraphDB: facilitates all interactions to the Neptune Graph Database
@@ -32,7 +43,7 @@ class GraphDB:
             sys.exit("Neptune Endpoint was not supplied in NEPTUNEDBRO environment")
         if not valid_endpoint(neptune_endpoint):
             sys.exit("Invalid Neptune Endpoint")
-        self.remote_connection = DriverRemoteConnection(neptune_endpoint, 'g')
+        self.remote_connection = DriverRemoteConnection(neptune_endpoint, 'g', transport_factory=CustomTornadoTransport)
         self.graph_trav = graph.traversal().withRemote(self.remote_connection)
 
     def __del__(self):
