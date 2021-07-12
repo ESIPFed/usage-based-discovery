@@ -7,7 +7,7 @@ import csv
 import argparse
 from util import csv_helper
 from util.graph_db import GraphDB
-from util.env_helper import setup_env
+from util.env_helper import load_vars
 
 def parse_options():
     """parse the command line options, returning input file and Neptune endpoint"""
@@ -87,5 +87,5 @@ def db_input_csv(input_file):
 if __name__ == '__main__':
     args = parse_options()
     if args.e == 'development':
-        setup_env(flask_env='development')
+        load_vars(flask_env='development')
     db_input_csv(args.ifile)

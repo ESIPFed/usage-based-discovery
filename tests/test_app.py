@@ -1,5 +1,5 @@
-from util.env_helper import setup_env
-setup_env(flask_env='development')
+from util.env_helper import load_vars, clear_vars
+load_vars(flask_env='development')
 
 from util.graph_db import GraphDB
 from app_factory import create_app
@@ -32,7 +32,8 @@ class TestApp():
         self.db = GraphDB()
 
     def setup_method(self):
-        setup_env(flask_env='development')
+        clear_vars()
+        load_vars(flask_env='development')
         flask_app = create_app()
         flask_app.testing = True
         flask_app.config['SERVER_NAME'] = 'localhost.localdomain'
@@ -92,7 +93,7 @@ class TestApp():
 
     def test_change_topic_route_rename(self):
         with self.flask_app.test_client() as c:
-            setup_env(flask_env='development', orcid="9020-0003-9403-1032")
+            load_vars(flask_env='development', orcid="9020-0003-9403-1032")
             c.get(self.get_url_for('login'), follow_redirects=True)
 
             self.db.add_topic(TOPIC)
@@ -109,7 +110,7 @@ class TestApp():
 
     def test_change_topic_route_new(self):
         with self.flask_app.test_client() as c:
-            setup_env(flask_env='development', orcid="9020-0003-9403-1032")
+            load_vars(flask_env='development', orcid="9020-0003-9403-1032")
             c.get(self.get_url_for('login'), follow_redirects=True)
 
             assert self.db.get_topics() == []
@@ -125,7 +126,7 @@ class TestApp():
 
     def test_change_topic_route_delete(self):
         with self.flask_app.test_client() as c:
-            setup_env(flask_env='development', orcid="9020-0003-9403-1032")
+            load_vars(flask_env='development', orcid="9020-0003-9403-1032")
             c.get(self.get_url_for('login'), follow_redirects=True)
 
             self.db.add_topic(TOPIC)

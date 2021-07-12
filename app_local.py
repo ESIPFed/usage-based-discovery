@@ -1,8 +1,11 @@
 from util import env_helper
-env_helper.setup_env(flask_env='development')
+env_helper.load_vars(flask_env='development')
 
 import app_factory
 
 if __name__ == '__main__':
     app = app_factory.create_app()
-    app.run(debug=True)
+    
+    # runs app and loads .env if it exists
+    # load_dotenv=True will not override any env vars
+    app.run(debug=True, load_dotenv=True)

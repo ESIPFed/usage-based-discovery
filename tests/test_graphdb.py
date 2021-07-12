@@ -1,5 +1,5 @@
-from util.env_helper import setup_env
-setup_env(flask_env='development')
+from util.env_helper import load_vars
+load_vars(flask_env='development')
 
 from util.graph_db import GraphDB, valid_endpoint
 
