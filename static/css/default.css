@@ -53,12 +53,8 @@ p {
 }
 
 a {
-  color: #cccccc;
+  color: #8a9cb4;
   transition: 0.3s;
-}
-
-a:hover {
-  color: #fff;
 }
 
 .navbar-brand {
