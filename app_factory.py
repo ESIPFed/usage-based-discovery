@@ -1,8 +1,9 @@
-from flask import Flask, request, session, abort
+from flask import Flask
 from flask_fontawesome import FontAwesome
 import os
 from util import secrets_manager
-from routes import topic_routes, app_routes, user_routes, relationship_routes, info_routes, dataset_routes
+from routes import topic_routes, app_routes, user_routes, error_routes, \
+    relationship_routes, info_routes, dataset_routes, before_routes
 
 '''
 # app layout
@@ -35,17 +36,9 @@ def create_flask_app():
     else:
         flask_app.secret_key = secrets_manager.get_secret('APP_SECRET_KEY')
     
-    @flask_app.errorhandler(403)
-    def forbidden(error):
-        return error, 403
+    error_routes.bind(flask_app)    
 
-    @flask_app.before_request
-    def before_request():
-        supervisor_routes = ['/admin', '/delete_application', '/delete_dataset_relation', 
-            '/verify-application', '/verify-dataset', '/add-csv']
-        if any(request.path.startswith(s) for s in supervisor_routes):
-            if (not 'role' in session) or (not session['role'] == 'supervisor'):
-                abort(403)
+    before_routes.bind(flask_app)
 
     user_routes.bind(flask_app)
     
