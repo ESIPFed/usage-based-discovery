@@ -2,7 +2,7 @@ from util.env_helper import load_vars, clear_vars
 load_vars(flask_env='development')
 
 from util.graph_db import GraphDB
-from app_factory import create_app
+from app_factory import create_flask_app
 from flask import url_for, session
 
 import os
@@ -34,7 +34,7 @@ class TestApp():
     def setup_method(self):
         clear_vars()
         load_vars(flask_env='development')
-        flask_app = create_app()
+        flask_app = create_flask_app()
         flask_app.testing = True
         flask_app.config['SERVER_NAME'] = 'localhost.localdomain'
         self.flask_app = flask_app
