@@ -51,7 +51,7 @@ def bind(flask_app):
         #getting temporary images for apps who don't have images
         s3 = s3Functions()
         filename = 'topic/'+topic+'.jpg' 
-        if selected_app is not None and selected_app['screenshot'] != 'NA':
+        if selected_app is not None and selected_app['screenshot'] != 'NA' and selected_app['screenshot']:
             filename = selected_app['screenshot']
         screenshot = s3.create_presigned_url(os.environ.get('S3_BUCKET'), filename)
         
