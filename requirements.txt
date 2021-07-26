@@ -13,7 +13,7 @@ selenium==3.141.0
 tqdm==4.59.0
 troposphere==2.7.0
 Unidecode==1.2.0
-urllib3==1.26.4
+urllib3==1.26.5
 zappa==0.52.0
 python-dotenv
 Flask-FontAwesome==0.1.5
