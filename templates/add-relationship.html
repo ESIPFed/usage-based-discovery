@@ -65,7 +65,7 @@
         action="{{ url_for('add_relationship') }}" method="post" novalidate>
         <div class="row mt-3">
           <div class="col-6">
-
+            <h3>Add Content</h3>
           </div>
           <div class="col-6 d-flex justify-content-end">
             <button id="submit_btn" type="submit" class="btn btn-success">Submit</button>
@@ -190,19 +190,25 @@
     
     <form class="needs-validation" action="{{ url_for('add_csv') }}" method="post" enctype="multipart/form-data"
       novalidate>
-      <h3>Upload Applications</h3>
-      <div class="form-group">
-        <div class="custom-file">
-          <p>Only CSV files, must have headers, topic, name, site, description, title (of dataset), doi (of dataset).
-            type(optional but make sure it matches with existing types), publication(optional). Note: Take a DB snapshot
-            before adding. if your csv is 30 lines or longer it may take a couple seconds to
-            add.</p>
-          <label class="custom-file-label" for="customFile">Choose CSV</label><br>
-          <input type="file" name="csv_file" class="custom-file-input" id="customFile" accept=".csv">
+      <div class="row my-3">
+        <div class="col-6">
+          <h3>Add CSV</h3>
+        </div>
+        <div class="col-6 d-flex justify-content-end">
+          <button id="submit_btn" type="submit" class="btn btn-primary">Submit</button>
         </div>
       </div>
-      <div class="form-group my-4">
-        <button id="submit_btn" type="submit" class="btn btn-primary">Submit CSV</button>
+      <div class="form-group">
+        <div class="custom-file">
+          <div class="alert alert-info" role="alert">
+            Must have headers: topic, name, site, description, title (of dataset), doi (of dataset).
+            All headers: topic (see dropdown), name, site, publication, description, title, doi, type (one of Software, Research, unclassified), app_discoverer (ORCID), app_verifier (ORCID), app_verified (true or false), annotation, discoverer (ORCID), verifier (ORCID), verified (true or false), essential_variable (see dropdown).
+          </div>
+          <div class="form-group">
+            <label class="custom-file-label" for="customFile">Choose CSV</label>
+            <input type="file" name="csv_file" class="custom-file-input" id="customFile" accept=".csv">
+          </div>
+        </div>
       </div>
     </form>
     

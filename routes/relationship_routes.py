@@ -1,5 +1,6 @@
 from flask import request, session, redirect, render_template, url_for
-from util import graph_db, essential_variables, usage_types, autofill, add_csv
+from util import graph_db, essential_variables, usage_types, autofill
+from util.add_csv import db_input_csv
 from routes.helper import thumbnail
 import os
 
@@ -260,7 +261,7 @@ def bind(flask_app):
             if uploaded_file.filename != '':
                 fstring = uploaded_file.read()
                 fstring = fstring.decode("utf-8")
-                did_it_work = add_csv.db_input_csv(fstring, session['orcid'])
+                did_it_work = db_input_csv(fstring, session['orcid'])
                 print(did_it_work)
                 return "CSV values successfully added"
         return "Please check data headers and try again"

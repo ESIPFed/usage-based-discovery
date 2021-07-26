@@ -31,7 +31,7 @@
   </div>
   <div class="container">
     {% for node_type in ['apps', 'datasets'] %}
-    <h1 class="mt-4">{{node_type.capitalize()}}</h1>
+    <h3 class="mt-4">{{node_type.capitalize()}}</h3>
       {% for key, value in stats[node_type].items() %}
       <div class='row'>
         <div class="col-12 my-3">
