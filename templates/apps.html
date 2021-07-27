@@ -7,26 +7,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- CSS only -->
   {{ fontawesome_html() }}
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap" rel="stylesheet" />
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/default.css') }}">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/apps.css') }}">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 </head>
 
 <body>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <!-- JavaScript Bundle with Popper -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
-    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-    crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
-    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
-    crossorigin="anonymous"></script>
+  <script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   <script type="text/javascript"
     src="https://fbm.earthdata.nasa.gov/for/Usage%20Based%20Discovery/feedback.js"></script>
   <script>feedback.init();</script>
@@ -53,11 +46,11 @@
       <div class="col-md-3 left-col">
         <div class="title">
           <div class="d-flex justify-content-around flex-wrap">
-            <div class="dropdown show">
-              <a class="btn btn-lg btn-outline-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <div class="dropdown">
+              <button class="btn btn-lg btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuLink"
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Type: {{string_type.capitalize() if string_type.lower() != "software" else "Application"}}
-              </a>
+            </button>
 
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 {% if 'all' in string_type %}
@@ -90,9 +83,9 @@
               </div>
             </div>
 
-            <div class="dropdown show">
+            <div class="dropdown">
               <a class="btn btn-lg btn-outline-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Topic: {{topic}}</a>
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Topic: {{topic}}</a>
 
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 {% for t in topics %} {% if topic == t %}
@@ -106,38 +99,33 @@
             </div>
           </div>
         </div>
-        <div class="appresults">
+        <ul class="appresults list-group list-group-flush">
           {% for a in apps %}
-          <span class="app"
-            onclick="window.location.assign('{{ url_for('apps', string_type=string_type, string_topic=topic, app_site=a['site']) }}')">
-            {% if app != None and a['name'] == app['name'] %}
-            <button style="width: 100%;" class="selected-app font">
-              {% if not a['verified'] %}
-              <span class="fas fa-flag"></span>
-              {% endif %}
-              <br />
-              <h4 class="font">
-                <strong>{{a['name']}}</strong>
-              </h4>
-              <!--<em class="font">Datasets: 1</em>-->
-              <strong>{{a['description'][:50]}}...</strong>
-              <br /><br />
-            </button>
-            {% else %}
-            <button style="width: 100%;" class="font">
-              {% if not a['verified'] %}
-              <span class="fas fa-flag"></span>
-              {% endif %}
-              <br />
-              <h4 class="font">{{a['name']}}</h4>
-              <!--<em class="font">Datasets: 1</em>-->
-              {{a['description'][:50]}}...
-              <br /><br />
-            </button>
+          {% set active_class = 'list-group-item-action active' if app != None and a['name'] == app['name'] else '' %}
+          <a href='{{ url_for('apps', string_type=string_type, string_topic=topic, app_site=a['site']) }}' 
+            class="app list-group-item list-group-item-action {{ active_class }}">
+            {% if not a['verified'] %}
+              <span class="position-absolute top-0 end-0 p-2 fas fa-exclamation" title="This has not been verified">
+              </span>
             {% endif %}
-          </span>
+            <div class="d-flex align-items-center">
+              <div class="flex-column d-flex">
+                {% if a['type'] and (a['type'][0].lower() == 'software' or a['type'][0].lower() == 'research') %}
+                {% for aType in a['type'] %}
+                {% set badge_class = ('fa-chart-area' if aType.lower() == 'software' else 'fa-flask') %}
+                <span class="fas {{ badge_class }} ms-0 me-2 my-1 align-self-start" title='{{aType if aType != "Software" else "Application"}}'></span>
+                {% endfor %}
+                {% else %}
+                <span class="fas fa-flask ms-0 me-2 my-1 align-self-start" style="color: white;"></span>
+                {% endif %}
+              </div>
+              <div class="flex-grow-1 ms-3 text-start">
+                {{ a['truncated_name'] }}
+              </div>
+            </div>
+          </a>
           {% endfor %}
-        </div>
+        </ul>
       </div>
 
       <div class="col-md-6">
@@ -151,7 +139,7 @@
         {% if app != None %}
         <div class="heading">
           <h1 class="font">{{app['name']}}
-            {% if 'essential_variable' in app %}
+            {% if 'essential_variable' in app and app['essential_variable']|length > 0 %}
             {% for ev in app['essential_variable'] %}
             <span class="badge badge-pill bg-info">{{ ev }}</span>
             {% endfor %}
@@ -178,12 +166,12 @@
           <button
             onclick="if (confirm ( 'Are you sure you want to delete {{app['name']}}?')) {window.location.href = '{{ 
             url_for("delete_application", app_site=app["site"]) }}';}" type="button" class="btn btn-outline-danger btn-md">Delete
-            Application</button>
+            </button>
           {% endif %}
           <br />
           <!--application website description-->
           <p class="font" style="align-self: center;">
-            {{app['description'][:320]}}...
+            {{ app['truncated_description'] }}
           </p>
         </div>
         <div>

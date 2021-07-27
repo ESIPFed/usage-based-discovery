@@ -11,6 +11,7 @@ from gremlin_python.process.traversal import Cardinality, T, Direction, P, withi
 from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
 from gremlin_python.driver.tornado.transport import TornadoTransport
 from util import essential_variables
+from util import str_helper
 
 def valid_endpoint(endpoint):
     '''
@@ -122,21 +123,6 @@ class GraphDB:
                 if len(item[prop]) == 1 and prop != 'type' and prop != 'essential_variable':
                     item[prop] = item[prop][0]
         return valuemap
-
-    def api(self, topics, types, verified=True):
-        '''
-        returns all application type nodes that have the provided topics and types
-        '''
-        info = self.graph_trav.V().hasLabel('application').toList()
-        if verified:
-            info = self.graph_trav.V(info).has('application', 'verified', True).toList()
-        if info and len(topics) != 0:
-            info = self.graph_trav.V(info).where(__.outE("about").otherV().has("topic", within(*topics))).toList()
-        if info and len(types) != 0:
-            info = self.graph_trav.V(info).has('type', within(*types)).toList()
-        if not info:
-            return info
-        return self.graph_trav.V(info).valueMap().toList()
 
     def get_leader_board(self):
         return {
@@ -421,8 +407,11 @@ class GraphDB:
         '''
         return self.graph_trav.V().hasLabel('dataset').where(bothE().count().is_(0)).drop().iterate()
 
-    def api(self, topics, types, verified=False):
-        info = self.graph_trav.V().toList()
+    def api(self, topics, types, verified=False, incl_truncated_name=False, incl_truncated_description=False):
+        '''
+        returns all application type nodes that have the provided topics and types
+        '''
+        info = self.graph_trav.V().hasLabel('application').toList()
         if verified:
             info = self.graph_trav.V(info).has('application', 'verified', True).toList()
         if info and len(topics) != 0:
@@ -431,7 +420,12 @@ class GraphDB:
             info = self.graph_trav.V(info).has('type', within(*types)).toList()
         if not info:
             return info
-        return self.graph_trav.V(info).hasLabel('application').valueMap().toList()
+        app_list = self.graph_trav.V(info).valueMap().toList()
+        if incl_truncated_name:
+            app_list = list(map(lambda a: a | { 'truncated_name': str_helper.smart_truncate(a['name'][0]) }, app_list))
+        if incl_truncated_description:
+            app_list = list(map(lambda a: a | { 'truncated_description': str_helper.smart_truncate(a['description'][0], length=300) }, app_list))
+        return app_list
 
     def get_topics_by_types(self, types):
         return self.graph_trav.V().has('type', within(*types)).outE('about').otherV().values('topic').toSet()
