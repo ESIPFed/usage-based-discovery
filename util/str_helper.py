@@ -6,7 +6,9 @@ def list_from_string(str):
 
 # https://stackoverflow.com/questions/250357/truncate-a-string-without-ending-in-the-middle-of-a-word
 def smart_truncate(content, length=100, suffix='...'):
-    if len(content) <= length:
-        return content
-    else:
-        return content[:length].rsplit(' ', 1)[0]+suffix
+    if len(content) > length:
+        content = content[:length].rsplit(' ', 1)[0]
+        content = content.rstrip(',')
+        content = content.rstrip(';')
+        content += suffix
+    return content
