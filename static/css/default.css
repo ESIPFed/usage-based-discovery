@@ -60,3 +60,7 @@ a {
 .navbar-brand {
   font-size: 2rem;
 }
+
+.hidden-fa {
+  visibility: hidden;
+}
