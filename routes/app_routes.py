@@ -1,7 +1,7 @@
 from util.graph_db import GraphDB
 from util.s3_functions import s3Functions
 from flask import render_template, request, session, redirect
-from util import usage_types
+from util import usage_types, str_helper
 import os, json
 
 def bind(flask_app):    
@@ -30,16 +30,16 @@ def bind(flask_app):
         topic = topic[0] # take this out later once multi select is in
         
         # query only for application relating to specified topic and type
-        topic_apps = g.mapify(g.api( [topic] , Type))
+        topic_apps = g.mapify(g.api( [topic] , Type, incl_truncated_name=True, incl_truncated_description=True))
         # filter apps and datasets based on if they are trusted
         if not trusted_user:
             topic_apps = list(filter(lambda relapp: relapp['verified']==True, topic_apps))
         topic_apps.sort(key=lambda x: x['name'], reverse=False)
 
         selected_app = None
-        if(app_site != 'all'):
-            selected_app = g.mapify(g.get_app(app_site))[0]
-        elif(len(topic_apps) != 0):
+        if app_site != 'all':
+            selected_app = list(filter(lambda a: a['site'] == app_site, topic_apps))[0]
+        elif len(topic_apps) != 0:
             selected_app=topic_apps[0]
         
         # query for all datasets relating to specified application

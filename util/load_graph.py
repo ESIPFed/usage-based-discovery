@@ -5,7 +5,7 @@ Load a set of application-dataset relationships in CSV form into a Neptune graph
 """
 import csv
 import argparse
-from util import csv_helper
+from util import str_helper
 from util.graph_db import GraphDB
 from util.env_helper import load_vars
 
@@ -35,9 +35,9 @@ def db_input_csv(input_file):
             if not 'type' in line.keys():
                 line['type'] = 'unclassified'
             
-            line['topic'] = csv_helper.list_from_string(line['topic'])
-            line['type'] = csv_helper.list_from_string(line['type'])
-            line['essential_variable'] = csv_helper.list_from_string(line['essential_variable'])
+            line['topic'] = str_helper.list_from_string(line['topic'])
+            line['type'] = str_helper.list_from_string(line['type'])
+            line['essential_variable'] = str_helper.list_from_string(line['essential_variable'])
             
             # add each topic[], before adding the app
             for index, t in enumerate(line['topic']):
