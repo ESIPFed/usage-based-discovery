@@ -422,9 +422,9 @@ class GraphDB:
             return info
         app_list = self.graph_trav.V(info).valueMap().toList()
         if incl_truncated_name:
-            app_list = list(map(lambda a: a | { 'truncated_name': str_helper.smart_truncate(a['name'][0]) }, app_list))
+            app_list = [dict(app, **{'truncated_name':str_helper.smart_truncate(app['name'][0])}) for app in app_list]
         if incl_truncated_description:
-            app_list = list(map(lambda a: a | { 'truncated_description': str_helper.smart_truncate(a['description'][0], length=300) }, app_list))
+            app_list = [dict(app, **{'truncated_description':str_helper.smart_truncate(app['description'][0], length=300)}) for app in app_list]
         return app_list
 
     def get_topics_by_types(self, types):
