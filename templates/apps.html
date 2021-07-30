@@ -156,16 +156,20 @@
 
           {% if app['verified'] == False %}
           <button
-            onclick="if (confirm ( 'Are you sure you want to verify {{app['name']}}?')) {window.location.href = '{{ 
-            url_for("verify_application", app_site=app["site"]) }}';}" type="button"
+            id='verify-app-btn'
+            data-message="Are you sure you want to verify {{app['name']}}?"
+            data-nav-to='{{ url_for("verify_application", app_site=app["site"]) }}' 
+            type="button"
             class="btn btn-outline-success btn-md">Verify</button>
           {% endif %}
           <button onclick="edit_application(this, '{{app['site']}}')" type="button"
             data-add-relationship-url="{{ url_for('add_relationship') }}"
             class="btn btn-outline-warning btn-md">Edit</button>
           <button
-            onclick="if (confirm ( 'Are you sure you want to delete {{app['name']}}?')) {window.location.href = '{{ 
-            url_for("delete_application", app_site=app["site"]) }}';}" type="button" class="btn btn-outline-danger btn-md">Delete
+            id='delete-app-btn'
+            data-message="Are you sure you want to delete {{app['name']}}?"
+            data-nav-to='{{ url_for("delete_application", app_site=app["site"]) }}' 
+            class="btn btn-outline-danger btn-md">Delete
             </button>
           {% endif %}
           <br />
@@ -218,15 +222,19 @@
             <!-- only shows if you are a trusted user and the app is selected -->
             {% if trusted_user and app%}
             {% if d[1]['verified'] == false %}
-            <button
-              onclick="if (confirm ( 'Are you sure you want to verify {{d[2]['title'][0]}}?')) {window.location.href = '{{ 
-              url_for("verify_dataset", app_name=app["site"], doi=d[2]["doi"][0]) }}';}" type="button"
+            <button 
+              id='verify-dataset-btn'
+              data-message="Are you sure you want to verify {{d[2]['title'][0]}}?"
+              data-nav-to='{{ url_for("verify_dataset", app_name=app["site"], doi=d[2]["doi"][0]) }}' 
+              type="button"
               class="btn btn-outline-success btn-sm" data-toggle="tooltip" data-placement="top"
               title="Verify Dataset Relationship">Verify</button>
             {% endif %}
             <button
-              onclick="if (confirm ( 'Are you sure you want to unlink {{d[2]['title'][0]}}?')) {window.location.href = '{{ 
-              url_for("delete_dataset_relation", app_site=app["site"], doi=d[2]["doi"][0]) }}';}" type="button"
+              id='delete-dataset-btn'
+              data-message="Are you sure you want to unlink {{d[2]['title'][0]}}?"
+              data-nav-to='{{ url_for("delete_dataset_relation", app_site=app["site"], doi=d[2]["doi"][0]) }}' 
+              type="button"
               class="btn btn-outline-danger btn-sm" data-toggle="tooltip" data-placement="top"
               title="Unlink Dataset Relationship"><span class="fas fa-unlink"></span></button>
             {% endif %}

@@ -1,8 +1,9 @@
 from util.graph_db import GraphDB
 from util.s3_functions import s3Functions
-from flask import render_template, request, session, redirect
+from flask import render_template, request, session, redirect, url_for
 from util import usage_types, str_helper
 import os, json
+from urllib.parse import urlparse, parse_qs
 
 def bind(flask_app):    
     
@@ -103,5 +104,9 @@ def bind(flask_app):
             #delete application
             g.delete_app(app_site)
             g.delete_orphan_datasets()
-        redirect_path = request.referrer.rsplit('/',1)[0] + '/all' # this is so we direct to .../topic/all instead of .../topic/app (topic/app doesn't exit after it gets deleted)
+            parsed_url = urlparse(request.referrer)
+            parsed_args = parse_qs(parsed_url.query)
+            topic = parsed_args['string_topic']
+            redirect_path = url_for('apps', app_site='all', string_type='all', string_topic=topic)
+        
         return redirect(redirect_path)

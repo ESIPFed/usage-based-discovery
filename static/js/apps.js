@@ -14,7 +14,25 @@ $(function(){
         })
         $('[data-toggle="popover"]').popover()
     })
+    for (const id of ['verify-app-btn', 'delete-app-btn', 
+        'verify-dataset-btn', 'delete-dataset-btn']) {
+        bindButtonConfirmation(id);
+    }
 })
+
+function bindButtonConfirmation(id) {
+    $('#' + id).on('click', function() {
+        const message = $(this).data('message');
+        const navTo = $(this).data('nav-to');
+        handleClickConfirmation(message, navTo);
+    });
+}
+
+function handleClickConfirmation(message, navTo) {
+    if(confirm(message)) {
+        window.location.href = navTo;
+    }
+}
 
 function edit_application(ev, app_site){
     var payload = {"app_site" : app_site, "type":"edit_application"};
