@@ -128,12 +128,6 @@
       </div>
 
       <div class="col-md-4">
-        {% if trusted_user and undo%}
-        <!-- undo btn -->
-        <button
-          onclick="if (confirm ( 'Are you sure you want to undo your last change?\nChange type: \n{{undo}}')) {window.location.href = '{{ 
-          url_for("undo") }}';}" type="button" class="btn btn-outline-warning btn-md">Undo last change</button>
-        {% endif %}
 
         {% if app != None %}
         <div class="heading">
@@ -171,6 +165,12 @@
             class="btn btn-outline-danger btn-md">Delete
             </button>
           {% endif %}
+          {% if trusted_user and undo%}
+        <!-- undo btn -->
+        <button
+          onclick="if (confirm ( 'Are you sure you want to undo your last change?\nChange type: \n{{undo}}')) {window.location.href = '{{ 
+          url_for("undo") }}';}" type="button" class="fas fa-undo btn btn-outline-warning btn-md"></button>
+        {% endif %}
           <br />
           <!--application website description-->
           <p style="align-self: center;">
@@ -215,7 +215,7 @@
               </div>
             </div>
             <br />
-            <h4 class="font">{{d[2]['title'][0]}}</h4>
+            <h5 class="font">{{d[2]['title'][0]}}</h5>
             <a href="{{d[2]['doi'][0]}}" target="_blank" class="btn btn-outline-secondary btn-sm" role="button"
               aria-pressed="true">See Dataset &rarr;</a>
             <!-- only shows if you are a trusted user and the app is selected -->
