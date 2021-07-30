@@ -14,14 +14,14 @@ $(function(){
         })
         $('[data-toggle="popover"]').popover()
     })
-    for (const id of ['verify-app-btn', 'delete-app-btn', 
+    for (const clazz of ['verify-app-btn', 'delete-app-btn', 
         'verify-dataset-btn', 'delete-dataset-btn']) {
-        bindButtonConfirmation(id);
+        bindButtonConfirmation(clazz);
     }
 })
 
-function bindButtonConfirmation(id) {
-    $('#' + id).on('click', function() {
+function bindButtonConfirmation(clazz) {
+    $('.' + clazz).on('click', function() {
         const message = $(this).data('message');
         const navTo = $(this).data('nav-to');
         handleClickConfirmation(message, navTo);
