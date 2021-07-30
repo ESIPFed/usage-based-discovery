@@ -28,13 +28,13 @@ body {
 }
 
 h1 {
-  font-family: "Maven Pro", sans-serif;
+  /* font-family: "Maven Pro", sans-serif; */
   vertical-align: middle;
 }
 
 h2,
 p {
-  font-family: "Maven Pro", sans-serif;
+  /* font-family: "Maven Pro", sans-serif; */
   text-align: center;
 }
 
@@ -48,7 +48,7 @@ p {
 }
 
 .font {
-  font-family: "Maven Pro", sans-serif;
+  /* font-family: "Maven Pro", sans-serif; */
   text-align: center;
 }
 

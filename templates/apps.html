@@ -8,7 +8,6 @@
   <!-- CSS only -->
   {{ fontawesome_html() }}
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-  <link href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap" rel="stylesheet" />
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/default.css') }}">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/apps.css') }}">
 </head>
@@ -43,7 +42,7 @@
   </div>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-3 left-col">
+      <div class="col-md-4 left-col">
         <div class="title">
           <div class="d-flex justify-content-around flex-wrap">
             <div class="dropdown">
@@ -128,7 +127,7 @@
         </ul>
       </div>
 
-      <div class="col-md-6">
+      <div class="col-md-4">
         {% if trusted_user and undo%}
         <!-- undo btn -->
         <button
@@ -138,13 +137,13 @@
 
         {% if app != None %}
         <div class="heading">
-          <h1 class="font">{{app['name']}}
-            {% if 'essential_variable' in app and app['essential_variable']|length > 0 %}
-            {% for ev in app['essential_variable'] %}
-            <span class="badge badge-pill bg-info">{{ ev }}</span>
-            {% endfor %}
-            {% endif %}
-          </h1>
+          <h3>{{app['name']}}
+          {% if 'essential_variable' in app and app['essential_variable']|length > 0 %}
+          {% for ev in app['essential_variable'] %}
+          <span class="essential-variable-pill badge badge-pill bg-info align-self-center">{{ ev }}</span>
+          {% endfor %}
+          {% endif %}
+          </h3>
           <a href="{{app['site']}}" target="_blank" style="align-self: center;" class="btn btn-outline-secondary btn-md"
             role="button" aria-pressed="true">Website</a>
           <!--publication link, if none then DON'T INCLUDE-->
@@ -174,7 +173,7 @@
           {% endif %}
           <br />
           <!--application website description-->
-          <p class="font" style="align-self: center;">
+          <p style="align-self: center;">
             {{ app['truncated_description'] }}
           </p>
         </div>
@@ -186,7 +185,7 @@
         {% endif %}
       </div>
 
-      <div class="col-md-3 right-col">
+      <div class="col-md-4 right-col">
         <div class="dataset-results">
           {% for d in datasets %}
           <div class="dataset-div">
