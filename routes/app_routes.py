@@ -39,8 +39,10 @@ def bind(flask_app):
 
         selected_app = None
         if app_site != 'all':
-            selected_app = list(filter(lambda a: a['site'] == app_site, topic_apps))[0]
-        elif len(topic_apps) != 0:
+            selected_app_list = list(filter(lambda a: a['site'] == app_site, topic_apps))
+            if selected_app_list:
+                selected_app = selected_app_list[0]
+        if not selected_app and len(topic_apps) != 0:
             selected_app=topic_apps[0]
         
         # query for all datasets relating to specified application
