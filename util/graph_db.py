@@ -17,7 +17,7 @@ def valid_endpoint(endpoint):
     '''
     checks whether or not the neptune_endpoint supplied is valid
     '''
-    return (endpoint.startswith("wss://") or endpoint.startswith("ws://")) and endpoint.endswith(":8182/gremlin")
+    return (endpoint.startswith("wss://") or endpoint.startswith("ws://")) and endpoint.endswith("/gremlin")
 
 # Temp fix for: https://issues.apache.org/jira/browse/TINKERPOP-2388
 class CustomTornadoTransport(TornadoTransport):
