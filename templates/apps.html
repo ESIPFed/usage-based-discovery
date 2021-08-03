@@ -191,8 +191,8 @@
               {% if d[1]['annotation'] != '' %}
 
               <a tabindex="0" class="btn btn-outline-success btn-sm transparent annotation" role="button"
-                data-toggle="popover" data-placement="bottom" data-trigger="focus" data-html="true" title="Annotations"
-                data-content="<p>{{d[1]['annotation']}}</p><button class='btn btn-outline-primary btn-sm' data-resolve-url='{{ url_for('resolve_annotation', app_site=app['site'], doi=d[2]['doi'][0]) }}' onclick='resolve_annotation(this);'>Resolve</button>">
+                data-toggle="popover" data-bs-placement="bottom" data-bs-trigger="focus" data-bs-html="true" data-bs-sanitize="false" title="Annotations"
+                data-bs-content="<p>{{d[1]['annotation']}}</p><a href='{{ url_for('resolve_annotation', app_site=app['site'], doi=d[2]['doi'][0]) }}' role='button' class='btn btn-primary btn-sm'>Resolve</a>">
 
                 <span class="tt" title="see annotations">
                   <span class="fas fa-comment"></span>
@@ -237,7 +237,7 @@
 
             <span class="tt" title="see ORCid">
               <a tabindex="0" class="btn btn-outline-success btn-sm" role="button" data-toggle="popover"
-                data-placement="bottom" data-trigger="focus" data-html="true" title="ORCiD" data-content="<a href='https://orcid.org/{{d[1]['verifier']}}'>
+                data-bs-placement="bottom" data-trigger="focus" data-bs-html="true" title="ORCiD" data-bs-content="<a target='__blank' href='https://orcid.org/{{d[1]['verifier']}}'>
 		<img alt='ORCID logo' src='https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png' width='16' height='16' />
 		{{d[1]['verifier']}}
 		</a>"><span class="fas fa-check"></span></a>

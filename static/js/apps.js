@@ -66,7 +66,3 @@ function add_annotation_form(e){
     $(annotation_form).insertBefore(e);
     $(e).remove();
 }
-
-function resolve_annotation(ev){
-    window.location.href = ev.getAttribute('data-resolve-url');
-}
