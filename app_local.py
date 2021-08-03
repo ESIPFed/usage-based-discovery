@@ -1,5 +1,5 @@
 from util import env_helper
-env_helper.load_vars(flask_env='development')
+env_helper.load_vars(flask_env='development', neptune_endpoint='ws://localhost:8182/gremlin')
 
 import app_factory
 

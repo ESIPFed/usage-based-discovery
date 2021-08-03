@@ -1,5 +1,5 @@
 from util.env_helper import load_vars
-load_vars(flask_env='development')
+load_vars(flask_env='development', neptune_endpoint='ws://localhost:8183/gremlin')
 
 from util.graph_db import GraphDB, valid_endpoint
 

@@ -87,5 +87,5 @@ def db_input_csv(input_file):
 if __name__ == '__main__':
     args = parse_options()
     if args.e == 'development':
-        load_vars(flask_env='development')
+        load_vars(flask_env='development', neptune_endpoint='ws://localhost:8182/gremlin')
     db_input_csv(args.ifile)

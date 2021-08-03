@@ -1,11 +1,11 @@
 import os
 import secrets
 
-def load_vars(orcid=None, flask_env=None):
-    if 'NEPTUNEDBRO' not in os.environ or not os.environ['NEPTUNEDBRO']:
-        os.environ['NEPTUNEDBRO'] = 'ws://localhost:8182/gremlin'
+def load_vars(orcid=None, flask_env=None, neptune_endpoint=None):
+    if ('NEPTUNEDBRO' not in os.environ or not os.environ['NEPTUNEDBRO']) and neptune_endpoint:
+        os.environ['NEPTUNEDBRO'] = neptune_endpoint
     os.environ['APP_SECRET_KEY'] = secrets.token_urlsafe(10)
-
+    print(os.environ['NEPTUNEDBRO'])
     if orcid:
         os.environ['ORCID'] = orcid
     
