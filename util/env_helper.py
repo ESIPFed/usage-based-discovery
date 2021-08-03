@@ -1,15 +1,19 @@
 import os
 import secrets
 
+
 def load_vars(orcid=None, flask_env=None, neptune_endpoint=None):
+    """ Load the specified env vars, only if they don't already exist. """
     if ('NEPTUNEDBRO' not in os.environ or not os.environ['NEPTUNEDBRO']) and neptune_endpoint:
         os.environ['NEPTUNEDBRO'] = neptune_endpoint
-    os.environ['APP_SECRET_KEY'] = secrets.token_urlsafe(10)
-    print(os.environ['NEPTUNEDBRO'])
-    if orcid:
+    
+    if ('APP_SECRET_KEY' not in os.environ or not os.environ['APP_SECRET_KEY']):
+        os.environ['APP_SECRET_KEY'] = secrets.token_urlsafe(10)
+    
+    if ('ORCID' not in os.environ or not os.environ['ORCID']) and orcid:
         os.environ['ORCID'] = orcid
     
-    if flask_env:
+    if ('FLASK_ENV' not in os.environ or not os.environ['FLASK_ENV']) and flask_env:
         os.environ['FLASK_ENV'] = flask_env
 
 def clear_vars():

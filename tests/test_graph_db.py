@@ -1,8 +1,5 @@
-from util.env_helper import load_vars
-load_vars(flask_env='development', neptune_endpoint='ws://localhost:8183/gremlin')
-
 from util.graph_db import GraphDB, valid_endpoint
-
+from util.env_helper import load_vars, clear_vars
 
 SITE = 'https://example.com'
 DOI = '1234567890'
@@ -56,9 +53,11 @@ def test_invalid_endpoint():
     assert not valid_endpoint("wss://endpoint")
     assert not valid_endpoint("endpoint:8182/gremlin")
 
-class TestInit():
+class TestGraphDB():
 
     def setup_class(self):
+        clear_vars()
+        load_vars(flask_env='development', neptune_endpoint='ws://localhost:8183/gremlin')
         self.db = GraphDB()
 
     def setup_method(self):

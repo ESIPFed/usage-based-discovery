@@ -132,11 +132,36 @@ function add_topic(){
     var topic_to_add_html = `<option value='${topic_to_add}' selected>${topic_to_add}</option>`
     $('#Topic').append(topic_to_add_html);
     $('#custom_topic_list').append('<span class="badge badge-pill badge-secondary bg-secondary my-1">' + topic_to_add + '</span>&nbsp;');
+}
 
+function handleUsageTypeSelection(usageType) {
+  if (usageType == 'unclassified') {
+    // disable usage submit
+    $('#submit_btn').prop('disabled', true);
+    $('#left-usage-col').hide();
+    $('#right-usage-col').hide();
+
+  } else if (usageType == 'software') {
+    // enable usage submit
+    $('#submit_btn').prop('disabled', false);
+    $('#left-usage-col').show();
+    $('#right-usage-col').show();
+
+  } else if (usageType == 'research') {
+    // enable usage submit
+    $('#submit_btn').prop('disabled', false);
+    $('#left-usage-col').show();
+    $('#right-usage-col').show();
+
+  }
 }
 
 $(function () {
   'use strict'
+
+  $('#Type').on('change', function() {
+    handleUsageTypeSelection($(this).val().toLowerCase());
+  });
 
   $('#image_file').on('change', function() {
     const fileSize = this.files[0].size / 1024 / 1024; // in MiB

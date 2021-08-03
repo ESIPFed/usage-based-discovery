@@ -5,13 +5,6 @@ import xml.etree.ElementTree as ET
 import json
 from .s3_functions import s3Functions
 
-s3 = s3Functions()
-data = s3.get_file('test-bucket-parth', 'facets.json')
-data = json.loads(data)
-
-instrument_names = data['relations'].keys()
-platform_names = data['platforms']
-platform_instrument_relations = data['relations']
 
 list_of_shortNames = ["MCD14DL", "MCD14ML","VNP14", "MCD64A1", "MOD14", "MOD14A1",
     "MOD14A2", "MYD14", "MYD14A1", "MYD14A2", "VNP03MODLL", "VNP14", "VNP14A1",
@@ -117,8 +110,8 @@ def get_datasets(keywords):
     for instrument in keywords['instruments']:
         url = cmr_url + "&instrument=" + instrument
         for platform in keywords['platforms']:
-            if instrument in platform_instrument_relations.keys():
-                if platform in platform_instrument_relations[instrument]:
+            if instrument in AutoFill.platform_instrument_relations.keys():
+                if platform in AutoFill.platform_instrument_relations[instrument]:
                     url = url + "&platform=" + platform
                     covered_platforms.add(platform)
         queries.append(url)
@@ -158,14 +151,14 @@ def get_shortNames(soup, data):
 
 def get_instruments(data):
     instruments = []
-    for name in instrument_names:
+    for name in AutoFill.instrument_names:
         if re.search("(?<=[^a-zA-Z])"+name.lower()+"(?=[^a-zA-Z])",data.lower()):
             instruments.append(name)
     return instruments
 
 def get_platforms(data):
     platforms = []
-    for name in platform_names:
+    for name in AutoFill.platform_names:
         if re.search("(?<=[^a-zA-Z])"+name.lower()+"(?=[^a-zA-Z])",data.lower()):
             platforms.append(name)
     return platforms
@@ -261,14 +254,36 @@ def makedict(site, soup, data):
     result['datasets'] = get_datasets(result['keywords'])
     return result
 
-def autofill(url):
-    print(url)
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser') #contains all of the tags, raw HTML 
-    data = soup.get_text()
-    #remove html entities like &#13;
-    data = re.sub("&\W*\w{2,4};", "", data)
-    data = re.sub("\s\s+", " ", data)
-    result = makedict(url, soup, data)
-    print(json.dumps(result, indent=4))
-    return result
+class AutoFill():
+
+    initialized = False
+
+    instrument_names = None
+    platform_names = None
+    platform_instrument_relations = None
+
+    @staticmethod
+    def init():
+        s3 = s3Functions()
+        data = s3.get_file('test-bucket-parth', 'facets.json')
+        data = json.loads(data)
+
+        AutoFill.instrument_names = data['relations'].keys()
+        AutoFill.platform_names = data['platforms']
+        AutoFill.platform_instrument_relations = data['relations']
+
+    @staticmethod
+    def autofill(url):
+        if not AutoFill.initialized:
+            AutoFill.init()
+            AutoFill.initialized = True
+
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser') #contains all of the tags, raw HTML 
+        data = soup.get_text()
+        #remove html entities like &#13;
+        data = re.sub("&\W*\w{2,4};", "", data)
+        data = re.sub("\s\s+", " ", data)
+        result = makedict(url, soup, data)
+        print(json.dumps(result, indent=4))
+        return result
