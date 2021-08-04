@@ -15,7 +15,7 @@ run-app:
 	. venv/bin/activate && python app_local.py
 
 run-test:
-	. venv/bin/activate && pytest -v -rP
+	. venv/bin/activate && pytest -vv -rP
 
 test:
 	if [ ! "$$(docker ps -a | grep ubd-test-db)" ]; then \

@@ -238,17 +238,19 @@ class GraphDB:
             'essential_variable': ['Precipitation']
         }
         '''
-        self.graph_trav.V().has('application', 'site', app['site']) \
+        t = self.graph_trav.V().has('application', 'site', app['site']) \
                 .fold().coalesce(unfold(), addV('application') \
                 .property('name', app['name']) \
                 .property('site', app['site']) \
-                .property('screenshot', app['screenshot']) \
-                .property('publication', app['publication']) \
                 .property('description', app['description']) \
                 .property('discoverer', discoverer) \
                 .property('verified', verified) \
-                .property('verifier', verifier)) \
-                .next()
+                .property('verifier', verifier))
+        if app.get('screenshot', '').strip():
+            t = t.property('screenshot', app['screenshot'])
+        if app.get('publication', '').strip():
+            t = t.property('publication', app['publication'])
+        t.next()
         for i in range(len(app['topic'])):
             self.connect_topic(app['site'], app['topic'][i])
         for i in range(len(app['type'])):
@@ -331,16 +333,18 @@ class GraphDB:
         '''
         updates application vertex in the database with new information
         '''
-        self.graph_trav.V().has('application', 'site', site) \
+        t = self.graph_trav.V().has('application', 'site', site) \
             .sideEffect(__.outE("about").where(otherV().hasLabel("topic")).drop()) \
             .sideEffect(__.properties('type').drop()) \
             .sideEffect(__.properties('essential_variable').drop()) \
             .property(Cardinality.single, 'name', app['name']) \
             .property(Cardinality.single, 'site', app['site']) \
-            .property(Cardinality.single, 'screenshot', app['screenshot']) \
-            .property(Cardinality.single, 'publication', app['publication']) \
-            .property(Cardinality.single, 'description', app['description']) \
-            .next()
+            .property(Cardinality.single, 'description', app['description'])
+        if app.get('screenshot', '').strip():
+            t = t.property(Cardinality.single, 'screenshot', app['screenshot'])
+        if app.get('publication', '').strip():
+            t = t.property(Cardinality.single, 'publication', app['publication'])
+        t.next()
         for i in range(len(app['topic'])):
             self.connect_topic(app['site'], app['topic'][i])
         for i in range(len(app['type'])):

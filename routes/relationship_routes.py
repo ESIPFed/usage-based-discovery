@@ -43,6 +43,9 @@ def edit_application(f, g):
         f['DOI_'+str(index+10)] = doi
 
 def sanitize_app(APP):
+    if 'Research' in APP['type']:
+        del APP['screenshot']
+        del APP['publication']
     return APP
 
 def validate_form(f):
@@ -54,19 +57,18 @@ def validate_form(f):
 def formatted_APP_from_form(f, g):
     # Get previous app information if there was one(mainly for the screenshot info), ( 'prev_app_name' will be a property of the form when you edit an application) 
     if 'prev_app_site' in f and f['prev_app_site']:
-        # Store screenshot info before app deletion
         temp_app = g.mapify(g.get_app(f['prev_app_site']))
-        f['screenshot'] = temp_app[0]['screenshot']
+        f['screenshot'] = temp_app[0].get('screenshot')
     # There are alot of things in f (submitted form) that we don't want when adding just an app(like datasets), so we filter the data into APP
     APP = {
-            'type': f['Type[]'],
-            'topic': f['Topic[]'],
-            'name': f['Application_Name'],
-            'site': f['site'],
-            'screenshot': f['screenshot'],
-            'publication': f['Publication_Link'],
-            'description': f['description'],
-            'essential_variable': f['essential_variable']  
+        'type': f['Type[]'],
+        'topic': f['Topic[]'],
+        'name': f['Application_Name'],
+        'site': f['site'],
+        'screenshot': f['screenshot'],
+        'publication': f['Publication_Link'],
+        'description': f['description'],
+        'essential_variable': f['essential_variable']  
     }
     return APP
 

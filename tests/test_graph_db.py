@@ -1,5 +1,5 @@
 from util.graph_db import GraphDB, valid_endpoint
-from util.env_helper import load_vars, clear_vars
+from util.env_helper import load_vars
 
 SITE = 'https://example.com'
 DOI = '1234567890'
