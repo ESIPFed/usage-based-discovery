@@ -56,7 +56,6 @@ def test_invalid_endpoint():
 class TestGraphDB():
 
     def setup_class(self):
-        clear_vars()
         load_vars(flask_env='development', neptune_endpoint='ws://localhost:8183/gremlin')
         self.db = GraphDB()
 

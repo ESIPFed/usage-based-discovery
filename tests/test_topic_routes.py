@@ -1,5 +1,5 @@
 from tests.routes_test import RoutesTest
-from util.env_helper import load_vars
+from util.env_helper import set_var
 
 NAME = 'Testing123'
 SITE = 'https///:example.com'
@@ -36,7 +36,7 @@ class TestTopicRoutes(RoutesTest):
 
     def test_change_topic_route_rename(self):
         with self.flask_app.test_client() as c:
-            load_vars(flask_env='development', orcid="9020-0003-9403-1032")
+            set_var('ORCID', "9020-0003-9403-1032")
             c.get(self.get_url_for('login'), follow_redirects=True)
 
             self.db.add_topic(TOPIC)
@@ -53,7 +53,7 @@ class TestTopicRoutes(RoutesTest):
 
     def test_change_topic_route_new(self):
         with self.flask_app.test_client() as c:
-            load_vars(flask_env='development', orcid="9020-0003-9403-1032")
+            set_var('ORCID', "9020-0003-9403-1032")
             c.get(self.get_url_for('login'), follow_redirects=True)
 
             assert self.db.get_topics() == []
@@ -69,7 +69,7 @@ class TestTopicRoutes(RoutesTest):
 
     def test_change_topic_route_delete(self):
         with self.flask_app.test_client() as c:
-            load_vars(flask_env='development', orcid="9020-0003-9403-1032")
+            set_var('ORCID', "9020-0003-9403-1032")
             c.get(self.get_url_for('login'), follow_redirects=True)
 
             self.db.add_topic(TOPIC)
@@ -86,7 +86,7 @@ class TestTopicRoutes(RoutesTest):
 
     def test_change_topic_route_delete_empty_name(self):
         with self.flask_app.test_client() as c:
-            load_vars(flask_env='development', orcid="9020-0003-9403-1032")
+            set_var('ORCID', "9020-0003-9403-1032")
             c.get(self.get_url_for('login'), follow_redirects=True)
 
             self.db.add_topic('')
@@ -103,7 +103,7 @@ class TestTopicRoutes(RoutesTest):
 
     def test_change_topic_route_delete_nonexistent_returns_200(self):
         with self.flask_app.test_client() as c:
-            load_vars(flask_env='development', orcid="9020-0003-9403-1032")
+            set_var('ORCID', "9020-0003-9403-1032")
             c.get(self.get_url_for('login'), follow_redirects=True)
 
             self.db.add_topic('Cyclones')

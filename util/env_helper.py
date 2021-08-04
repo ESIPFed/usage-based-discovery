@@ -16,6 +16,9 @@ def load_vars(orcid=None, flask_env=None, neptune_endpoint=None):
     if ('FLASK_ENV' not in os.environ or not os.environ['FLASK_ENV']) and flask_env:
         os.environ['FLASK_ENV'] = flask_env
 
+def set_var(k, v):
+    os.environ[k] = v
+
 def clear_vars():
     if 'NEPTUNEDBRO' in os.environ:
         del os.environ['NEPTUNEDBRO']
