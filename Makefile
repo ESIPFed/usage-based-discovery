@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: app-db load-app-db run-app test clean-test app clean-app clean-all
+.PHONY: run-app-db run-test-db load-app-db run-app run-test test app clean-test clean-app clean
 
 run-app-db:
 	docker run -d -p 8183:8182 --name=ubd-app-db tinkerpop/gremlin-server && sleep 5
