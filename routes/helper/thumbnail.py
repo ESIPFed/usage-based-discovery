@@ -18,6 +18,8 @@ def upload_thumbnail(request, dims, img_path=None):
         file_name = request.files['image_file'].filename
         if img_path:
             file_name = img_path
+        if os.environ.get('FLASK_ENV') == 'development':
+            return file_name
         resized_image = resize_image_file(request.files['image_file'], dims)
         s3 = s3_functions.s3Functions()
         s3.upload_image_obj(os.environ.get('S3_BUCKET'), file_name, resized_image)
