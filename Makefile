@@ -1,27 +1,39 @@
-.PHONY: gremlin-db load-app run-app start-test clean-test start-app clean-app clean-all
+SHELL := /bin/bash
 
-gremlin-db:
-	docker run -d -p 8183:8182 --name=ubd-app-db tinkerpop/gremlin-server && sleep 10
+.PHONY: app-db load-app-db run-app test clean-test app clean-app clean-all
 
-load-app:
+run-app-db:
+	docker run -d -p 8183:8182 --name=ubd-app-db tinkerpop/gremlin-server && sleep 5
+
+run-test-db:
+	docker run -d -p 8182:8182 --name=ubd-test-db tinkerpop/gremlin-server && sleep 5
+
+load-app-db:
 	. venv/bin/activate && python -m util.load_graph -i util/sample_data.csv -e development
 
 run-app:
 	. venv/bin/activate && python app_local.py
 
-start-test:
-	docker run -d -p 8182:8182 --name=ubd-test-db tinkerpop/gremlin-server && sleep 10
+run-test:
 	. venv/bin/activate && pytest -v -rP
-	docker rm --force ubd-test-db
+
+test:
+	if [ ! "$$(docker ps -a | grep ubd-test-db)" ]; then \
+		make run-test-db; \
+	fi
+	make run-test
+
+app:
+	if [ ! "$$(docker ps -a | grep ubd-app-db)" ]; then \
+		make run-app-db; \
+		make load-app-db; \
+	fi
+	make run-app
 
 clean-test:
 	docker rm --force ubd-test-db
 
-start-app: gremlin-db load-app run-app
-
 clean-app:
 	docker rm --force ubd-app-db
 
-clean-all:
-	docker rm --force ubd-app-db
-	docker rm --force ubd-test-db
+clean: clean-test clean-app
