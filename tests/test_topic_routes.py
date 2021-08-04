@@ -18,6 +18,13 @@ APP = {
 
 class TestTopicRoutes(RoutesTest):
 
+    def test_base_route(self):
+        url = self.get_url_for('topics')
+        response = self.flask_app.test_client().get(url)
+        # print(response)
+        # print(response.data)
+        assert response.status_code == 200
+
     def test_change_topic_route_forbidden_if_not_supervisor(self):
         url = self.get_url_for('post_change_topic')
         response = self.flask_app.test_client().post(url, content_type='multipart/form-data', 

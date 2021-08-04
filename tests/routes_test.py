@@ -10,6 +10,8 @@ class RoutesTest():
             return url_for(route, **dict(kwargs, _external=False))
 
     def setup_class(self):
+        clear_vars()
+        load_vars(flask_env='development', neptune_endpoint='ws://localhost:8183/gremlin')
         self.db = GraphDB()
 
     def setup_method(self):
