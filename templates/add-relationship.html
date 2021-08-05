@@ -59,7 +59,7 @@
     {% if status == "success" %} {% set f = none %} {% else %} {% set f = form
     %} {% endif %}
 
-    <div class="row">
+    <div class="row" id='add-relationship-row' style="display: none;">
       <form class="form needs-validation col-12" id="form1" name="form1" enctype=multipart/form-data
         action="{{ url_for('add_relationship') }}" method="post" novalidate>
         <div class="row mt-3">
@@ -75,7 +75,7 @@
             <div class="form-group">
               <label>Usage Type<span class="required-star">*</span></label>
               <select class="selectpicker" name="Type[]" id="Type" data-width="100%" required>
-                {% for t in types %}
+                {% for t in ['Software', 'Research'] %}
                 {% if t in f['type[]'] %}
                 <option value="{{t}}" selected>{% if t.lower() == 'software' %}{{ "Application" }}{% else %}{{
                   t.capitalize() }}{% endif %}</option>
@@ -96,7 +96,7 @@
           <div class='col-6' id='left-usage-col'>
             <div class="form-group">
               <label>Name<span class="required-star">*</span></label>
-              <input type="text" class="form-control" id="formGroupExampleInput" name="Application_Name"
+              <input type="text" class="form-control" id="Application_Name" name="Application_Name"
                 placeholder="Impact of Wildfire on the Surface Energy Balance in Six California Case Studies"
                 value="{{f.Application_Name}}" required />
               <div class="valid-feedback">
@@ -104,10 +104,22 @@
               </div>
             </div>
             <div class="form-group">
-              <label>Publication Link</label>
+              <label id='site-label'>Website<span class="required-star">*</span></label>
+              <div class='input-group mb-3'>
+                <input type="url" class="form-control" id="site" name="site"
+                  placeholder="https://doi.org/10.1007/s10546-020-00562-5" value="{{f.site}}" required />
+                <div class="input-group-append">
+                  <button class="btn btn-outline-primary" type="button" onclick="autofill()">Autofill</button>
+                </div>
+                <div class="valid-feedback">
+                  Looks good!
+                </div>
+              </div>
+            </div>
+            <div class="form-group" id="publication-link-group">
+              <label>Associated Publication</label>
               <input type="text" class="form-control" id="formGroupExampleInput4" name="Publication_Link"
-                placeholder="Link for a publication associated with an application" value="{{f.Publication_Link}}" />
-                <small id="" class="form-text text-muted">Only fill this in if Usage Type = Application.</small>
+                placeholder="https://doi.org/10.1109/36.134076" value="{{f.Publication_Link}}" />
               <div class="valid-feedback">
                 Looks good!
               </div>
@@ -159,28 +171,15 @@
             </div>
             <div class="form-group">
               <label>Description<span class="required-star">*</span></label>
-              <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3"
+              <textarea class="form-control" id="description" name="description" rows="3"
                 required />{{f.description}}</textarea>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="image-file-group">
               <label class="custom-file-label" for="image_file">Image</label>
               <input type="file" name="image_file" class="custom-file-input" id="image_file" accept="image/*">
             </div>
           </div>
           <div class="col-6" id='right-usage-col'>
-            <div class="form-group">
-              <label>Website<span class="required-star">*</span></label>
-              <div class='input-group mb-3'>
-                <input type="url" class="form-control" id="formGroupExampleInput3" name="site"
-                  placeholder="https://doi.org/10.1007/s10546-020-00562-5" value="{{f.site}}" required />
-                <div class="input-group-append">
-                  <button class="btn btn-outline-primary" type="button" onclick="autofill()">Autofill</button>
-                </div>
-                <div class="valid-feedback">
-                  Looks good!
-                </div>
-              </div>
-            </div>
             <div class="form-group">
               <button id="add_dataset_btn" class="btn btn-outline-primary btn-add w-100 mt-2" type="button"
                 onclick="add_dataset('');add_doi('');">Add dataset
@@ -192,8 +191,8 @@
     </div>
 
     
-    <form class="needs-validation" action="{{ url_for('add_csv') }}" method="post" enctype="multipart/form-data"
-      novalidate>
+    <form id="add-csv-form" class="needs-validation" action="{{ url_for('add_csv') }}" method="post" enctype="multipart/form-data"
+      style="display: none;" novalidate>
       <div class="row my-3">
         <div class="col-6">
           <h3>Add CSV</h3>

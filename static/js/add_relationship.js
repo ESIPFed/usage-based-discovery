@@ -48,7 +48,7 @@ function add_dataset(value){
           id = ${id_val}
       name = "Dataset_Name_${id_val}"
       value = "${value}"
-      placeholder = "Dataset Name ${id_val}"
+      placeholder = "MODIS/Terra 8-Day L3 Global 500m SIN Grid V061"
       required
     />
     <div class="input-group-append">
@@ -72,7 +72,7 @@ function add_doi(value){
           id= "DOI${id_val}"
       name= "DOI_${id_val}"
       value= "${value}"
-          placeholder= "DOI ${id_val}"
+          placeholder= "https://dx.doi.org/10.5067/MODIS/MOD09A1.061"
       required
         />
      <div class="valid-feedback">
@@ -135,29 +135,27 @@ function add_topic(){
 }
 
 function handleUsageTypeSelection(usageType) {
-  if (usageType == 'unclassified') {
-    // disable usage submit
-    $('#submit_btn').prop('disabled', true);
-    $('#left-usage-col').hide();
-    $('#right-usage-col').hide();
-
-  } else if (usageType == 'software') {
-    // enable usage submit
-    $('#submit_btn').prop('disabled', false);
-    $('#left-usage-col').show();
-    $('#right-usage-col').show();
-
+  if (usageType == 'software') {
+    $('#publication-link-group').show();
+    $('#image-file-group').show();
+    $('#Application_Name').attr('placeholder', 'The DFO Flood Observatory');
+    $('#description').attr('placeholder', 'Space-based Measurement, Mapping, and Modeling of Surface Water For Research, Humanitarian, and Water Resources Applications');
+    $('#site').attr('placeholder', 'https://floodobservatory.colorado.edu/');
+    $('#site-label').text('Website');
   } else if (usageType == 'research') {
-    // enable usage submit
-    $('#submit_btn').prop('disabled', false);
-    $('#left-usage-col').show();
-    $('#right-usage-col').show();
-
+    $('#publication-link-group').hide();
+    $('#image-file-group').hide();
+    $('#Application_Name').attr('placeholder', 'Application of artificial neural networks and logistic regression to the prediction of forest fire danger in Galicia using MODIS data.');
+    $('#description').attr('placeholder', 'In this work, we tested the potential of artificial neural networks and logistic regression to estimate forest fire danger from remote sensing and fire history data.');
+    $('#site').attr('placeholder', 'https://doi.org/10.1071/WF11105');
+    $('#site-label').text('Publication DOI');
   }
 }
 
 $(function () {
   'use strict'
+
+  handleUsageTypeSelection($('#Type').val().toLowerCase());
 
   $('#Type').on('change', function() {
     handleUsageTypeSelection($(this).val().toLowerCase());
@@ -187,4 +185,7 @@ $(function () {
     form.classList.add('was-validated')
       }, false)
     })
+    
+    $('#add-relationship-row').show();
+    $('#add-csv-form').show();
 });
