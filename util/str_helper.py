@@ -1,6 +1,8 @@
 import re
 
 def list_from_string(str):
+    if not str:
+        return []
     sanitized_str = re.sub("\]|\[|\'", '', str)
     return list(map(lambda x: x.strip(), sanitized_str.split(',')))
 
