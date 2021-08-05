@@ -73,7 +73,8 @@
         <div class="row">
           <div class="col-6">
             <div class="form-group">
-              <label>Usage Type<span class="required-star">*</span></label>
+              <label>Usage Type<span class="required-star">*</span> <i class="fas fa-question-circle" 
+                data-bs-toggle="tooltip" data-bs-placement="right" title="Select 'Application' when adding something like the Dartmouth Flood Observatory. If you are adding a research publication, select 'Research'."></i></label>
               <select class="selectpicker" name="Type[]" id="Type" data-width="100%" required>
                 {% for t in ['Software', 'Research'] %}
                 {% if t in f['type[]'] %}
