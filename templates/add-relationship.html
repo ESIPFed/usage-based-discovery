@@ -116,14 +116,6 @@
                 </div>
               </div>
             </div>
-            <div class="form-group" id="publication-link-group">
-              <label>Associated Publication</label>
-              <input type="text" class="form-control" id="formGroupExampleInput4" name="Publication_Link"
-                placeholder="https://doi.org/10.1109/36.134076" value="{{f.Publication_Link}}" />
-              <div class="valid-feedback">
-                Looks good!
-              </div>
-            </div>
             <div class="form-group">
               <label>Topic<span class="required-star">*</span></label>
               <select class="selectpicker" name="Topic[]" id="Topic" data-width="100%" data-size="false" multiple required>
@@ -165,6 +157,14 @@
                 {% endif %}
                 {% endfor %}
               </select>
+              <div class="valid-feedback">
+                Looks good!
+              </div>
+            </div>
+            <div class="form-group" id="publication-link-group">
+              <label>Associated Publication</label>
+              <input type="text" class="form-control" id="formGroupExampleInput4" name="Publication_Link"
+                placeholder="https://doi.org/10.1109/36.134076" value="{{f.Publication_Link}}" />
               <div class="valid-feedback">
                 Looks good!
               </div>

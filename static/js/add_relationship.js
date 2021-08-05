@@ -141,14 +141,14 @@ function handleUsageTypeSelection(usageType) {
     $('#Application_Name').attr('placeholder', 'The DFO Flood Observatory');
     $('#description').attr('placeholder', 'Space-based Measurement, Mapping, and Modeling of Surface Water For Research, Humanitarian, and Water Resources Applications');
     $('#site').attr('placeholder', 'https://floodobservatory.colorado.edu/');
-    $('#site-label').text('Website');
+    $('#site-label').html('Website<span class="required-star">*</span>');
   } else if (usageType == 'research') {
     $('#publication-link-group').hide();
     $('#image-file-group').hide();
     $('#Application_Name').attr('placeholder', 'Application of artificial neural networks and logistic regression to the prediction of forest fire danger in Galicia using MODIS data.');
     $('#description').attr('placeholder', 'In this work, we tested the potential of artificial neural networks and logistic regression to estimate forest fire danger from remote sensing and fire history data.');
     $('#site').attr('placeholder', 'https://doi.org/10.1071/WF11105');
-    $('#site-label').text('Publication DOI');
+    $('#site-label').html('Publication DOI<span class="required-star">*</span>');
   }
 }
 
