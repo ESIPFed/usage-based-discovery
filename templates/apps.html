@@ -109,10 +109,12 @@
             {% endif %}
             <div class="d-flex align-items-center">
               <div class="flex-column d-flex">
-                {% if a['type'] and (a['type'][0].lower() == 'software' or a['type'][0].lower() == 'research') %}
+                {% if a['type'] and ('Software' in a['type'] or 'Research' in a['type']) %}
                 {% for aType in a['type'] %}
+                {% if aType != 'unclassified' %}
                 {% set badge_class = ('fa-chart-area' if aType.lower() == 'software' else 'fa-flask') %}
                 <span class="fas {{ badge_class }} ms-0 me-2 my-1 align-self-start" title='{{aType if aType != "Software" else "Application"}}'></span>
+                {% endif %}
                 {% endfor %}
                 {% else %}
                 <span class="fas fa-flask ms-0 me-2 my-1 align-self-start hidden-fa"></span>
