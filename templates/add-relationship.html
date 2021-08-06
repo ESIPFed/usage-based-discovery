@@ -165,7 +165,7 @@
             <div class="form-group" id="publication-link-group">
               <label>Associated Publication</label>
               <input type="text" class="form-control" id="formGroupExampleInput4" name="Publication_Link"
-                placeholder="https://doi.org/10.1109/36.134076" value="{{f.Publication_Link}}" />
+                placeholder="https://doi.org/10.1109/36.134076" value="{{f.get('Publication_Link', '')}}" />
               <div class="valid-feedback">
                 Looks good!
               </div>
