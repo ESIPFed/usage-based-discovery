@@ -34,7 +34,7 @@ def edit_application(f, g):
         f['essential_variable'] = app['essential_variable']
     f['Topic[]'] = g.get_app_topics(app['site'])
     f['site'] = app['site']
-    f['Publication_Link'] = app.get('publication')
+    f['Publication_Link'] = app['publication']
     # Iterating through datasets so they also show up in form
     for index, item in enumerate(datasets_obj):
         title = item[2]['title'][0]
