@@ -28,6 +28,15 @@ class TestRelationshipRoutes(RoutesTest):
             assert(ds1 == data['datasets'][1])
             assert(app == data['app'])
 
+            rv = c.post(self.get_url_for('add_relationship'), 
+                content_type='multipart/form-data', 
+                data={
+                    'type': 'edit_application',
+                    'app_site': data['form']['site']
+                })
+            
+            assert rv.status_code == 200
+
     def test_add_rltsp_route_research_update(self):
         data = MockData.get('Research', "9020-0003-9403-1032", is_edit=False)
         with self.flask_app.test_client() as c:
