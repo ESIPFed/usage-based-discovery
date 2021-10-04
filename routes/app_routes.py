@@ -1,9 +1,18 @@
 from util.graph_db import GraphDB
 from util.s3_functions import s3Functions
-from flask import render_template, request, session, redirect, url_for
-from util import usage_types, str_helper
+from flask import render_template, request, session, redirect, url_for, make_response
+from util import usage_types, save_graph
 import os, json
 from urllib.parse import urlparse, parse_qs
+
+def download_apps():
+    sio = save_graph.db_output_csv_to_string_io()
+
+    output = make_response(sio.getvalue())
+    output.headers["Content-Disposition"] = "attachment; filename=graph_snapshot.csv"
+    output.headers["Content-type"] = "text/csv"
+
+    return output
 
 def apps():
     app_site = request.args.get('app_site')
@@ -109,6 +118,8 @@ def delete_application():
 
 def bind(flask_app):    
     
+    flask_app.add_url_rule('/download-apps', view_func=download_apps)
+
     flask_app.add_url_rule('/apps', view_func=apps)
     
     flask_app.add_url_rule('/verify-application', view_func=verify_application)
