@@ -46,12 +46,21 @@ def write_records(out, data, graph):
         row = []
         row.append(graph.get_app_topics(app['site']))
         row.append(app['type'])
-        row.append(app['essential_variable'])
+        if 'essential_variable' in app: 
+            row.append(app['essential_variable'])
+        else:
+            row.append('')
         row.append(app['name'])
         row.append(app['site'])
-        row.append(app['screenshot'])
+        if 'screenshot' in app: 
+            row.append(app['screenshot'])
+        else:
+            row.append('')
         row.append(app['description'])
-        row.append(app['publication'])
+        if 'publication' in app: 
+            row.append(app['publication'])
+        else:
+            row.append('')
         row.append(app['discoverer'])
         row.append(app['verified'])
         row.append(app['verifier'])
