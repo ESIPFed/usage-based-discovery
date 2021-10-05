@@ -25,7 +25,7 @@ def db_output_csv_to_string_io():
 
 def write_records(out, data, graph):
     writer = csv.writer(out)
-    header = ['topic', 'type', 'essential_variable' 'name', 'site', 'screenshot', 'description', 'publication', 'app_discoverer', 
+    header = ['topic', 'type', 'essential_variable', 'name', 'site', 'screenshot', 'description', 'publication', 'app_discoverer', 
         'app_verified', 'app_verifier', 'doi', 'title', 'discoverer', 'verifier', 'verified', 'annotation']
     writer.writerow(header)
     for link in data['links']:
