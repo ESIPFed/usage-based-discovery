@@ -18,3 +18,5 @@ zappa==0.52.0
 python-dotenv
 Flask-FontAwesome==0.1.5
 Pillow
+markupsafe==2.0.1
+itsdangerous==2.0.1
