@@ -7,6 +7,8 @@ useDotenv: true
 custom:
   wsgi:
     app: app.app
+  pythonRequirements:
+    fileName: requirements-prod.txt
 
 plugins:
   - serverless-wsgi
