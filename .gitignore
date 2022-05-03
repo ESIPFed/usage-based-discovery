@@ -1,3 +1,5 @@
+.serverless
+node_modules
 venv/
 ubd-tool-remotedb-venv/
 awscli-venv/
@@ -9,5 +11,6 @@ __pycache__/
 *.pem
 .vscode/settings.json
 .env
+.env.production
 
 !util/sample_data.csv
