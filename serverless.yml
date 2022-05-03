@@ -1,0 +1,104 @@
+service: ubd-serverless
+
+frameworkVersion: '3'
+
+useDotenv: true
+
+custom:
+  wsgi:
+    app: app.app
+
+plugins:
+  - serverless-wsgi
+  - serverless-python-requirements
+
+provider:
+  name: aws
+  runtime: python3.8
+  # Function environment variables
+  environment:
+    STRIP_STAGE_PATH: yes
+    S3_BUCKET: ${env:S3_BUCKET}
+    NEPTUNEDBRO: ${env:NEPTUNEDBRO}
+    CLIENT_SECRET: ${env:CLIENT_SECRET}
+    CLIENT_ID: ${env:CLIENT_ID}
+    APP_SECRET_KEY: ${env:APP_SECRET_KEY}
+  vpc:
+    securityGroupIds:
+      - ${env:UBD_DEFAULT_SG}
+      - ${env:UBD_NEPTUNE_SG}
+    subnetIds:
+      - ${env:UBD_PRIVATE_SUBNET_ID}
+  deploymentBucket:
+    # Name of an existing bucket to use (default: created by serverless)
+    name: ubd-deployments
+    # On deployment, serverless prunes artifacts older than this limit (default: 5)
+    maxPreviousDeploymentArtifacts: 10
+    # Prevents public access via ACLs or bucket policies (default: false)
+    # Note: the deployment bucket is not public by default. These are additional ACLs.
+    blockPublicAccess: true
+    # Skip the creation of a default bucket policy when the deployment bucket is created (default: false)
+    skipPolicySetup: true
+    # Enable bucket versioning (default: false)
+    versioning: true
+    # Server-side encryption method
+    serverSideEncryption: aws:kms
+    # For server-side encryption
+    sseKMSKeyId: ${env:KMS_ARN}
+    # Tags that will be added to each of the deployment resources
+    tags:
+      ProjectName: ubd
+      IAMUsername: vinverso
+  # Default stage (default: dev)
+  stage: production
+  # Default region (default: us-east-1)
+  region: us-west-1
+  # The AWS profile to use to deploy (default: "default" profile)
+  profile: ubd
+  # Use a custom name for the CloudFormation stack
+  stackName: ubd-stack
+  # Optional CloudFormation tags to apply to APIs and functions
+  tags:
+    ProjectName: ubd
+    IAMUsername: vinverso
+  # Optional CloudFormation tags to apply to the stack
+  stackTags:
+    ProjectName: ubd
+    IAMUsername: vinverso
+  # Method used for CloudFormation deployments: 'changesets' or 'direct' (default: changesets)
+  # See https://www.serverless.com/framework/docs/providers/aws/guide/deploying#deployment-method
+  deploymentMethod: direct
+  # List of existing Amazon SNS topics in the same region where notifications about stack events are sent.
+  # notificationArns:
+  #   - 'arn:aws:sns:us-east-1:XXXXXX:mytopic'
+  # stackParameters:
+  #   - ParameterKey: 'Keyname'
+  #     ParameterValue: 'Value'
+  # Disable automatic rollback by CloudFormation on failure. To be used for non-production environments.
+  disableRollback: true
+  # rollbackConfiguration:
+  #   MonitoringTimeInMinutes: 20
+  #   RollbackTriggers:
+  #     - Arn: arn:aws:cloudwatch:us-east-1:000000000000:alarm:health
+  #       Type: AWS::CloudWatch::Alarm
+  #     - Arn: arn:aws:cloudwatch:us-east-1:000000000000:alarm:latency
+  #       Type: AWS::CloudWatch::Alarm
+  tracing:
+    # Can only be true if API Gateway is inside a stack.
+    apiGateway: true
+    # Optional, can be true (true equals 'Active'), 'Active' or 'PassThrough'
+    lambda: true
+
+functions:
+  api:
+    handler: wsgi_handler.handler
+    events:
+      - httpApi: '*'
+    layers:
+      - arn:aws:lambda:us-west-1:770693421928:layer:Klayers-p38-Pillow:2
+
+package:
+  patterns:
+    - '!venv/**'
+    - '!tests/**'
+    - '!.env.production'
