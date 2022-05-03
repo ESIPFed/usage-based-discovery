@@ -54,7 +54,7 @@ def post_change_topic():
         alert = {'success': f'{ " ".join(edits) }'}
         return render_template('change-topic.html', topics=topics, in_session=in_session, alert=alert)
     else:
-        alert = {'danger': 'We did not proccess this change request because the changes requested were invalid or nonexistent.'}
+        alert = {'danger': 'We did not process this change request because the changes requested were invalid or nonexistent.'}
         return render_template('change-topic.html', topics=topics, in_session=in_session, alert=alert), 422
 
 
