@@ -3,7 +3,7 @@
 
 ## Local Development
 
-These instructions have only been tested on macOS.
+The following instructions have only been tested on macOS. However the app can be run entirely in Docker (see [Makefile](Makefile) for relevant Docker commands).
 
 - Install (and use) **python3.8**. We recommend using a tool like **pyenv**.
 - Install Docker Desktop
