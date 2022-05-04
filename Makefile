@@ -20,7 +20,6 @@ run-app:
 run-docker:
 	docker rm --force ubd-app
 	docker run -d -p 5000:5000 -e IS_DOCKER=true --name=ubd-app ubd
-	make db
 
 run-test:
 	. venv/bin/activate && pytest -vv -rP
@@ -37,6 +36,10 @@ db:
 		make run-db; \
 		make load-db; \
 	fi
+
+docker:
+	make db
+	make run-docker
 
 app:
 	make db
