@@ -1,7 +1,7 @@
 ![Usage-Based Data Discovery Web App](https://github.com/ESIPFed/ubd-tool-remotedb/blob/main/static/ubd-app.png?raw=true)
 
 
-## Local Development
+## Development
 
 The following instructions have only been tested on macOS. However the app can be run entirely in Docker (see [Makefile](Makefile) for relevant Docker commands).
 
