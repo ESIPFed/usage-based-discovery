@@ -1,7 +1,9 @@
 ![Usage-Based Data Discovery Web App](https://github.com/ESIPFed/ubd-tool-remotedb/blob/main/static/ubd-app.png?raw=true)
 
 
-## Local Development (macOS)
+## Local Development
+
+These instructions have only been tested on macOS.
 
 - Install (and use) **python3.8**. We recommend using a tool like **pyenv**.
 - Install Docker Desktop
