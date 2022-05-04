@@ -24,7 +24,7 @@ provider:
     NEPTUNEDBRO: ${env:NEPTUNEDBRO}
     CLIENT_SECRET: ${env:CLIENT_SECRET}
     CLIENT_ID: ${env:CLIENT_ID}
-    APP_SECRET_KEY: ${env:APP_SECRET_KEY}
+    APP_SECRET_ARN: ${env:APP_SECRET_ARN}
   vpc:
     securityGroupIds:
       - ${env:UBD_DEFAULT_SG}

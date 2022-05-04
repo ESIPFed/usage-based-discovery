@@ -34,7 +34,7 @@ def create_flask_app():
     if os.environ.get('FLASK_ENV') == 'development':
         flask_app.secret_key = os.environ.get('APP_SECRET_KEY')
     else:
-        flask_app.secret_key = secrets_manager.get_secret('APP_SECRET_KEY')
+        flask_app.secret_key = secrets_manager.get_secret(os.environ.get('APP_SECRET_ARN'))
     
     error_routes.bind(flask_app)    
 
