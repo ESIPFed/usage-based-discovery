@@ -1,6 +1,6 @@
 from flask import session, request, redirect, url_for
 import os
-import subprocess
+import requests
 import json
 from util.s3_functions import s3Functions
 
@@ -31,16 +31,14 @@ def login():
         orcid = os.environ.get('ORCID')
     else:
         code = request.args.get('code')
-        inputstr = 'client_id=' + os.environ.get('CLIENT_ID') + \
-            '&client_secret=' + os.environ.get('CLIENT_SECRET') + \
-            '&grant_type=authorization_code&code=' + code
-        output = subprocess.check_output(['curl', '-i', '-L', '-H', 'Accept: application/json',
-                                          '--data', inputstr,  'https://orcid.org/oauth/token'], universal_newlines=True)
-
-        ind = output.index('{')
-        output = output[ind:]
-        output_json = json.loads(output)
-        orcid = output_json['orcid']
+        query = {
+            'client_id': os.environ.get('CLIENT_ID'),
+            'client_secret': os.environ.get('CLIENT_SECRET'),
+            'grant_type': 'authorization_code',
+            'code': code
+        }
+        data = requests.post(f'https://orcid.org/oauth/token', query).json()
+        orcid = data['orcid']
 
     s3 = s3Functions()
     data = s3.get_file(os.environ.get('S3_BUCKET'), 'orcid.json')
