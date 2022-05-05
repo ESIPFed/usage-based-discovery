@@ -21,16 +21,12 @@ def db_input_csv(fstring, orcid):
     if not required_headers.issubset(headers):
         return False 
     for line in reader:
-        if 'screenshot' not in line:
-            line['screenshot'] = 'NA'
-        if 'publication' not in line:
-            line['publication'] = 'None'
         print(line)
         if not 'type' in line.keys():
             line['type'] = 'unclassified'
         line['topic'] = str_helper.list_from_string(line['topic'])
         line['type'] = str_helper.list_from_string(line['type'])
-        line['essential_variable'] = str_helper.list_from_string(line['essential_variable'])
+        line['essential_variable'] = str_helper.list_from_string(line.get('essential_variable'))
         for index, t in enumerate(line['topic']):
             line['topic'][index] = t.strip()
             print(graph.add_topic(line['topic'][index]))
