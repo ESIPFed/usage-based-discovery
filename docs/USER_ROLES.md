@@ -1,4 +1,4 @@
-Anyone with an ORCID can login without being added to the special roles file ([ORCID.json](../orcid.json)). Supervisors must manually be added to ORCID.json.
+Anyone with an ORCID can login without being added to the special roles file ([orcid.json](../orcid.json)). Supervisors must manually be added to orcid.json.
 
 ```
 If logged in with ORCID auth:
