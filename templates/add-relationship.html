@@ -191,7 +191,7 @@
       </form>
     </div>
 
-    
+    {% if role == 'supervisor' %}
     <form id="add-csv-form" class="needs-validation" action="{{ url_for('add_csv') }}" method="post" enctype="multipart/form-data"
       style="display: none;" novalidate>
       <div class="row my-3">
@@ -215,6 +215,7 @@
         </div>
       </div>
     </form>
+    {% endif %}
     
   </div>
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
