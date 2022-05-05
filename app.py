@@ -1,4 +1,6 @@
 import os
+
+from dotenv import load_dotenv
 import app_factory
 from util import env_helper
 
@@ -10,6 +12,7 @@ if not (is_docker or is_dev):
 
 if __name__ == '__main__':
     # this should only be invoked in non-production modes (FLASK_ENV != production)
+    load_dotenv('.env.development')
     neptune_endpoint = 'ws://localhost:8183/gremlin'
     host = None
     if is_docker:

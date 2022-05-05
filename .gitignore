@@ -12,5 +12,6 @@ __pycache__/
 .vscode/settings.json
 .env
 .env.production
+.env.development
 
 !util/sample_data.csv
