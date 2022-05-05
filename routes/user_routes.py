@@ -54,7 +54,7 @@ def login():
 def logout():
     del session['orcid']
     del session['role']
-    return redirect(request.referrer)
+    return redirect(url_for('topics'))
 
 
 def bind(flask_app):
