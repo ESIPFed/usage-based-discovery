@@ -1,4 +1,4 @@
-Anyone with an ORCID can login without being added to the special roles file ([ORCID.json](../orcid.json)). Supervisors must manually be added to ORCID.json.
+Anyone with an ORCID can login without being added to the special roles file ([orcid.json](../orcid.json)). Supervisors must manually be added to orcid.json.
 
 ```
 If logged in with ORCID auth:
@@ -8,11 +8,11 @@ If logged in with ORCID auth:
         your session role = general
 
 If session role == supervisor, special privileges include:
-	Can add custom topics
-	Apps you add are automatically verified
-	Can delete applications
-	Can unlink datasets
-	Can verify applications
+    Can add custom topics
+    Apps you add are automatically verified
+    Can delete applications
+    Can unlink datasets
+    Can verify applications
     Can verify datasets
     Can see unverified applications
     Can undo changes
