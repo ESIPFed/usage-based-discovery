@@ -8,7 +8,7 @@ The following instructions have only been tested on macOS. However the app can b
 - Install (and use) **python3.8**. We recommend using a tool like **pyenv**.
 - Install Docker Desktop
 - Clone this repo and navigate to the root directory.
-- Create .env.development in the root directory and set ORCID to a value in [orcid.json](./orcid.json) to simulate role=supervisor (or blank for role=general) when logged in
+- Create .env.development in the root directory and set `ORCID=` a value in [orcid.json](./orcid.json) to simulate role=supervisor (or blank for role=general) when logged in
 - `$ python3.8 -m venv ./venv`
 - `$ source venv/bin/activate`
 - `$ pip3 install -r requirements-dev.txt`
