@@ -52,4 +52,7 @@ clean-app:
 	docker rm --force ubd-app
 	docker rm --force ubd-app-db
 
+clean-db:
+	docker rm --force ubd-app-db
+
 clean: clean-test clean-app

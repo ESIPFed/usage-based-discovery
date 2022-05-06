@@ -1,3 +1,4 @@
+from threading import Thread
 from flask import request, session, redirect, render_template, url_for
 from util import graph_db, essential_variables, usage_types
 from util.autofill import AutoFill
@@ -235,8 +236,7 @@ def add_csv():
         if uploaded_file.filename != '':
             fstring = uploaded_file.read()
             fstring = fstring.decode("utf-8")
-            did_it_work = db_input_csv(fstring, session['orcid'])
-            print(did_it_work)
+            Thread(target=db_input_csv, kwargs={ 'fstring': fstring, 'orcid': session['orcid'] }).start()
             return "CSV values successfully added"
     return "Please check data headers and try again"
 
