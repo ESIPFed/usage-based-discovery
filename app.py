@@ -17,7 +17,7 @@ if __name__ == '__main__':
     host = None
     if is_docker:
         neptune_endpoint = 'ws://host.docker.internal:8183/gremlin'
-        host='0.0.0.0'
+        host='localhost'
     env_helper.load_vars(flask_env='development', neptune_endpoint=neptune_endpoint)
     app = app_factory.create_flask_app()
     
