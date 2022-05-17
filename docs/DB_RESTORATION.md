@@ -5,7 +5,7 @@
 
 2. Run [to-ubd.py](../util/to-ubd.py)
 
-3. Deploy an ubuntu ec2 instance.
+3. Deploy an ubuntu ec2 instance in your public subnet.
 
 4. Attach security groups: one for SSH from your IP, the default VPC sg, and the neptune sg.
 
