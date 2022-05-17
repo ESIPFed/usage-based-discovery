@@ -3,7 +3,7 @@
 
 1. Obtain GotDataArticleNeedTopics CSV from Google Drive
 
-2. Run [to-ubd.py](./to-ubd.py)
+2. Run [to-ubd.py](../util/to-ubd.py)
 
 3. Deploy an ubuntu ec2 instance.
 
