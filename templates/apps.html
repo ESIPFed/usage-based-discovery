@@ -100,7 +100,7 @@
           </div>
         </div>
         <div id="appresults">
-          <input type="text" class="form-control search mb-1" id="search" placeholder="enter text to filter">
+          <input type="text" class="form-control search mb-1" id="search" placeholder="🔍 Enter text to filter">
           <ul class="list appresults list-group list-group-flush">        
             {% for a in apps %}
             {% set active_class = 'list-group-item-action active' if app != None and a['name'] == app['name'] else '' %}
