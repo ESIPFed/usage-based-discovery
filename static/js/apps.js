@@ -18,6 +18,10 @@ $(function(){
         'verify-dataset-btn', 'delete-dataset-btn']) {
         bindButtonConfirmation(clazz);
     }
+    var options = {
+        valueNames: [ 'search-text']
+    };
+    new List('appresults', options);
 })
 
 function bindButtonConfirmation(clazz) {

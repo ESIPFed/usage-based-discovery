@@ -22,6 +22,7 @@
   <script type="text/javascript"
     src="https://fbm.earthdata.nasa.gov/for/Usage%20Based%20Discovery/feedback.js"></script>
   <script>feedback.init();</script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
 
   <script src="{{ url_for('static', filename='js/apps.js') }}"></script>
 
@@ -98,35 +99,38 @@
             </div>
           </div>
         </div>
-        <ul class="appresults list-group list-group-flush">
-          {% for a in apps %}
-          {% set active_class = 'list-group-item-action active' if app != None and a['name'] == app['name'] else '' %}
-          <a href='{{ url_for('apps', string_type=string_type, string_topic=topic, app_site=a['site']) }}' 
-            class="app list-group-item list-group-item-action {{ active_class }}">
-            {% if not a['verified'] %}
-              <span class="position-absolute top-0 end-0 p-2 fas fa-exclamation" title="This has not been verified">
-              </span>
-            {% endif %}
-            <div class="d-flex align-items-center">
-              <div class="flex-column d-flex">
-                {% if a['type'] and ('Software' in a['type'] or 'Research' in a['type']) %}
-                {% for aType in a['type'] %}
-                {% if aType != 'unclassified' %}
-                {% set badge_class = ('fa-chart-area' if aType.lower() == 'software' else 'fa-flask') %}
-                <span class="fas {{ badge_class }} ms-0 me-2 my-1 align-self-start" title='{{aType if aType != "Software" else "Application"}}'></span>
-                {% endif %}
-                {% endfor %}
-                {% else %}
-                <span class="fas fa-flask ms-0 me-2 my-1 align-self-start hidden-fa"></span>
-                {% endif %}
+        <div id="appresults">
+          <input type="text" class="form-control search mb-1" id="search" placeholder="enter text to filter">
+          <ul class="list appresults list-group list-group-flush">        
+            {% for a in apps %}
+            {% set active_class = 'list-group-item-action active' if app != None and a['name'] == app['name'] else '' %}
+            <a href='{{ url_for('apps', string_type=string_type, string_topic=topic, app_site=a['site']) }}' 
+              class="app list-group-item list-group-item-action {{ active_class }}">
+              {% if not a['verified'] %}
+                <span class="position-absolute top-0 end-0 p-2 fas fa-exclamation" title="This has not been verified">
+                </span>
+              {% endif %}
+              <div class="d-flex align-items-center">
+                <div class="flex-column d-flex">
+                  {% if a['type'] and ('Software' in a['type'] or 'Research' in a['type']) %}
+                  {% for aType in a['type'] %}
+                  {% if aType != 'unclassified' %}
+                  {% set badge_class = ('fa-chart-area' if aType.lower() == 'software' else 'fa-flask') %}
+                  <span class="fas {{ badge_class }} ms-0 me-2 my-1 align-self-start" title='{{aType if aType != "Software" else "Application"}}'></span>
+                  {% endif %}
+                  {% endfor %}
+                  {% else %}
+                  <span class="fas fa-flask ms-0 me-2 my-1 align-self-start hidden-fa"></span>
+                  {% endif %}
+                </div>
+                <div class="flex-grow-1 ms-3 text-start search-text">
+                  {{ a['truncated_name'] }}
+                </div>
               </div>
-              <div class="flex-grow-1 ms-3 text-start">
-                {{ a['truncated_name'] }}
-              </div>
-            </div>
-          </a>
-          {% endfor %}
-        </ul>
+            </a>
+            {% endfor %}
+          </ul>
+        </div>
       </div>
 
       <div class="col-md-4 p-2">
