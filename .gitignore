@@ -13,5 +13,5 @@ __pycache__/
 .env
 .env.production
 .env.development
-
+frontend/build/
 !util/sample_data.csv

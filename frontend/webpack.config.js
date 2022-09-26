@@ -1,5 +1,6 @@
 const path = require("path");
 const webpack = require("webpack");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   entry: "./src/index.js",
@@ -20,16 +21,19 @@ module.exports = {
   },
   resolve: { extensions: ["*", ".js", ".jsx"] },
   output: {
-    filename: "main.js",
-    path: path.resolve(__dirname, "build"),
+    path: path.resolve(__dirname, "build/"),
+    filename: "main.js"
   },
   devServer: {
     port: 3000,
-    static: { 
-        publicPath: "http://localhost:3000/dist/", 
-        directory: path.join(__dirname, "public")
+    static: {
+      directory: path.join(__dirname, "build"),
     },
     hot: true
   },
-  plugins: []
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, "public", "index.html"),
+    }),
+  ]
 };
