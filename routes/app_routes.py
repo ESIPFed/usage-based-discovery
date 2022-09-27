@@ -73,6 +73,9 @@ def apps():
         app=selected_app, datasets=datasets, screenshot=screenshot, \
         in_session=in_session, trusted_user=trusted_user, undo=undo)
 
+def apps_new():
+    return render_template('index.html')
+
 def verify_application():
     app_site = request.args.get('app_site')
     g = GraphDB()
@@ -121,6 +124,8 @@ def bind(flask_app):
     flask_app.add_url_rule('/download-apps', view_func=download_apps)
 
     flask_app.add_url_rule('/apps', view_func=apps)
+
+    flask_app.add_url_rule('/apps_new', view_func=apps_new)
     
     flask_app.add_url_rule('/verify-application', view_func=verify_application)
 
