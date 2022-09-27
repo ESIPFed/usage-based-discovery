@@ -27,7 +27,7 @@ module.exports = {
     // the url to the output directory resolved relative to the HTML page
     // (when executed in the browser, webpack needs to know
     // where you'll host the generated bundle)
-    publicPath: "/static/js/",
+    publicPath: "http://localhost:3000/static/js/", // dev
     filename: "main.js"
   },
   devServer: {
