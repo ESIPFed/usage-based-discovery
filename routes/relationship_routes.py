@@ -236,7 +236,7 @@ def add_csv():
         if uploaded_file.filename != '':
             fstring = uploaded_file.read()
             fstring = fstring.decode("utf-8")
-            Thread(target=db_input_csv, kwargs={ 'fstring': fstring, 'orcid': session['orcid'] }).start()
+            db_input_csv(fstring, session["orcid"])
             return "CSV values successfully added"
     return "Please check data headers and try again"
 
